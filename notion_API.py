@@ -64,5 +64,4 @@ class notion_API:
             except Exception as e:
                 print("[properties] 속성 추출 실패 : ", e)
 
-            print(len(notion_data))
             return notion_data
