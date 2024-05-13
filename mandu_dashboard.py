@@ -1,8 +1,6 @@
-import streamlit as st
+import mandu_dashboard as st
 st.set_page_config(layout="wide")
 
-
-import data_process
 
 
 ##페이지 상단 영역
@@ -16,4 +14,3 @@ tab1, tab2 = st.tabs(["VoiceSDK 업체 현황", "VoiceSDK 파일"])
 
 with tab1:
     col1, col2 = st.columns([5, 5])
-st.write("Streamlit is working without notion_API.")
