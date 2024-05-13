@@ -1,4 +1,4 @@
-import mandu_dashboard as st
+import streamlit as st
 st.set_page_config(layout="wide")
 
 
