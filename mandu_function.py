@@ -39,3 +39,24 @@ def notion_function(notion_data):
 
         print(len(notion_data))
         return notion_data
+    
+    
+    
+def find_same_data(list_data):
+    temp = []
+    
+    for A in list_data:
+        if A not in temp:
+            
+            temp.append(A)
+            
+    return temp
+
+    
+    
+    
+    
+    
+    
+    
+    
