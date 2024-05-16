@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import Counter
 
 
 def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함수
@@ -11,13 +12,14 @@ def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함
     else:
         try:
             for A in range(count_data):
-                data[A] = pd.DataFrame.from_dict(data=data[A], orient="columns")
+                data[A] = pd.DataFrame.from_dict(
+                    data=data[A], orient="columns")
         except Exception as e:
             print("dic to dataframe 변환 실패 : ", e)
 
         return data
-    
-    
+
+
 def notion_function(notion_data):
 
     notion_data = notion_dic_to_dataframe(
@@ -39,24 +41,20 @@ def notion_function(notion_data):
 
         print(len(notion_data))
         return notion_data
-    
-    
-    
+
+
 def find_same_data(list_data):
     temp = []
-    
+
     for A in list_data:
         if A not in temp:
-            
+
             temp.append(A)
-            
+
     return temp
 
-    
-    
-    
-    
-    
-    
-    
-    
+
+def count_value(list_data):
+    counter = Counter(list_data)
+    print(counter)
+    return counter
