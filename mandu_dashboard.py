@@ -1,4 +1,3 @@
-import data_process
 import streamlit as st
 st.set_page_config(layout="wide")
 
@@ -17,5 +16,5 @@ with tab1:
     col1, col2 = st.columns([5, 5])
     st.markdown('통계자료는 아래와 같습니다.')
 
-    st.metric(label="정식계약", value=data_process.contract)
-    st.metric(label="데모계약", value=data_process.pre_contract)
+    # st.metric(label="정식계약", value=data_process.contract)
+    # st.metric(label="데모계약", value=data_process.pre_contract)
