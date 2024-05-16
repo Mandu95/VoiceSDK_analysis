@@ -44,6 +44,8 @@ for B in range(count):
     except Exception as e:
         print("Database를 다시 확인하시오, 데이터가 비어서 그럴거에요!")
 
+count_goods_value = mandu_function.count_value(goods_fliter)
+
 goods_fliter = mandu_function.find_same_data(goods_fliter)
 
 
@@ -70,6 +72,8 @@ for C in range(count):
     except Exception as e:
         print("데이터가 없는 병원, 업체 : , ", database_properties[0][C]['업체 이름']
               ['title'][0]['text']['content'])
+        print("데이터 확인: , ",
+              database_properties[0][C]['계약구분']['rollup']['array'])
 
 
 print("정식계약수 : ", contract)
