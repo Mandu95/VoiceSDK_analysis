@@ -1,8 +1,5 @@
-import data_process
 import streamlit as st
 
-contract = data_process.contract
-pro_contract = data_process.pre_contract
 st.set_page_config(layout="wide")
 
 
