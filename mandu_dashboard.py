@@ -1,6 +1,5 @@
-import streamlit as st
 import data_process
-
+import streamlit as st
 st.set_page_config(layout="wide")
 
 
