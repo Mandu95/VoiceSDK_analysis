@@ -75,24 +75,24 @@ with tab1:
     voiceemr_data.index.name='구분'
     count_voiceemr = len(voiceemr_data)
     df.index.name = '구분'
-    display_tab(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True), "VoiceEMR", count_voiceemr, 9, 30)
+    display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, 9, 30)
 with tab2:
     voiceenr_data = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
     voiceenr_data.index.name='구분'
     count_voiceenr = len(voiceenr_data)
-    display_tab(df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True), "VoiceENR", count_voiceenr, 4, 0)
+    display_tab(voiceenr_data, "VoiceENR", count_voiceenr, 4, 0)
 with tab3:
     voicesdk_data= df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
     voicesdk_data.index.name='구분'
     count_voicesdk = len(voicesdk_data)
-    display_tab(df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True), "VoiceSDK", count_voicesdk, 0, 2)
+    display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, 0, 2)
 with tab4:
     voicemark_data= df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
     voicemark_data.index.name='구분'
     count_voicemark = len(voicemark_data)
-    display_tab(df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True), "VoiceMARK", count_voicemark, 1, 0)
+    display_tab(voicemark_data, "VoiceMARK", count_voicemark, 1, 0)
 with tab5:
     voicedoc_data= df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
     voicedoc_data.index.name='구분'
     count_voicedoc = len(voicedoc_data)
-    display_tab(df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True), "VoiceDOC", count_voicedoc, 0, 0)
+    display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, 0, 0)
