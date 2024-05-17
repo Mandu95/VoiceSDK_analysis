@@ -217,35 +217,40 @@ def extract_goods_item(data):
     return goods_fliter
 
 
-def connect_db(data, df):
-    print(len(data))
+# def connect_db(data, df):
+#     print(len(data))
 
-    def safe_get(d, keys, default=None):
-        """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
-        for key in keys:
-            try:
-                d = d[key]
-            except (KeyError, TypeError, IndexError):
-                return default
-        return d
+#     def safe_get(d, keys, default=None):
+#         """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
+#         for key in keys:
+#             try:
+#                 d = d[key]
+#             except (KeyError, TypeError, IndexError):
+#                 return default
+#         return d
 
-    for A in range(len(df)):
-        temp = df.loc[A, '계약관리']
+#     for A in range(len(df)):
+#         temp = df.loc[A, '계약관리']
 
-        if temp is None:
-            continue  # temp가 None이면 건너뛰기
+#         if temp is None:
+#             continue  # temp가 None이면 건너뛰기
 
-        else:
-            for B in range(len(data)):
-                # item이 딕셔너리 형태인지 확인
+#         else:
+#             for B in range(len(data)):
+#                 # item이 딕셔너리 형태인지 확인
+#                 print(data[B]['id'])  # id가 텍스트로 안바뀜 이거 해야함.
 
-                try:
-                    if temp == data[B]['id']:
-                        new_value = safe_get(
-                            data[B], ["계약구분", 'select', 'name'])
-                        df.loc[A, '계약관리'] = new_value
-                        break  # 일치하는 항목을 찾으면 내부 루프를 종료
-                except (KeyError, TypeError):
-                    continue  # data[B]가 예상하는 형태가 아니면 건너뛰기
+#                 try:
 
-    return df
+#                     if temp == data[B]['id']:
+#                         print(data[B]['id'])
+#                         print(data[B]['properties'])
+#                         new_value = safe_get(
+#                             data[B], ['properties', "계약구분", 'select', 'name'])
+#                         df.loc[A, '계약관리'] = new_value
+#                         break  # 일치하는 항목을 찾으면 내부 루프를 종료
+#                 except (KeyError, TypeError):
+#                     continue  # data[B]가 예상하는 형태가 아니면 건너뛰기
+
+#     print(df['계약관리'])
+#     return df
