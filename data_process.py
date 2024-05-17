@@ -23,8 +23,9 @@ row_name = mandu_function.df_col(data1)
 df = mandu_function.extract_data(data1, row_name)
 
 
-# data2 = data[1]
-# df = mandu_function.connect_db(data2, df)
+data2 = data[1]
+
+df = mandu_function.change_contract_data(data2, df)
 # print(df[0:1])
 # 제품 필터 추출
 # goods_filter = mandu_function.extract_goods_item(data)

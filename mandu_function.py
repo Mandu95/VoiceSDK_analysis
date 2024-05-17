@@ -1,6 +1,27 @@
 import pandas as pd
 from collections import Counter
 
+# dic 형태의 데이터에서 데이터를 추출 할 때 Nontype 에러가 발생하지 않도록 해주는 함수
+def safe_get(d, keys, default=None):  
+        """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
+        for key in keys:
+            try:
+                d = d[key]  
+            except (KeyError, TypeError, IndexError): ## dic 데이터 안에 지목 된 keys가 없다면
+                return default ##None으로 반환
+        return d
+
+
+## Notion의 날짜 데이터는 ISO 8601 날짜 문자열이기 때문 년/월/일로 변환해주는 함수
+def format_date(date_str):
+        """ISO 8601 날짜 문자열을 년/월/일 형식으로 변환하는 함수"""
+        if date_str:
+            try:
+                return pd.to_datetime(date_str).strftime("%Y-%m-%d")
+            except (ValueError, TypeError):
+                return None
+        return None
+
 
 def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함수
 
@@ -68,133 +89,100 @@ def df_col(data):
     print(temp)
     return temp
 
-
-def extract_data(data, row_name):
+## 제품 현황 관리 DB 데이터를 표로  View 해주기 위한 함수
+def extract_data(data, row_name):  
     count_data = len(data)
-    temp_value = []  # 각 데이터를 위한 리스트 초기화
-    empty_df = pd.DataFrame(columns=row_name)
-    print(empty_df)
 
-    def safe_get(d, keys, default=None):
-        """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
-        for key in keys:
-            try:
-                d = d[key]
-            except (KeyError, TypeError, IndexError):
-                return default
-        return d
+    # 각 데이터를 위한 리스트 초기화
+    temp_value = []  
 
-    def format_date(date_str):
-        """ISO 8601 날짜 문자열을 년/월/일 형식으로 변환하는 함수"""
-        if date_str:
-            try:
-                return pd.to_datetime(date_str).strftime("%Y-%m-%d")
-            except (ValueError, TypeError):
-                return None
-        return None
+    ##비어 있는 df 선언
+    empty_df = pd.DataFrame(columns=row_name) 
 
-    if count_data <= 1:
-        print("데이터베이스에 입력 된 값이 한 줄 밖에 없습니다.")
-        empty_df.loc[0] = [
-            safe_get(data, ['납품병원', 'multi_select', 0, 'name']),
-            safe_get(data, ['계약구분', 'rollup', 'array', 0, 'select']),
-            safe_get(data, ['상태', 'status', 'name']),
-            format_date(safe_get(data, ['정보 최신화 날짜', 'last_edited_time'])),
-            safe_get(data, ['라이선스 수', 'rollup', 'number']),
-            format_date(safe_get(data, ['계약시작일', 'rollup', 'date', 'start'])),
-            safe_get(data, ['계약관리', 'relation', 0, 'id']),
-            safe_get(data, ['계약잔여일', 'formula', 'string']),
-            safe_get(data, ['개발언어', 'multi_select', 0, 'name']),
-            safe_get(data, ['계약 횟수', 'rollup', 'number']),
-            safe_get(data, ['컨택 업체 담당자', 'rich_text']),
-            safe_get(data, ['담당자 이메일', 'email']),
-            safe_get(data, ['연관 제품', 'select', 'name']),
-            format_date(safe_get(data, ['계약종료일', 'rollup', 'date', 'start'])),
-            safe_get(data, ['업체 이름', 'title', 0, 'text', 'content'])
-        ]
-    else:
-        print("입력되어 있는 데이터 총 개수는 : ", count_data)
+    ## 데이터 길이가 1개일 때는 직
+    print("입력되어 있는 데이터 총 개수는 : ", count_data)
 
-        for A in range(count_data):
-            # print(A, "번째 데이터 이식 시작합니다.")
+    for A in range(count_data):
+        # print(A, "번째 데이터 이식 시작합니다.")
 
-            row_data = []  # 각 행에 대한 데이터 리스트 초기화
+        row_data = []  # 각 행에 대한 데이터 리스트 초기화
 
-            for B in row_name:
-                if B in data[A] and data[A][B] is not None:
-                    try:
-                        if data[A][B]['type'] == "multi_select":
-                            if len(data[A][B]['multi_select']) > 0:
+        for B in row_name:
+            if B in data[A] and data[A][B] is not None:
+                try:
+                    if data[A][B]['type'] == "multi_select":
+                        if len(data[A][B]['multi_select']) > 0:
+                            row_data.append(
+                                safe_get(data[A], [B, 'multi_select', 0, 'name']))
+                        else:
+                            row_data.append(None)
+
+                    elif data[A][B]['type'] == "rollup":
+                        if data[A][B]['rollup']['type'] == "array":
+                            if len(data[A][B]['rollup']['array']) > 0:
                                 row_data.append(
-                                    safe_get(data[A], [B, 'multi_select', 0, 'name']))
+                                    safe_get(data[A], [B, 'rollup', 'array', 0, 'select', 'name']))
                             else:
                                 row_data.append(None)
-
-                        elif data[A][B]['type'] == "rollup":
-                            if data[A][B]['rollup']['type'] == "array":
-                                if len(data[A][B]['rollup']['array']) > 0:
-                                    row_data.append(
-                                        safe_get(data[A], [B, 'rollup', 'array', 0, 'select', 'name']))
-                                else:
-                                    row_data.append(None)
-                            elif data[A][B]['rollup']['type'] == "number":
-                                row_data.append(
-                                    safe_get(data[A], [B, 'rollup', 'number']))
-                            elif data[A][B]['rollup']['type'] == "date":
-                                date_str = safe_get(
-                                    data[A], [B, 'rollup', 'date', 'start'])
-                                row_data.append(format_date(date_str))
-
-                        elif data[A][B]['type'] == "last_edited_time":
+                        elif data[A][B]['rollup']['type'] == "number":
+                            row_data.append(
+                                safe_get(data[A], [B, 'rollup', 'number']))
+                        elif data[A][B]['rollup']['type'] == "date":
                             date_str = safe_get(
-                                data[A], [B, 'last_edited_time'])
+                                data[A], [B, 'rollup', 'date', 'start'])
                             row_data.append(format_date(date_str))
 
-                        elif data[A][B]['type'] == "relation":
-                            if len(data[A][B]['relation']) > 0:
-                                row_data.append(
-                                    safe_get(data[A], [B, 'relation', 0, 'id']))
-                            else:
-                                row_data.append(None)
+                    elif data[A][B]['type'] == "last_edited_time":
+                        date_str = safe_get(
+                            data[A], [B, 'last_edited_time'])
+                        row_data.append(format_date(date_str))
 
-                        elif data[A][B]['type'] == "formula":
-                            if data[A][B]['formula']['type'] == "string":
-                                row_data.append(
-                                    safe_get(data[A], [B, 'formula', 'string']))
-                            elif data[A][B]['formula']['type'] == "number":
-                                row_data.append(
-                                    safe_get(data[A], [B, 'formula', 'number']))
-
-                        elif data[A][B]['type'] == "status":
+                    elif data[A][B]['type'] == "relation":
+                        if len(data[A][B]['relation']) > 0:
                             row_data.append(
-                                safe_get(data[A], [B, 'status', 'name']))
+                                safe_get(data[A], [B, 'relation', 0, 'id']))
+                        else:
+                            row_data.append(None)
 
-                        elif data[A][B]['type'] == "rich_text":
+                    elif data[A][B]['type'] == "formula":
+                        if data[A][B]['formula']['type'] == "string":
                             row_data.append(
-                                safe_get(data[A], [B, 'rich_text', 0, 'text', 'content']))
-
-                        elif data[A][B]['type'] == "email":
-                            row_data.append(safe_get(data[A], [B, 'email']))
-
-                        elif data[A][B]['type'] == "select":
+                                safe_get(data[A], [B, 'formula', 'string']))
+                        elif data[A][B]['formula']['type'] == "number":
                             row_data.append(
-                                safe_get(data[A], [B, 'select', 'name']))
+                                safe_get(data[A], [B, 'formula', 'number']))
 
-                        elif data[A][B]['type'] == "title":
-                            if safe_get(data[A][B], ['title', 0, 'type']) == "text":
-                                row_data.append(
-                                    safe_get(data[A], [B, 'title', 0, 'text', 'content']))
-                    except (KeyError, IndexError, TypeError) as e:
-                        print(f"Error accessing {B}: {e}")
-                        row_data.append(None)
-                else:
-                    row_data.append(None)  # 데이터가 없는 경우 None 추가
+                    elif data[A][B]['type'] == "status":
+                        row_data.append(
+                            safe_get(data[A], [B, 'status', 'name']))
 
-            temp_value.append(row_data)  # 행 데이터를 temp_value에 추가
+                    elif data[A][B]['type'] == "rich_text":
+                        row_data.append(
+                            safe_get(data[A], [B, 'rich_text', 0, 'text', 'content']))
+
+                    elif data[A][B]['type'] == "email":
+                        row_data.append(safe_get(data[A], [B, 'email']))
+
+                    elif data[A][B]['type'] == "select":
+                        row_data.append(
+                            safe_get(data[A], [B, 'select', 'name']))
+
+                    elif data[A][B]['type'] == "title":
+                        if safe_get(data[A][B], ['title', 0, 'type']) == "text":
+                            row_data.append(
+                                safe_get(data[A], [B, 'title', 0, 'text', 'content']))
+                except (KeyError, IndexError, TypeError) as e:
+                    print(f"Error accessing {B}: {e}")
+                    row_data.append(None)
+            else:
+                row_data.append(None)  # 데이터가 없는 경우 None 추가
+
+        temp_value.append(row_data)  # 행 데이터를 temp_value에 추가
 
     return pd.concat([empty_df, pd.DataFrame(temp_value, columns=row_name)], ignore_index=True)
 
 
+## 제품 현황 관리 DB에서 제품 value 추출하는 함수 [현재 사용 안함]
 def extract_goods_item(data):
     goods_fliter = []
     count = len(data)
@@ -216,41 +204,20 @@ def extract_goods_item(data):
 
     return goods_fliter
 
+## 제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수
+def change_contract_data(data, df):   
 
-# def connect_db(data, df):
-#     print(len(data))
+    for A in range(len(df)):
+        temp = df.loc[A, '계약관리']
 
-#     def safe_get(d, keys, default=None):
-#         """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
-#         for key in keys:
-#             try:
-#                 d = d[key]
-#             except (KeyError, TypeError, IndexError):
-#                 return default
-#         return d
+        if temp is None:
+            continue  # temp가 None이면 건너뛰기
 
-#     for A in range(len(df)):
-#         temp = df.loc[A, '계약관리']
+        for B in range(len(data)):
+ 
+            if temp == data['id'][B]:
+                new_value = safe_get(data, ['properties', B,'계약구분', 'select', 'name'])
+                print(new_value)
+                df.loc[A, '계약관리'] = new_value
 
-#         if temp is None:
-#             continue  # temp가 None이면 건너뛰기
-
-#         else:
-#             for B in range(len(data)):
-#                 # item이 딕셔너리 형태인지 확인
-#                 print(data[B]['id'])  # id가 텍스트로 안바뀜 이거 해야함.
-
-#                 try:
-
-#                     if temp == data[B]['id']:
-#                         print(data[B]['id'])
-#                         print(data[B]['properties'])
-#                         new_value = safe_get(
-#                             data[B], ['properties', "계약구분", 'select', 'name'])
-#                         df.loc[A, '계약관리'] = new_value
-#                         break  # 일치하는 항목을 찾으면 내부 루프를 종료
-#                 except (KeyError, TypeError):
-#                     continue  # data[B]가 예상하는 형태가 아니면 건너뛰기
-
-#     print(df['계약관리'])
-#     return df
+    return df
