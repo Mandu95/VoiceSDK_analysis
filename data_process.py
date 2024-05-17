@@ -23,6 +23,14 @@ df = mandu_function.extract_data(data, row_name)
 print(df.loc[82])
 
 
+# 제품 필터 추출
+goods_filter = mandu_function.extract_goods_item(data)
+
+
+# 제품 필터로 df 추출
+goods_filter_Data = mandu_function.extract_data(df, goods_filter)
+
+
 # database_properties = nc.extract_properties(
 #     data)  # dic 형태에서 properties 속성 값만 추출
 
@@ -47,24 +55,6 @@ print(df.loc[82])
 #         print("Database를 다시 확인하시오, 데이터가 비어서 그럴거에요!")
 
 # status_fliter = mandu_function.find_same_data(status_fliter)
-
-# # 제품 명 = filter 항목 추출
-# goods_fliter = []
-# for B in range(count):
-
-#     try:
-
-#         if database_properties[0][B]['연관 제품']['select']['name'] is not None:
-
-#             goods_fliter.append(
-#                 database_properties[0][B]['연관 제품']['select']['name'])
-
-#     except Exception as e:
-#         print("Database를 다시 확인하시오, 데이터가 비어서 그럴거에요!")
-
-# count_goods_value = mandu_function.count_value(goods_fliter)
-
-# goods_fliter = mandu_function.find_same_data(goods_fliter)
 
 
 # # 정식, 데모 계약 확인

@@ -193,3 +193,25 @@ def extract_data(data, row_name):
             temp_value.append(row_data)  # 행 데이터를 temp_value에 추가
 
     return pd.concat([empty_df, pd.DataFrame(temp_value, columns=row_name)], ignore_index=True)
+
+
+def extract_goods_item(data):
+    goods_fliter = []
+    count = len(data)
+    for B in range(count):
+
+        try:
+
+            if data[0][B]['연관 제품']['select']['name'] is not None:
+
+                goods_fliter.append(
+                    data[0][B]['연관 제품']['select']['name'])
+
+        except Exception as e:
+            print("Database를 다시 확인하시오, 데이터가 비어서 그럴거에요!")
+
+    count_goods_value = count_value(goods_fliter)
+
+    goods_fliter = find_same_data(goods_fliter)
+
+    return goods_fliter

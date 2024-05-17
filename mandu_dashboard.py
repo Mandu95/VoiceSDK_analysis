@@ -3,7 +3,7 @@ import data_process
 
 st.set_page_config(layout="wide")
 
-
+df = data_process.df
 # 페이지 상단 영역
 st.subheader("PuzzleAI's 사업부 대시보드")
 
@@ -25,7 +25,8 @@ with tab1:
     with col3:
         st.metric(label="데모계약", value=30)
 
-    st.dataframe(data_process.df)
+    active_df = df[df['연관 제품'] == 'VoiceEMR']
+    st.dataframe(active_df)
 
 # VoiceENR
 with tab2:
@@ -39,6 +40,9 @@ with tab2:
     with col6:
         st.metric(label="데모계약", value=0)
 
+    active_df = df[df['연관 제품'] == 'VoiceENR']
+    st.dataframe(active_df)
+
 # VoiceSDK
 with tab3:
 
@@ -50,6 +54,8 @@ with tab3:
         st.metric(label="정식계약", value=0)
     with col9:
         st.metric(label="협업 중", value=2)
+    active_df = df[df['연관 제품'] == 'VoiceSDK']
+    st.dataframe(active_df)
 
 # VoiceMARK
 with tab4:
@@ -63,6 +69,9 @@ with tab4:
     with col12:
         st.metric(label="데모계약", value=0)
 
+    active_df = df[df['연관 제품'] == 'VoiceMARK']
+    st.dataframe(active_df)
+
 # VoiceDOC
 with tab5:
     col13, col14, col15 = st.columns([4, 3, 3])
@@ -73,3 +82,6 @@ with tab5:
         st.metric(label="정식계약", value=0)
     with col15:
         st.metric(label="데모계약", value=0)
+
+    active_df = df[df['연관 제품'] == 'VoiceDOC']
+    st.dataframe(active_df)
