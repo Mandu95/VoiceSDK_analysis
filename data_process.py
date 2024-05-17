@@ -6,11 +6,8 @@ nc = notion_DB_call.notion_API()  # notion api 호출해서 DB 연결
 # 내가 조회하고자 하는 DB 키 정적입력 type = list
 all_key = ["69aeff6ca32d4466ad4748dde3939e8b"]
 data = nc.notion_readDatabase(all_key)  # DB 데이터 추출
-print(type(data[0]))
-print(data)
-
-df = pd.DataFrame(data[0])
-print(df)
+data = data[0]['properties']
+df = data.to_frame()
 
 
 # database_properties = nc.extract_properties(
