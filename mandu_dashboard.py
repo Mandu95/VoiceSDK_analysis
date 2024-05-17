@@ -10,7 +10,7 @@ st.subheader("PuzzleAI's 사업부 대시보드")
 col9, col10 = st.columns([8, 2])
 st.subheader("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 table_height = 400  # 테이블 높이 (픽셀 단위)
-table_width = 800   # 테이블 너비 (픽셀 단위)
+table_width = 1600  # 테이블 너비 (픽셀 단위)
 
 # 탭메뉴 영역
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
