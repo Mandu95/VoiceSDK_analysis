@@ -25,6 +25,8 @@ with tab1:
     with col3:
         st.metric(label="데모계약", value=30)
 
+    st.dataframe(data_process.df)
+
 # VoiceENR
 with tab2:
 

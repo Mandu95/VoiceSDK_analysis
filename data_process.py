@@ -2,12 +2,25 @@ import notion_DB_call
 import mandu_function
 import pandas as pd
 
-nc = notion_DB_call.notion_API()  # notion api 호출해서 DB 연결
+# notion api 호출해서 DB 연결
+nc = notion_DB_call.notion_API()
+
 # 내가 조회하고자 하는 DB 키 정적입력 type = list
 all_key = ["69aeff6ca32d4466ad4748dde3939e8b"]
-data = nc.notion_readDatabase(all_key)  # DB 데이터 추출
+
+# DB 데이터 추출
+data = nc.notion_readDatabase(all_key)
+
+# Dataframe에서 properties 속성만 추출하는 것
 data = data[0]['properties']
-df = data.to_frame()
+
+
+# 표 View 하기 위한 속성 추출
+row_name = mandu_function.df_col(data)
+
+# 값 추출
+df = mandu_function.extract_data(data, row_name)
+print(df)
 
 
 # database_properties = nc.extract_properties(
