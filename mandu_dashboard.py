@@ -9,6 +9,8 @@ st.subheader("PuzzleAI's 사업부 대시보드")
 
 col9, col10 = st.columns([8, 2])
 st.subheader("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
+table_height = 400  # 테이블 높이 (픽셀 단위)
+table_width = 800   # 테이블 너비 (픽셀 단위)
 
 # 탭메뉴 영역
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
@@ -27,7 +29,7 @@ with tab1:
 
     active_df = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
     active_df.index += 1
-    st.dataframe(active_df)
+    st.dataframe(active_df,height=table_height, width=table_width)
 
 # VoiceENR
 with tab2:
@@ -43,7 +45,7 @@ with tab2:
 
     active_df = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
     active_df.index += 1
-    st.dataframe(active_df)
+    st.dataframe(active_df,height=table_height, width=table_width)
 
 # VoiceSDK
 with tab3:
@@ -58,7 +60,7 @@ with tab3:
         st.metric(label="협업 중", value=2)
     active_df = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
     active_df.index += 1
-    st.dataframe(active_df)
+    st.dataframe(active_df,height=table_height, width=table_width)
 
 # VoiceMARK
 with tab4:
@@ -74,7 +76,7 @@ with tab4:
 
     active_df = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
     active_df.index += 1
-    st.dataframe(active_df)
+    st.dataframe(active_df,height=table_height, width=table_width)
 
 # VoiceDOC
 with tab5:
@@ -89,4 +91,4 @@ with tab5:
 
     active_df = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
     active_df.index += 1
-    st.dataframe(active_df)
+    st.dataframe(active_df,height=table_height, width=table_width)
