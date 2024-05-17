@@ -119,7 +119,7 @@ def extract_data(data, row_name):
                                     safe_get(data[A], [B, 'multi_select', X, 'name']))
                                 
                             row_data.append(value_list)
-                            print(row_data)
+
                         else:
                             row_data.append(None)
 
