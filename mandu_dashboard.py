@@ -46,12 +46,12 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
 
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
-    display_tab(df[df['연관 제품'] == 'VoiceEMR'], "VoiceEMR", 55, 9, 30)
+    display_tab(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True), "VoiceEMR", 55, 9, 30)
 with tab2:
-    display_tab(df[df['연관 제품'] == 'VoiceENR'], "VoiceENR", 4, 4, 0)
+    display_tab(df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True), "VoiceENR", 4, 4, 0)
 with tab3:
-    display_tab(df[df['연관 제품'] == 'VoiceSDK'], "VoiceSDK", 9, 0, 2)
+    display_tab(df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True), "VoiceSDK", 9, 0, 2)
 with tab4:
-    display_tab(df[df['연관 제품'] == 'VoiceMARK'], "VoiceMARK", 1, 1, 0)
+    display_tab(df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True), "VoiceMARK", 1, 1, 0)
 with tab5:
-    display_tab(df[df['연관 제품'] == 'VoiceDOC'], "VoiceDOC", 1, 0, 0)
+    display_tab(df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True), "VoiceDOC", 1, 0, 0)
