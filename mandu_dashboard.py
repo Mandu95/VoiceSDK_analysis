@@ -36,7 +36,7 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
 
     total_items = len(dataframe)
     total_pages = (total_items + items_per_page - 1) // items_per_page
-    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1)
+
 
 
     # CSS를 사용하여 입력 상자의 크기 조절
