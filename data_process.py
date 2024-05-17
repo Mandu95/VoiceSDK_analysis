@@ -20,7 +20,7 @@ row_name = mandu_function.df_col(data)
 
 # 값 추출
 df = mandu_function.extract_data(data, row_name)
-print(df)
+print(df.loc[82])
 
 
 # database_properties = nc.extract_properties(

@@ -125,19 +125,27 @@ def extract_data(data, row_name):
                             if data[A][B]['rollup']['type'] == "array":
                                 if len(data[A][B]['rollup']['array']) > 0:
                                     row_data.append(
-                                        safe_get(data[A], [B, 'rollup', 'array', 0, 'select']))
+                                        safe_get(data[A], [B, 'rollup', 'array', 0, 'select', 'name']))
                                 else:
                                     row_data.append(None)
+
                             elif data[A][B]['rollup']['type'] == "number":
                                 row_data.append(
                                     safe_get(data[A], [B, 'rollup', 'number']))
+
                             elif data[A][B]['rollup']['type'] == "date":
+                                temp = data[A], [B, 'rollup', 'date', 'start']
+                                temp = pd.to_datetime(temp, utc=True)
+                                temp = temp.strftime("%Y-%m-%d")
                                 row_data.append(
-                                    safe_get(data[A], [B, 'rollup', 'date', 'start']))
+                                    safe_get(temp))
 
                         elif data[A][B]['type'] == "last_edited_time":
+                            temp = data[A], [B, 'last_edited_time']
+                            temp = pd.to_datetime(temp, utc=True)
+                            temp = temp.strftime("%Y-%m-%d")
                             row_data.append(
-                                safe_get(data[A], [B, 'last_edited_time']))
+                                safe_get(temp))
 
                         elif data[A][B]['type'] == "relation":
                             if len(data[A][B]['relation']) > 0:
@@ -160,7 +168,7 @@ def extract_data(data, row_name):
 
                         elif data[A][B]['type'] == "rich_text":
                             row_data.append(
-                                safe_get(data[A], [B, 'rich_text']))
+                                safe_get(data[A], [B, 'rich_text', 0, 'text', 'content']))
 
                         elif data[A][B]['type'] == "email":
                             row_data.append(safe_get(data[A], [B, 'email']))
