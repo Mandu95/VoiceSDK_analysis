@@ -12,128 +12,46 @@ st.subheader("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 table_height = 400  # 테이블 높이 (픽셀 단위)
 table_width = 2000  # 테이블 너비 (픽셀 단위)
 
+# 페이지당 항목 수 설정
+items_per_page = 10
+
+def paginate_data(dataframe, page_number, items_per_page):
+    start_index = (page_number - 1) * items_per_page
+    end_index = start_index + items_per_page
+    return dataframe.iloc[start_index:end_index]
+
 # 탭메뉴 영역
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
-# VoiceEMR
-with tab1:
 
+def display_tab(dataframe, tab_label, customers, contracts, demos):
     col1, col2, col3 = st.columns([4, 3, 3])
 
     with col1:
-        st.metric(label="고객", value=55)
+        st.metric(label="고객", value=customers)
     with col2:
-        st.metric(label="정식계약", value=9)
+        st.metric(label="정식계약", value=contracts)
     with col3:
-        st.metric(label="데모계약", value=30)
+        st.metric(label="데모계약", value=demos)
 
-    
-    # 페이지 번호 설정
-    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+    total_items = len(dataframe)
+    total_pages = (total_items + items_per_page - 1) // items_per_page
+    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1)
 
-    # 데이터프레임 페이징
-    start_index = (page_number - 1) * 10
-    end_index = start_index + 10
-    paged_df = df.iloc[start_index:end_index]
+    paged_df = paginate_data(dataframe, page_number, items_per_page)
+    paged_df.index += 1
 
-    active_df = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
-    active_df.index += 1
-    st.dataframe(active_df,height=table_height, width=table_width)
+    st.dataframe(paged_df, height=table_height, width=table_width)
+    st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
-# VoiceENR
+# 각 탭에 데이터프레임 및 페이징 기능 적용
+with tab1:
+    display_tab(df[df['연관 제품'] == 'VoiceEMR'], "VoiceEMR", 55, 9, 30)
 with tab2:
-
-    col4, col5, col6 = st.columns([4, 3, 3])
-
-    with col4:
-        st.metric(label="고객", value=4)
-    with col5:
-        st.metric(label="정식계약", value=4)
-    with col6:
-        st.metric(label="데모계약", value=0)
-
-    # 페이지 번호 설정
-    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
-
-    # 데이터프레임 페이징
-    start_index = (page_number - 1) * 10
-    end_index = start_index + 10
-    paged_df = df.iloc[start_index:end_index]
-
-    active_df = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
-    active_df.index += 1
-    st.dataframe(active_df,height=table_height, width=table_width)
-
-# VoiceSDK
+    display_tab(df[df['연관 제품'] == 'VoiceENR'], "VoiceENR", 4, 4, 0)
 with tab3:
-
-    col7, col8, col9 = st.columns([4, 3, 3])
-
-    with col7:
-        st.metric(label="고객", value=9)
-    with col8:
-        st.metric(label="정식계약", value=0)
-    with col9:
-        st.metric(label="협업 중", value=2)
-
-    # 페이지 번호 설정
-    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
-
-    # 데이터프레임 페이징
-    start_index = (page_number - 1) * 10
-    end_index = start_index + 10
-    paged_df = df.iloc[start_index:end_index]
-
-
-    active_df = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
-    active_df.index += 1
-    st.dataframe(active_df,height=table_height, width=table_width)
-
-# VoiceMARK
+    display_tab(df[df['연관 제품'] == 'VoiceSDK'], "VoiceSDK", 9, 0, 2)
 with tab4:
-
-    col10, col11, col12 = st.columns([4, 3, 3])
-
-    with col10:
-        st.metric(label="고객", value=1)
-    with col11:
-        st.metric(label="정식계약", value=1)
-    with col12:
-        st.metric(label="데모계약", value=0)
-
-
-    # 페이지 번호 설정
-    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
-
-    # 데이터프레임 페이징
-    start_index = (page_number - 1) * 10
-    end_index = start_index + 10
-    paged_df = df.iloc[start_index:end_index]
-
-    active_df = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
-    active_df.index += 1
-    st.dataframe(active_df,height=table_height, width=table_width)
-
-# VoiceDOC
+    display_tab(df[df['연관 제품'] == 'VoiceMARK'], "VoiceMARK", 1, 1, 0)
 with tab5:
-    col13, col14, col15 = st.columns([4, 3, 3])
-
-    with col13:
-        st.metric(label="고객", value=1)
-    with col14:
-        st.metric(label="정식계약", value=0)
-    with col15:
-        st.metric(label="데모계약", value=0)
-
-
-    # 페이지 번호 설정
-    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
-
-    # 데이터프레임 페이징
-    start_index = (page_number - 1) * 10
-    end_index = start_index + 10
-    paged_df = df.iloc[start_index:end_index]
-
-    active_df = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
-    active_df.index += 1
-    st.dataframe(active_df,height=table_height, width=table_width)
+    display_tab(df[df['연관 제품'] == 'VoiceDOC'], "VoiceDOC", 1, 0, 0)
