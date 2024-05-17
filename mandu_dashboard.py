@@ -90,7 +90,7 @@ with tab2:
 
     temp1 = len(df[df['계약관리'] == '정식'])
     temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == None])
+    temp3 = len(df[df['계약관리'] == "None"])
 
     display_tab(voiceenr_data, "VoiceENR", count_voiceenr, temp1, temp2,temp3)
 
@@ -102,7 +102,7 @@ with tab3:
 
     temp1 = len(df[df['계약관리'] == '정식'])
     temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == None])
+    temp3 = len(df[df['계약관리'] == ""])
     display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, temp1, temp2,temp3)
 
 
