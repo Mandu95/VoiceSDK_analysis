@@ -24,9 +24,8 @@ df = mandu_function.extract_data(data1, row_name)
 
 
 data2 = data[1]
-print(data2)
 df = mandu_function.connect_db(data2, df)
-
+print(df[0:1])
 # 제품 필터 추출
 # goods_filter = mandu_function.extract_goods_item(data)
 

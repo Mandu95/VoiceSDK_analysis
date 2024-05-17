@@ -218,6 +218,7 @@ def extract_goods_item(data):
 
 
 def connect_db(data, df):
+    print(len(data))
 
     def safe_get(d, keys, default=None):
         """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
@@ -228,11 +229,23 @@ def connect_db(data, df):
                 return default
         return d
 
-    for idx in df.index:
-        for item in data:
-            # item이 딕셔너리 형태인지 확인
-            if isinstance(item, dict) and df.at[idx, '계약관리'] == item.get('id'):
-                temp = safe_get(item, ["계약구분", 'select', 'name'])
-                df.at[idx, '계약관리'] = temp
+    for A in range(len(df)):
+        temp = df.loc[A, '계약관리']
+
+        if temp is None:
+            continue  # temp가 None이면 건너뛰기
+
+        else:
+            for B in range(len(data)):
+                # item이 딕셔너리 형태인지 확인
+
+                try:
+                    if temp == data[B]['id']:
+                        new_value = safe_get(
+                            data[B], ["계약구분", 'select', 'name'])
+                        df.loc[A, '계약관리'] = new_value
+                        break  # 일치하는 항목을 찾으면 내부 루프를 종료
+                except (KeyError, TypeError):
+                    continue  # data[B]가 예상하는 형태가 아니면 건너뛰기
 
     return df
