@@ -84,15 +84,24 @@ def extract_data(data, row_name):
                 return default
         return d
 
+    def format_date(date_str):
+        """ISO 8601 날짜 문자열을 년/월/일 형식으로 변환하는 함수"""
+        if date_str:
+            try:
+                return pd.to_datetime(date_str).strftime("%Y-%m-%d")
+            except (ValueError, TypeError):
+                return None
+        return None
+
     if count_data <= 1:
         print("데이터베이스에 입력 된 값이 한 줄 밖에 없습니다.")
         empty_df.loc[0] = [
             safe_get(data, ['납품병원', 'multi_select', 0, 'name']),
             safe_get(data, ['계약구분', 'rollup', 'array', 0, 'select']),
             safe_get(data, ['상태', 'status', 'name']),
-            safe_get(data, ['정보 최신화 날짜', 'last_edited_time']),
+            format_date(safe_get(data, ['정보 최신화 날짜', 'last_edited_time'])),
             safe_get(data, ['라이선스 수', 'rollup', 'number']),
-            safe_get(data, ['계약시작일', 'rollup', 'date', 'start']),
+            format_date(safe_get(data, ['계약시작일', 'rollup', 'date', 'start'])),
             safe_get(data, ['계약관리', 'relation', 0, 'id']),
             safe_get(data, ['계약잔여일', 'formula', 'string']),
             safe_get(data, ['개발언어', 'multi_select', 0, 'name']),
@@ -100,7 +109,7 @@ def extract_data(data, row_name):
             safe_get(data, ['컨택 업체 담당자', 'rich_text']),
             safe_get(data, ['담당자 이메일', 'email']),
             safe_get(data, ['연관 제품', 'select', 'name']),
-            safe_get(data, ['계약종료일', 'rollup', 'date', 'start']),
+            format_date(safe_get(data, ['계약종료일', 'rollup', 'date', 'start'])),
             safe_get(data, ['업체 이름', 'title', 0, 'text', 'content'])
         ]
     else:
@@ -128,24 +137,18 @@ def extract_data(data, row_name):
                                         safe_get(data[A], [B, 'rollup', 'array', 0, 'select', 'name']))
                                 else:
                                     row_data.append(None)
-
                             elif data[A][B]['rollup']['type'] == "number":
                                 row_data.append(
                                     safe_get(data[A], [B, 'rollup', 'number']))
-
                             elif data[A][B]['rollup']['type'] == "date":
-                                temp = data[A], [B, 'rollup', 'date', 'start']
-                                temp = pd.to_datetime(temp, utc=True)
-                                temp = temp.strftime("%Y-%m-%d")
-                                row_data.append(
-                                    safe_get(temp))
+                                date_str = safe_get(
+                                    data[A], [B, 'rollup', 'date', 'start'])
+                                row_data.append(format_date(date_str))
 
                         elif data[A][B]['type'] == "last_edited_time":
-                            temp = data[A], [B, 'last_edited_time']
-                            temp = pd.to_datetime(temp, utc=True)
-                            temp = temp.strftime("%Y-%m-%d")
-                            row_data.append(
-                                safe_get(temp))
+                            date_str = safe_get(
+                                data[A], [B, 'last_edited_time'])
+                            row_data.append(format_date(date_str))
 
                         elif data[A][B]['type'] == "relation":
                             if len(data[A][B]['relation']) > 0:
@@ -190,14 +193,3 @@ def extract_data(data, row_name):
             temp_value.append(row_data)  # 행 데이터를 temp_value에 추가
 
     return pd.concat([empty_df, pd.DataFrame(temp_value, columns=row_name)], ignore_index=True)
-
-
-def check_data(key_to_check, data):
-
-    if data.get(key_to_check) in data:
-        temp = data
-
-    else:
-        temp = ""
-
-    return temp
