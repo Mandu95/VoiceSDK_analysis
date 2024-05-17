@@ -111,9 +111,15 @@ def extract_data(data, row_name):
             if B in data[A] and data[A][B] is not None:
                 try:
                     if data[A][B]['type'] == "multi_select":
-                        if len(data[A][B]['multi_select']) > 0:
-                            row_data.append(
-                                safe_get(data[A], [B, 'multi_select', 0, 'name']))
+                        temp = len(data[A][B]['multi_select'])
+                        if temp > 0:
+                            value_list=[]
+                            for X in range(temp):
+                                value_list.append(
+                                    safe_get(data[A], [B, 'multi_select', X, 'name']))
+                                
+                            row_data.append(value_list)
+                            print(row_data)
                         else:
                             row_data.append(None)
 
@@ -217,7 +223,6 @@ def change_contract_data(data, df):
  
             if temp == data['id'][B]:
                 new_value = safe_get(data, ['properties', B,'계약구분', 'select', 'name'])
-                print(new_value)
                 df.loc[A, '계약관리'] = new_value
 
     return df
