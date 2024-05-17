@@ -26,7 +26,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
 
 def display_tab(dataframe, tab_label, customers, contracts, demos,unknown):
-    col1, col2, col3, col4 = st.columns([2, 2, 2,2])
+    col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
 
     with col1:
         st.metric(label="고객", value=customers)
