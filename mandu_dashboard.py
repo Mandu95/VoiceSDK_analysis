@@ -28,16 +28,12 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 def display_tab(dataframe, tab_label, customers, contracts, demos):
     col1, col2, col3 = st.columns([4, 3, 3])
 
-
     with col1:
-        if st.button(f"{customers} 고객", key=f"{tab_label}_customers"):
-            st.session_state.active_tab = tab_label
+        st.metric(label="고객", value=customers)
     with col2:
-        if st.button(f"{contracts} 정식계약", key=f"{tab_label}_contracts"):
-            st.session_state.active_tab = tab_label
+        st.metric(label="정식계약", value=contracts)
     with col3:
-        if st.button(f"{demos} 데모계약", key=f"{tab_label}_demos"):
-            st.session_state.active_tab = tab_label
+        st.metric(label="데모계약", value=demos)
 
     total_items = len(dataframe)
     total_pages = (total_items + items_per_page - 1) // items_per_page
