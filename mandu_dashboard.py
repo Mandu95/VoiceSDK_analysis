@@ -4,6 +4,8 @@ import data_process
 st.set_page_config(layout="wide")
 
 df = data_process.df
+df.index.name = '구분'
+
 # 페이지 상단 영역
 st.subheader("PuzzleAI's 사업부 대시보드")
 
@@ -47,7 +49,7 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
             margin: 10px 0;
         }}
         .number-input-wrapper-{tab_label} input {{
-            width: 100px; /* 여기서 크기를 조절할 수 있습니다 */
+            width: 10px; /* 여기서 크기를 조절할 수 있습니다 */
             height: 40px; /* 여기서 높이를 조절할 수 있습니다 */
             font-size: 20px; /* 여기서 글꼴 크기를 조절할 수 있습니다 */
         }}
@@ -66,12 +68,17 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
 
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
-    display_tab(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True), "VoiceEMR", 55, 9, 30)
+    count_voiceemr = len(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True))
+    display_tab(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True), "VoiceEMR", count_voiceemr, 9, 30)
 with tab2:
-    display_tab(df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True), "VoiceENR", 4, 4, 0)
+    count_voiceenr = len(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True))
+    display_tab(df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True), "VoiceENR", count_voiceenr, 4, 0)
 with tab3:
-    display_tab(df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True), "VoiceSDK", 9, 0, 2)
+    count_voicesdk= len(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True))
+    display_tab(df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True), "VoiceSDK", count_voicesdk, 0, 2)
 with tab4:
-    display_tab(df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True), "VoiceMARK", 1, 1, 0)
+    count_voicemark= len(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True))
+    display_tab(df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True), "VoiceMARK", count_voicemark, 1, 0)
 with tab5:
-    display_tab(df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True), "VoiceDOC", 1, 0, 0)
+    count_voicedoc = len(df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True))
+    display_tab(df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True), "VoiceDOC", count_voicedoc, 0, 0)
