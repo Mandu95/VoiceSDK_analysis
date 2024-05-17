@@ -10,7 +10,7 @@ st.subheader("PuzzleAI's 사업부 대시보드")
 col9, col10 = st.columns([8, 2])
 st.subheader("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 table_height = 400  # 테이블 높이 (픽셀 단위)
-table_width = 1600  # 테이블 너비 (픽셀 단위)
+table_width = 2000  # 테이블 너비 (픽셀 단위)
 
 # 탭메뉴 영역
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
@@ -26,6 +26,15 @@ with tab1:
         st.metric(label="정식계약", value=9)
     with col3:
         st.metric(label="데모계약", value=30)
+
+    
+    # 페이지 번호 설정
+    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+
+    # 데이터프레임 페이징
+    start_index = (page_number - 1) * 10
+    end_index = start_index + 10
+    paged_df = df.iloc[start_index:end_index]
 
     active_df = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
     active_df.index += 1
@@ -43,6 +52,14 @@ with tab2:
     with col6:
         st.metric(label="데모계약", value=0)
 
+    # 페이지 번호 설정
+    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+
+    # 데이터프레임 페이징
+    start_index = (page_number - 1) * 10
+    end_index = start_index + 10
+    paged_df = df.iloc[start_index:end_index]
+
     active_df = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
     active_df.index += 1
     st.dataframe(active_df,height=table_height, width=table_width)
@@ -58,6 +75,16 @@ with tab3:
         st.metric(label="정식계약", value=0)
     with col9:
         st.metric(label="협업 중", value=2)
+
+    # 페이지 번호 설정
+    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+
+    # 데이터프레임 페이징
+    start_index = (page_number - 1) * 10
+    end_index = start_index + 10
+    paged_df = df.iloc[start_index:end_index]
+
+
     active_df = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
     active_df.index += 1
     st.dataframe(active_df,height=table_height, width=table_width)
@@ -74,6 +101,15 @@ with tab4:
     with col12:
         st.metric(label="데모계약", value=0)
 
+
+    # 페이지 번호 설정
+    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+
+    # 데이터프레임 페이징
+    start_index = (page_number - 1) * 10
+    end_index = start_index + 10
+    paged_df = df.iloc[start_index:end_index]
+
     active_df = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
     active_df.index += 1
     st.dataframe(active_df,height=table_height, width=table_width)
@@ -88,6 +124,15 @@ with tab5:
         st.metric(label="정식계약", value=0)
     with col15:
         st.metric(label="데모계약", value=0)
+
+
+    # 페이지 번호 설정
+    page_number = st.sidebar.number_input('Page number', min_value=1, max_value=(len(df) // 10) + 1, step=1, value=1)
+
+    # 데이터프레임 페이징
+    start_index = (page_number - 1) * 10
+    end_index = start_index + 10
+    paged_df = df.iloc[start_index:end_index]
 
     active_df = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
     active_df.index += 1
