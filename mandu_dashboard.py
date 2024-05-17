@@ -56,6 +56,9 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
         </style>
     """, unsafe_allow_html=True)
 
+
+    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=tab_label)
+
     paged_df = paginate_data(dataframe, page_number, items_per_page)
     paged_df.index += 1
 
