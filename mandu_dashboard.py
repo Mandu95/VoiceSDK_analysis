@@ -25,7 +25,8 @@ with tab1:
     with col3:
         st.metric(label="데모계약", value=30)
 
-    active_df = df[df['연관 제품'] == 'VoiceEMR']
+    active_df = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
+    active_df.index += 1
     st.dataframe(active_df)
 
 # VoiceENR
@@ -40,7 +41,8 @@ with tab2:
     with col6:
         st.metric(label="데모계약", value=0)
 
-    active_df = df[df['연관 제품'] == 'VoiceENR']
+    active_df = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
+    active_df.index += 1
     st.dataframe(active_df)
 
 # VoiceSDK
@@ -54,7 +56,8 @@ with tab3:
         st.metric(label="정식계약", value=0)
     with col9:
         st.metric(label="협업 중", value=2)
-    active_df = df[df['연관 제품'] == 'VoiceSDK']
+    active_df = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
+    active_df.index += 1
     st.dataframe(active_df)
 
 # VoiceMARK
@@ -69,7 +72,8 @@ with tab4:
     with col12:
         st.metric(label="데모계약", value=0)
 
-    active_df = df[df['연관 제품'] == 'VoiceMARK']
+    active_df = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
+    active_df.index += 1
     st.dataframe(active_df)
 
 # VoiceDOC
@@ -83,5 +87,6 @@ with tab5:
     with col15:
         st.metric(label="데모계약", value=0)
 
-    active_df = df[df['연관 제품'] == 'VoiceDOC']
+    active_df = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
+    active_df.index += 1
     st.dataframe(active_df)

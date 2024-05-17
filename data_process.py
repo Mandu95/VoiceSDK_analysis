@@ -6,29 +6,29 @@ import pandas as pd
 nc = notion_DB_call.notion_API()
 
 # 내가 조회하고자 하는 DB 키 정적입력 type = list
-all_key = ["69aeff6ca32d4466ad4748dde3939e8b"]
+all_key = ["69aeff6ca32d4466ad4748dde3939e8b",
+           "49e1a704e0ae41679775e9f1194d9068"]
 
 # DB 데이터 추출
 data = nc.notion_readDatabase(all_key)
 
 # Dataframe에서 properties 속성만 추출하는 것
-data = data[0]['properties']
+data1 = data[0]['properties']
 
 
 # 표 View 하기 위한 속성 추출
-row_name = mandu_function.df_col(data)
+row_name = mandu_function.df_col(data1)
 
 # 값 추출
-df = mandu_function.extract_data(data, row_name)
-print(df.loc[82])
+df = mandu_function.extract_data(data1, row_name)
 
+
+data2 = data[1]
+print(data2)
+df = mandu_function.connect_db(data2, df)
 
 # 제품 필터 추출
-goods_filter = mandu_function.extract_goods_item(data)
-
-
-# 제품 필터로 df 추출
-goods_filter_Data = mandu_function.extract_data(df, goods_filter)
+# goods_filter = mandu_function.extract_goods_item(data)
 
 
 # database_properties = nc.extract_properties(

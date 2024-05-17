@@ -215,3 +215,24 @@ def extract_goods_item(data):
     goods_fliter = find_same_data(goods_fliter)
 
     return goods_fliter
+
+
+def connect_db(data, df):
+
+    def safe_get(d, keys, default=None):
+        """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
+        for key in keys:
+            try:
+                d = d[key]
+            except (KeyError, TypeError, IndexError):
+                return default
+        return d
+
+    for idx in df.index:
+        for item in data:
+            # item이 딕셔너리 형태인지 확인
+            if isinstance(item, dict) and df.at[idx, '계약관리'] == item.get('id'):
+                temp = safe_get(item, ["계약구분", 'select', 'name'])
+                df.at[idx, '계약관리'] = temp
+
+    return df
