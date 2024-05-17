@@ -25,8 +25,8 @@ def paginate_data(dataframe, page_number, items_per_page):
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
 
-def display_tab(dataframe, tab_label, customers, contracts, demos):
-    col1, col2, col3 = st.columns([4, 3, 3])
+def display_tab(dataframe, tab_label, customers, contracts, demos,unknown):
+    col1, col2, col3, col4 = st.columns([2, 2, 2,2])
 
     with col1:
         st.metric(label="고객", value=customers)
@@ -34,6 +34,8 @@ def display_tab(dataframe, tab_label, customers, contracts, demos):
         st.metric(label="정식계약", value=contracts)
     with col3:
         st.metric(label="데모계약", value=demos)
+    with col4:
+        st.metric(label="파악불가", value=unknown)
 
     total_items = len(dataframe)
     total_pages = (total_items + items_per_page - 1) // items_per_page
@@ -75,24 +77,52 @@ with tab1:
     voiceemr_data.index.name='구분'
     count_voiceemr = len(voiceemr_data)
     df.index.name = '구분'
-    display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, 9, 30)
+
+    temp1 = len(df[df['계약관리'] == '정식'])
+    temp2 = len(df[df['계약관리'] == '데모'])
+    temp3 = len(df[df['계약관리'] == None])
+
+    display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, temp1, temp2,temp3)
 with tab2:
     voiceenr_data = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
     voiceenr_data.index.name='구분'
     count_voiceenr = len(voiceenr_data)
-    display_tab(voiceenr_data, "VoiceENR", count_voiceenr, 4, 0)
+
+    temp1 = len(df[df['계약관리'] == '정식'])
+    temp2 = len(df[df['계약관리'] == '데모'])
+    temp3 = len(df[df['계약관리'] == None])
+
+    display_tab(voiceenr_data, "VoiceENR", count_voiceenr, temp1, temp2,temp3)
+
+
 with tab3:
     voicesdk_data= df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
     voicesdk_data.index.name='구분'
     count_voicesdk = len(voicesdk_data)
-    display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, 0, 2)
+
+    temp1 = len(df[df['계약관리'] == '정식'])
+    temp2 = len(df[df['계약관리'] == '데모'])
+    temp3 = len(df[df['계약관리'] == None])
+    display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, temp1, temp2,temp3)
+
+
 with tab4:
     voicemark_data= df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
     voicemark_data.index.name='구분'
     count_voicemark = len(voicemark_data)
-    display_tab(voicemark_data, "VoiceMARK", count_voicemark, 1, 0)
+
+    temp1 = len(df[df['계약관리'] == '정식'])
+    temp2 = len(df[df['계약관리'] == '데모'])
+    temp3 = len(df[df['계약관리'] == None])
+    display_tab(voicemark_data, "VoiceMARK", count_voicemark, temp1, temp2,temp3)
+
+
 with tab5:
     voicedoc_data= df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
     voicedoc_data.index.name='구분'
     count_voicedoc = len(voicedoc_data)
-    display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, 0, 0)
+
+    temp1 = len(df[df['계약관리'] == '정식'])
+    temp2 = len(df[df['계약관리'] == '데모'])
+    temp3 = len(df[df['계약관리'] == None])
+    display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, temp1, temp2,temp3)
