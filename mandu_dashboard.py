@@ -83,7 +83,7 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
                     align-items: center;
                     height: 300px;
                     font-size: 24px;
-                    color: red;
+                    color: black;
                 }
                 </style>
                 <div class="no-data">데이터가 없습니다</div>
