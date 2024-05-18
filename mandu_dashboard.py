@@ -23,7 +23,7 @@ with col_button:
             background-color: #4CAF50; /* Green */
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 10px 24px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
