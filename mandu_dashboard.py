@@ -173,7 +173,7 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
 
             # 페이지 번호 입력 상자를 표 상단 맨 오른쪽에 배치
-            col5, col6 = st.columns([11, 1])
+            col5, col6 = st.columns([10, 1])
             with col6:
                 page_number = st.number_input(
                     f'Page number for {tab_label}',
