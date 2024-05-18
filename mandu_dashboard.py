@@ -16,6 +16,7 @@ table_width = 2000  # 테이블 너비 (픽셀 단위)
 # 페이지당 항목 수 설정
 items_per_page = 10
 
+# 데이터 프레임을 페이지별로 나누는 함수
 def paginate_data(dataframe, page_number, items_per_page):
     start_index = (page_number - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -25,9 +26,11 @@ def paginate_data(dataframe, page_number, items_per_page):
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
 
-def display_tab(dataframe, tab_label, customers, contracts, demos,unknown):
+# 각 탭의 데이터를 표시하는 함수
+def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
 
+    # 메트릭 표시
     with col1:
         st.metric(label="고객", value=customers)
     with col2:
@@ -37,33 +40,35 @@ def display_tab(dataframe, tab_label, customers, contracts, demos,unknown):
     with col4:
         st.metric(label="파악불가", value=unknown)
 
-    total_items = len(dataframe)
+    # 메트릭 선택을 위한 라디오 버튼 추가
+    metric = st.radio(
+        f"Select metric for {tab_label}", 
+        ('고객', '정식계약', '데모계약', '파악불가'), 
+        key=f"metric_{tab_label}"
+    )
+
+    # 선택한 메트릭에 따라 데이터 프레임 필터링
+    if metric == '고객':
+        filtered_df = dataframe
+    elif metric == '정식계약':
+        filtered_df = dataframe[dataframe['계약관리'] == '정식']
+    elif metric == '데모계약':
+        filtered_df = dataframe[dataframe['계약관리'] == '데모']
+    elif metric == '파악불가':
+        filtered_df = dataframe[dataframe['계약관리'].isnull()]
+
+    # 전체 아이템 수와 페이지 수 계산
+    total_items = len(filtered_df)
     total_pages = (total_items + items_per_page - 1) // items_per_page
 
-    # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
-    st.markdown(f"""
-        <style>
-        .number-input-wrapper-{tab_label} {{
-            display: flex;
-            justify-content: left; /* 왼쪽 정렬 */
-            align-items: center;
-            margin: 10px 0;
-        }}
-        .number-input-wrapper-{tab_label} input {{
-            width: 10px; /* 여기서 크기를 조절할 수 있습니다 */
-            height: 40px; /* 여기서 높이를 조절할 수 있습니다 */
-            font-size: 20px; /* 여기서 글꼴 크기를 조절할 수 있습니다 */
-        }}
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f'<div class="number-input-wrapper-{tab_label}">', unsafe_allow_html=True)
-    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=tab_label)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    paged_df = paginate_data(dataframe, page_number, items_per_page)
+    # 페이지 번호 입력 받기
+    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=f'page_{tab_label}')
+    
+    # 페이지 데이터 가져오기
+    paged_df = paginate_data(filtered_df, page_number, items_per_page)
     paged_df.index += 1
 
+    # 데이터 프레임 표시
     st.dataframe(paged_df, height=table_height, width=table_width)
     st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
