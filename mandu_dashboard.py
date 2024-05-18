@@ -36,6 +36,7 @@ with col_buttons:
             text-align: center;
             text-decoration: none;
             display: inline-block;
+            min-width: 150px; /* 모든 버튼의 최소 너비를 동일하게 설정 */
         }
         .notion-button {
             background-color: #00bfa6; /* Notion 시그니처 색상 */
@@ -65,6 +66,7 @@ with col_buttons:
         """,
         unsafe_allow_html=True
     )
+
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
 
