@@ -24,19 +24,21 @@ with col_buttons:
             justify-content: flex-end;
             align-items: center;
         }
-        .notion-button {
-            background-color: #00bfa6; /* Notion 시그니처 색상 */
-            border: none;
-            color: white;
+        .button {
             padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
             border-radius: 12px;
             transition-duration: 0.4s;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .notion-button {
+            background-color: #00bfa6; /* Notion 시그니처 색상 */
         }
         .notion-button:hover {
             background-color: white;
@@ -45,17 +47,6 @@ with col_buttons:
         }
         .onedrive-button {
             background-color: #0078d4; /* OneDrive 시그니처 색상 */
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition-duration: 0.4s;
         }
         .onedrive-button:hover {
             background-color: white;
@@ -65,10 +56,10 @@ with col_buttons:
         </style>
         <div class="button-container">
             <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
-                <button class="notion-button">고객 관리</button>
+                <button class="button notion-button">고객 관리</button>
             </a>
             <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-                <button class="onedrive-button">사업부 공유폴더</button>
+                <button class="button onedrive-button">사업부 공유폴더</button>
             </a>
         </div>
         """,
