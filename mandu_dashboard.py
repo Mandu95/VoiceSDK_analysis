@@ -78,9 +78,9 @@ with tab1:
     count_voiceemr = len(voiceemr_data)
     df.index.name = '구분'
 
-    temp1 = len(df[df['계약관리'] == '정식'])
-    temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == None])
+    temp1 = len(voiceemr_data[voiceemr_data['계약관리'] == '정식'])
+    temp2 = len(voiceemr_data[voiceemr_data['계약관리'] == '데모'])
+    temp3 = len(voiceemr_data[voiceemr_data['계약관리'] == None])
 
     display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, temp1, temp2,temp3)
 with tab2:
@@ -88,9 +88,9 @@ with tab2:
     voiceenr_data.index.name='구분'
     count_voiceenr = len(voiceenr_data)
 
-    temp1 = len(df[df['계약관리'] == '정식'])
-    temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == "None"])
+    temp1 = len(voiceenr_data[voiceenr_data['계약관리'] == '정식'])
+    temp2 = len(voiceenr_data[voiceenr_data['계약관리'] == '데모'])
+    temp3 = len(voiceenr_data[voiceenr_data['계약관리'] == "None"])
 
     display_tab(voiceenr_data, "VoiceENR", count_voiceenr, temp1, temp2,temp3)
 
@@ -100,9 +100,9 @@ with tab3:
     voicesdk_data.index.name='구분'
     count_voicesdk = len(voicesdk_data)
 
-    temp1 = len(df[df['계약관리'] == '정식'])
-    temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == ""])
+    temp1 = len(voicesdk_data[voicesdk_data['계약관리'] == '정식'])
+    temp2 = len(voicesdk_data[voicesdk_data['계약관리'] == '데모'])
+    temp3 = len(voicesdk_data[voicesdk_data['계약관리'] == None])
     display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, temp1, temp2,temp3)
 
 
@@ -111,9 +111,9 @@ with tab4:
     voicemark_data.index.name='구분'
     count_voicemark = len(voicemark_data)
 
-    temp1 = len(df[df['계약관리'] == '정식'])
-    temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == None])
+    temp1 = len(voicemark_data[voicemark_data['계약관리'] == '정식'])
+    temp2 = len(voicemark_data[voicemark_data['계약관리'] == '데모'])
+    temp3 = len(voicemark_data[voicemark_data['계약관리'] == None])
     display_tab(voicemark_data, "VoiceMARK", count_voicemark, temp1, temp2,temp3)
 
 
@@ -122,7 +122,7 @@ with tab5:
     voicedoc_data.index.name='구분'
     count_voicedoc = len(voicedoc_data)
 
-    temp1 = len(df[df['계약관리'] == '정식'])
-    temp2 = len(df[df['계약관리'] == '데모'])
-    temp3 = len(df[df['계약관리'] == None])
+    temp1 = len(voicedoc_data[voicedoc_data['계약관리'] == '정식'])
+    temp2 = len(voicedoc_data[voicedoc_data['계약관리'] == '데모'])
+    temp3 = len(voicedoc_data[voicedoc_data['계약관리'] == None])
     display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, temp1, temp2,temp3)
