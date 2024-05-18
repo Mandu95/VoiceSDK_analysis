@@ -142,9 +142,11 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
 
             col5, col6 = st.columns([11, 1])
+            with col5:
+                st.write(f'Page number for {tab_label}')
             with col6:
                 page_number = st.number_input(
-                    f'Page number for {tab_label}',
+                    '',
                     min_value=1,
                     max_value=total_pages,
                     step=1,
@@ -157,7 +159,18 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             start_index = st.session_state.get(f'{tab_label}_start_index', 1)
             paged_df.index = range(start_index, start_index + len(paged_df))
 
-            st.dataframe(paged_df, height=table_height, width=table_width)
+            def highlight_remaining_days(val):
+                """계약잔여일이 60일 이하인 경우 색상 강조"""
+                try:
+                    if int(val) < 60:
+                        return 'background-color: yellow'
+                except ValueError:
+                    pass
+                return ''
+
+            styled_df = paged_df.style.applymap(highlight_remaining_days, subset=['계약잔여일'])
+            
+            st.dataframe(styled_df, height=table_height, width=table_width)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
 
             st.session_state[f'{tab_label}_start_index'] = start_index + len(paged_df)
