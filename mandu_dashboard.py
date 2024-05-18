@@ -70,24 +70,23 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         total_items = len(filtered_df)
         total_pages = (total_items + items_per_page - 1) // items_per_page
 
+        # 페이지 번호 입력 상자를 표 상단 맨 오른쪽에 배치
+        col5, col6 = st.columns([10, 1])
+        with col6:
+            page_number = st.number_input(
+                f'Page number for {tab_label}', 
+                min_value=1, 
+                max_value=total_pages, 
+                step=1, 
+                value=st.session_state[f'{tab_label}_page_number'], 
+                key=f'page_{tab_label}',
+                on_change=lambda: st.session_state.update({f'{tab_label}_page_number': st.session_state[f'page_{tab_label}']})
+            )
+
         paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
         paged_df.index += 1
 
         st.dataframe(paged_df, height=table_height, width=table_width)
-
-        # 페이지 번호 입력 상자를 표 아래쪽 중앙에 배치
-        st.markdown(f'<div style="text-align: center;">', unsafe_allow_html=True)
-        page_number = st.number_input(
-            f'Page number for {tab_label}', 
-            min_value=1, 
-            max_value=total_pages, 
-            step=1, 
-            value=st.session_state[f'{tab_label}_page_number'], 
-            key=f'page_{tab_label}',
-            on_change=lambda: st.session_state.update({f'{tab_label}_page_number': st.session_state[f'page_{tab_label}']})
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-        
         st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
 
 
