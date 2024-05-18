@@ -6,26 +6,45 @@ st.set_page_config(layout="wide")
 df = data_process.df
 url_data = data_process.url_df
 
-# Create a dictionary to map company names to URLs
+
+# 회사 이름을 URL에 매핑하는 사전 생성
 url_dict = dict(zip(url_data['업체 이름'], url_data['URL']))
 
-# Function to create clickable links
+# 클릭 가능한 링크를 생성하는 함수
 def make_clickable(name):
     url = url_dict.get(name, '#')
     return f'<a href="{url}" target="_blank">{name}</a>'
 
-# Apply the function to the '업체 이름' column
+# '업체 이름' 열에 함수 적용
 if '업체 이름' in df.columns:
-    df['업체 이름'] = df['업체 이름'].apply(make_clickable)
+    df['업체 이름'] = df['업체 이름'].apply(lambda x: f'<a href="{url_dict.get(x, "#")}" target="_blank">{x}</a>')
 
-# Convert the dataframe to HTML to retain the clickable links
+# 페이지 레이아웃
+col_header, col_button = st.columns([8, 2])
+with col_header:
+    st.subheader("PuzzleAI's 사업부 대시보드")
+
+with col_button:
+    st.markdown(
+        """
+        <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
+            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">
+                SharePoint Link
+            </button>
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
+
+# 데이터프레임을 HTML로 변환하여 클릭 가능한 링크 유지
 df_html = df.to_html(escape=False)
 
-# 페이지 상단 영역
-st.subheader("PuzzleAI's 사업부 대시보드")
+# 클릭 가능한 링크가 있는 데이터프레임 표시
+st.write(df_html, unsafe_allow_html=True)
 
-col9, col10 = st.columns([8, 2])
-st.subheader("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
+
 table_height = 400  # 테이블 높이 (픽셀 단위)
 table_width = 2000  # 테이블 너비 (픽셀 단위)
 
