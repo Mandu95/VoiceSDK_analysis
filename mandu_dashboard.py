@@ -22,11 +22,6 @@ with col_button:
 
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
-# 데이터프레임을 HTML로 변환하여 클릭 가능한 링크 유지
-df_html = df.to_html(escape=False)
-
-# 클릭 가능한 링크가 있는 데이터프레임 표시
-st.write(df_html, unsafe_allow_html=True)
 
 
 table_height = 400  # 테이블 높이 (픽셀 단위)
