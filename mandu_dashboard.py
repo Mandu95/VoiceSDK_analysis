@@ -78,6 +78,7 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             col5, col6 = st.columns([10, 1])
             with col6:
                 page_number = st.number_input(
+                    f'Page number for {tab_label}', 
                     min_value=1, 
                     max_value=total_pages, 
                     step=1, 
