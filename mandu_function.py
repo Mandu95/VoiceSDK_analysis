@@ -133,7 +133,7 @@ def extract_data(data, row_name):
                             if len(temp) > 0:
                                 value_list = []
                                 for Y in range(temp):
-                                    value_list.append(safe_get(data[A], [B, 'rollup', 'array', 0, 'select', 'name']))
+                                    value_list.append(safe_get(data[A], [B, 'rollup', 'array', 0, 'select', Y,'name']))
 
                                 row_data.append(value_list)
                             else:
