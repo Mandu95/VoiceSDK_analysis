@@ -16,7 +16,6 @@ table_width = 2000  # 테이블 너비 (픽셀 단위)
 # 페이지당 항목 수 설정
 items_per_page = 10
 
-
 def paginate_data(dataframe, page_number, items_per_page):
     start_index = (page_number - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -73,15 +72,25 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         # 페이지 번호 입력 상자를 표 상단 맨 오른쪽에 배치
         col5, col6 = st.columns([10, 1])
         with col6:
+            st.markdown(f"""
+                <style>
+                .number-input-wrapper-{tab_label} input {{
+                    width: 50px; /* 너비를 조절합니다 */
+                    height: 30px; /* 높이를 조절합니다 */
+                    font-size: 15px; /* 글꼴 크기를 조절합니다 */
+                }}
+                </style>
+            """, unsafe_allow_html=True)
+            
             page_number = st.number_input(
                 f'Page number for {tab_label}', 
                 min_value=1, 
                 max_value=total_pages, 
                 step=1, 
                 value=st.session_state[f'{tab_label}_page_number'], 
-                key=f'page_{tab_label}',
-                on_change=lambda: st.session_state.update({f'{tab_label}_page_number': st.session_state[f'page_{tab_label}']})
+                key=f'page_{tab_label}'
             )
+            st.session_state[f'{tab_label}_page_number'] = page_number
 
         paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
         paged_df.index += 1
