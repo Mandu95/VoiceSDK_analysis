@@ -119,69 +119,70 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
     voiceemr_data = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
-    voiceemr_data.index.name='No'
+    voiceemr_data.index.name = 'No'
     count_voiceemr = len(voiceemr_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
-    temp1 = len(voiceemr_data[voiceemr_data['계약관리'] == '정식'])
+    temp1 = len(voiceemr_data[voiceemr_data['계약관리'].str.contains('정식', na=False)])
     # 계약 관리가 "데모"인 데이터만 카운트
-    temp2 = len(voiceemr_data[voiceemr_data['계약관리'] == '데모'])
+    temp2 = len(voiceemr_data[voiceemr_data['계약관리'].str.contains('데모', na=False)])
     # 계약 관리가 비어있는 데이터만 카운트
     temp3 = len(voiceemr_data[voiceemr_data['계약관리'].isnull()])
 
-    display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, temp1, temp2,temp3)
+    display_tab(voiceemr_data, "VoiceEMR", count_voiceemr, temp1, temp2, temp3)
+
 with tab2:
     voiceenr_data = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
-    voiceenr_data.index.name='No'
+    voiceenr_data.index.name = 'No'
     count_voiceenr = len(voiceenr_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
-    temp1 = len(voiceenr_data[voiceenr_data['계약관리'] == '정식'])
+    temp1 = len(voiceenr_data[voiceenr_data['계약관리'].str.contains('정식', na=False)])
     # 계약 관리가 "데모"인 데이터만 카운트
-    temp2 = len(voiceenr_data[voiceenr_data['계약관리'] == '데모'])
+    temp2 = len(voiceenr_data[voiceenr_data['계약관리'].str.contains('데모', na=False)])
     # 계약 관리가 비어있는 데이터만 카운트
     temp3 = len(voiceenr_data[voiceenr_data['계약관리'].isnull()])
 
-    display_tab(voiceenr_data, "VoiceENR", count_voiceenr, temp1, temp2,temp3)
-
+    display_tab(voiceenr_data, "VoiceENR", count_voiceenr, temp1, temp2, temp3)
 
 with tab3:
-    voicesdk_data= df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
-    voicesdk_data.index.name='No'
+    voicesdk_data = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
+    voicesdk_data.index.name = 'No'
     count_voicesdk = len(voicesdk_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
-    temp1 = len(voicesdk_data[voicesdk_data['계약관리'] == '정식'])
+    temp1 = len(voicesdk_data[voicesdk_data['계약관리'].str.contains('정식', na=False)])
     # 계약 관리가 "데모"인 데이터만 카운트
-    temp2 = len(voicesdk_data[voicesdk_data['계약관리'] == '데모'])
+    temp2 = len(voicesdk_data[voicesdk_data['계약관리'].str.contains('데모', na=False)])
     # 계약 관리가 비어있는 데이터만 카운트
     temp3 = len(voicesdk_data[voicesdk_data['계약관리'].isnull()])
-    display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, temp1, temp2,temp3)
 
+    display_tab(voicesdk_data, "VoiceSDK", count_voicesdk, temp1, temp2, temp3)
 
 with tab4:
-    voicemark_data= df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
-    voicemark_data.index.name='No'
+    voicemark_data = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
+    voicemark_data.index.name = 'No'
     count_voicemark = len(voicemark_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
-    temp1 = len(voicemark_data[voicemark_data['계약관리'] == '정식'])
+    temp1 = len(voicemark_data[voicemark_data['계약관리'].str.contains('정식', na=False)])
     # 계약 관리가 "데모"인 데이터만 카운트
-    temp2 = len(voicemark_data[voicemark_data['계약관리'] == '데모'])
+    temp2 = len(voicemark_data[voicemark_data['계약관리'].str.contains('데모', na=False)])
     # 계약 관리가 비어있는 데이터만 카운트
     temp3 = len(voicemark_data[voicemark_data['계약관리'].isnull()])
-    display_tab(voicemark_data, "VoiceMARK", count_voicemark, temp1, temp2,temp3)
 
+    display_tab(voicemark_data, "VoiceMARK", count_voicemark, temp1, temp2, temp3)
 
 with tab5:
-    voicedoc_data= df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
-    voicedoc_data.index.name='No'
+    voicedoc_data = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
+    voicedoc_data.index.name = 'No'
     count_voicedoc = len(voicedoc_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
-    temp1 = len(voicedoc_data[voicedoc_data['계약관리'] == '정식'])
+    temp1 = len(voicedoc_data[voicedoc_data['계약관리'].str.contains('정식', na=False)])
     # 계약 관리가 "데모"인 데이터만 카운트
-    temp2 = len(voicedoc_data[voicedoc_data['계약관리'] == '데모'])
+    temp2 = len(voicedoc_data[voicedoc_data['계약관리'].str.contains('데모', na=False)])
     # 계약 관리가 비어있는 데이터만 카운트
     temp3 = len(voicedoc_data[voicedoc_data['계약관리'].isnull()])
-    display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, temp1, temp2,temp3)
+
+    display_tab(voicedoc_data, "VoiceDOC", count_voicedoc, temp1, temp2, temp3)
