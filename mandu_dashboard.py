@@ -84,7 +84,7 @@ st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
 # 표 높이와 너비 동적으로 설정
 def get_table_dimensions():
-    return 350, 2400  # 너비를 더 크게 설정
+    return 385, 2400  # 너비를 더 크게 설정
 
 table_height, table_width = get_table_dimensions()
 
