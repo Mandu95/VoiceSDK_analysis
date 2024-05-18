@@ -29,19 +29,23 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
 
     with col1:
-        if st.button(f"고객 ({customers})", key=f"{tab_label}_고객"):
+        st.write("고객")
+        if st.button(f"{customers}", key=f"{tab_label}_고객"):
             filtered_df = dataframe
 
     with col2:
-        if st.button(f"정식계약 ({contracts})", key=f"{tab_label}_정식계약"):
+        st.write("정식계약")
+        if st.button(f"{contracts}", key=f"{tab_label}_정식계약"):
             filtered_df = dataframe[dataframe['계약관리'] == '정식']
 
     with col3:
-        if st.button(f"데모계약 ({demos})", key=f"{tab_label}_데모계약"):
+        st.write("데모계약")
+        if st.button(f"{demos}", key=f"{tab_label}_데모계약"):
             filtered_df = dataframe[dataframe['계약관리'] == '데모']
 
     with col4:
-        if st.button(f"파악불가 ({unknown})", key=f"{tab_label}_파악불가"):
+        st.write("파악불가")
+        if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
             filtered_df = dataframe[dataframe['계약관리'].isnull()]
 
     if 'filtered_df' not in locals():
@@ -50,6 +54,14 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     total_items = len(filtered_df)
     total_pages = (total_items + items_per_page - 1) // items_per_page
 
+    with col1:
+        st.metric(label="고객", value=customers)
+    with col2:
+        st.metric(label="정식계약", value=contracts)
+    with col3:
+        st.metric(label="데모계약", value=demos)
+    with col4:
+        st.metric(label="파악불가", value=unknown)
     # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
     st.markdown(f"""
         <style>
