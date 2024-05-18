@@ -28,6 +28,10 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
 
+    # 필터 초기화
+    filtered_df = None
+
+    # 텍스트와 버튼을 분리하여 표시
     with col1:
         st.write("고객")
         if st.button(f"{customers}", key=f"{tab_label}_고객"):
@@ -48,38 +52,37 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
             filtered_df = dataframe[dataframe['계약관리'].isnull()]
 
-    if 'filtered_df' not in locals():
-        filtered_df = dataframe  # 초기값으로 전체 데이터프레임 설정
+    # 버튼 클릭 시에만 데이터프레임 표시
+    if filtered_df is not None:
+        total_items = len(filtered_df)
+        total_pages = (total_items + items_per_page - 1) // items_per_page
 
-    total_items = len(filtered_df)
-    total_pages = (total_items + items_per_page - 1) // items_per_page
+        # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
+        st.markdown(f"""
+            <style>
+            .number-input-wrapper-{tab_label} {{
+                display: flex;
+                justify-content: left; /* 왼쪽 정렬 */
+                align-items: center;
+                margin: 10px 0;
+            }}
+            .number-input-wrapper-{tab_label} input {{
+                width: 10px; /* 여기서 크기를 조절할 수 있습니다 */
+                height: 40px; /* 여기서 높이를 조절할 수 있습니다 */
+                font-size: 20px; /* 여기서 글꼴 크기를 조절할 수 있습니다 */
+            }}
+            </style>
+        """, unsafe_allow_html=True)
 
-    # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
-    st.markdown(f"""
-        <style>
-        .number-input-wrapper-{tab_label} {{
-            display: flex;
-            justify-content: left; /* 왼쪽 정렬 */
-            align-items: center;
-            margin: 10px 0;
-        }}
-        .number-input-wrapper-{tab_label} input {{
-            width: 10px; /* 여기서 크기를 조절할 수 있습니다 */
-            height: 40px; /* 여기서 높이를 조절할 수 있습니다 */
-            font-size: 20px; /* 여기서 글꼴 크기를 조절할 수 있습니다 */
-        }}
-        </style>
-    """, unsafe_allow_html=True)
+        st.markdown(f'<div class="number-input-wrapper-{tab_label}">', unsafe_allow_html=True)
+        page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=tab_label)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown(f'<div class="number-input-wrapper-{tab_label}">', unsafe_allow_html=True)
-    page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=tab_label)
-    st.markdown('</div>', unsafe_allow_html=True)
+        paged_df = paginate_data(filtered_df, page_number, items_per_page)
+        paged_df.index += 1
 
-    paged_df = paginate_data(dataframe, page_number, items_per_page)
-    paged_df.index += 1
-
-    st.dataframe(paged_df, height=table_height, width=table_width)
-    st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
+        st.dataframe(paged_df, height=table_height, width=table_width)
+        st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
 
 
