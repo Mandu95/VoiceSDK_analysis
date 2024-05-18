@@ -70,24 +70,40 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         total_items = len(filtered_df)
         total_pages = (total_items + items_per_page - 1) // items_per_page
 
-        # 페이지 번호 입력 상자를 표 상단 맨 오른쪽에 배치
-        col5, col6 = st.columns([10, 1])
-        with col6:
-            page_number = st.number_input(
-                f'Page number for {tab_label}', 
-                min_value=1, 
-                max_value=total_pages, 
-                step=1, 
-                value=st.session_state[f'{tab_label}_page_number'], 
-                key=f'page_{tab_label}'
-            )
-            st.session_state[f'{tab_label}_page_number'] = page_number
+        # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
+        st.markdown(f"""
+            <style>
+            .number-input-wrapper-{tab_label} {{
+                display: flex;
+                justify-content: left; /* 왼쪽 정렬 */
+                align-items: center;
+                margin: 10px 0;
+            }}
+            .number-input-wrapper-{tab_label} input {{
+                width: 10px; /* 여기서 크기를 조절할 수 있습니다 */
+                height: 40px; /* 여기서 높이를 조절할 수 있습니다 */
+                font-size: 20px; /* 여기서 글꼴 크기를 조절할 수 있습니다 */
+            }}
+            </style>
+        """, unsafe_allow_html=True)
 
-        paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
+        st.markdown(f'<div class="number-input-wrapper-{tab_label}">', unsafe_allow_html=True)
+        page_number = st.number_input(
+            f'Page number for {tab_label}', 
+            min_value=1, 
+            max_value=total_pages, 
+            step=1, 
+            value=st.session_state[f'{tab_label}_page_number'], 
+            key=f'page_{tab_label}',
+            on_change=lambda: st.session_state.update({f'{tab_label}_page_number': st.session_state[f'page_{tab_label}']})
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        paged_df = paginate_data(filtered_df, page_number, items_per_page)
         paged_df.index += 1
 
         st.dataframe(paged_df, height=table_height, width=table_width)
-        st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
+        st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
 
 
