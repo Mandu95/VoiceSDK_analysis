@@ -18,7 +18,7 @@ with col_button:
     if st.button('사업부 공유폴더'):
         js = "window.open('https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp')"
         html = f"<script>{js}</script>"
-        st.markdown(html, unsafe_allow_html=True)
+        st.components.v1.html(html)
 
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
