@@ -4,14 +4,22 @@ import data_process
 st.set_page_config(layout="wide")
 
 df = data_process.df
-URL = data_process.url_data
+url_data = data_process.url_df
 
-def make_clickable(name, url):
+# Create a dictionary to map company names to URLs
+url_dict = dict(zip(url_data['업체 이름'], url_data['URL']))
+
+# Function to create clickable links
+def make_clickable(name):
+    url = url_dict.get(name, '#')
     return f'<a href="{url}" target="_blank">{name}</a>'
 
-# "업체이름" 열의 각 행에 해당하는 URL을 하이퍼링크로 변환
-if '업체이름' in df.columns and 'URL' in URL.columns:
-    df['업체이름'] = df.apply(lambda x: make_clickable(x['업체이름'], URL.loc[x.name, 'URL']), axis=1)
+# Apply the function to the '업체 이름' column
+if '업체 이름' in df.columns:
+    df['업체 이름'] = df['업체 이름'].apply(make_clickable)
+
+# Convert the dataframe to HTML to retain the clickable links
+df_html = df.to_html(escape=False)
 
 # 페이지 상단 영역
 st.subheader("PuzzleAI's 사업부 대시보드")
