@@ -129,9 +129,11 @@ def extract_data(data, row_name):
 
                     elif data[A][B]['type'] == "rollup":
                         if data[A][B]['rollup']['type'] == "array":
-                            temp = data[A][B]['rollup']['array']
-                            if len(temp) > 0:
+                            
+                            temp = len(data[A][B]['rollup']['array'])
+                            if temp > 0:
                                 value_list = []
+
                                 for Y in range(temp):
                                     value_list.append(safe_get(data[A], [B, 'rollup', 'array', Y, 'select', 'name']))
 
