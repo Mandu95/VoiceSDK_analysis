@@ -5,6 +5,7 @@ st.set_page_config(layout="wide")
 
 df = data_process.df
 URL = data_process.url_data
+
 def make_clickable(name, url):
     return f'<a href="{url}" target="_blank">{name}</a>'
 
@@ -22,7 +23,6 @@ table_width = 2000  # 테이블 너비 (픽셀 단위)
 
 # 페이지당 항목 수 설정
 items_per_page = 10
-
 
 def paginate_data(dataframe, page_number, items_per_page):
     start_index = (page_number - 1) * items_per_page
@@ -108,13 +108,10 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
                 st.session_state[f'{tab_label}_page_number'] = page_number
 
             paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
-            paged_df.index += 1
+            paged_df.index = range(1, len(paged_df) + 1)  # 인덱스를 1부터 시작하도록 설정
 
             st.dataframe(paged_df, height=table_height, width=table_width)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
-
-
-
 
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
