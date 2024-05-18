@@ -7,17 +7,7 @@ df = data_process.df
 url_data = data_process.url_df
 
 
-# 회사 이름을 URL에 매핑하는 사전 생성
-url_dict = dict(zip(url_data['업체 이름'], url_data['URL']))
 
-# 클릭 가능한 링크를 생성하는 함수
-def make_clickable(name):
-    url = url_dict.get(name, '#')
-    return f'<a href="{url}" target="_blank">{name}</a>'
-
-# '업체 이름' 열에 함수 적용
-if '업체 이름' in df.columns:
-    df['업체 이름'] = df['업체 이름'].apply(lambda x: f'<a href="{url_dict.get(x, "#")}" target="_blank">{x}</a>')
 
 # 페이지 레이아웃
 col_header, col_button = st.columns([8, 2])
@@ -25,7 +15,7 @@ with col_header:
     st.subheader("PuzzleAI's 사업부 대시보드")
 
 with col_button:
-    if st.button('SharePoint Link'):
+    if st.button('사업부 공유폴더'):
         js = "window.open('https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp')"
         html = f"<script>{js}</script>"
         st.markdown(html, unsafe_allow_html=True)
