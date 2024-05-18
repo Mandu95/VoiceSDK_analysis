@@ -18,6 +18,9 @@ st.markdown(
     html, body, [class*="css"] {
         font-family: 'AppleSDGothicNeoR00';
     }
+    .dataframe-container {
+        width: 100%;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -84,7 +87,7 @@ st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
 # 표 높이와 너비 동적으로 설정
 def get_table_dimensions():
-    return 400, 2400  # 너비를 더 크게 설정
+    return 400, '100%'  # 너비를 100%로 설정
 
 table_height, table_width = get_table_dimensions()
 
@@ -196,7 +199,9 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             # "계약잔여일" 강조 표시 적용
             styled_df = paged_df.style.applymap(highlight_remaining_days, subset=['계약잔여일'])
 
+            st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
             st.dataframe(styled_df, height=table_height, width=table_width)
+            st.markdown('</div>', unsafe_allow_html=True)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
 
             # 다음 페이지로 넘어갈 때 start_index 업데이트
