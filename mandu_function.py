@@ -72,7 +72,9 @@ def find_same_data(list_data):
     for A in list_data:
         if A not in temp:
 
-            temp.append(A)
+            if A is not None:
+
+                temp.append(A)
 
     return temp
 
@@ -137,7 +139,9 @@ def extract_data(data, row_name):
                                 for Y in range(temp):
                                     value_list.append(safe_get(data[A], [B, 'rollup', 'array', Y, 'select', 'name']))
 
+                                value_list = find_same_data(value_list)
                                 row_data.append(value_list)
+                                print(value_list)
                             else:
                                 row_data.append(None)
                         elif data[A][B]['rollup']['type'] == "number":
