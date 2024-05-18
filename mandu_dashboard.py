@@ -84,7 +84,7 @@ with col_buttons:
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
 table_height = 400  # 테이블 높이 (픽셀 단위)
-table_width = 2000  # 테이블 너비 (픽셀 단위)
+table_width = 2400  # 테이블 너비 (픽셀 단위)
 
 # 페이지당 항목 수 설정
 items_per_page = 10
