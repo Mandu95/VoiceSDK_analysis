@@ -74,7 +74,20 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         filtered_df = st.session_state[f'{tab_label}_filtered_df']
         
         if filtered_df.empty:
-            st.write("데이터가 없습니다")
+            st.markdown(
+                """
+                <style>
+                .no-data {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 300px;
+                    font-size: 24px;
+                    color: red;
+                }
+                </style>
+                <div class="no-data">데이터가 없습니다</div>
+                """, unsafe_allow_html=True)
         else:
             total_items = len(filtered_df)
             total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
@@ -95,6 +108,22 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
             paged_df.index += 1
 
+            # CSS 스타일 추가
+            st.markdown(
+                """
+                <style>
+                .dataframe td, .dataframe th {
+                    font-size: 12px; /* 글자 크기 조정 */
+                    white-space: nowrap; /* 한 줄로 표시 */
+                    text-align: center; /* 중앙 정렬 */
+                }
+                .dataframe {
+                    table-layout: fixed;
+                    width: 100%;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+
             # HTML 허용하여 데이터프레임 표시
             st.markdown(paged_df.to_html(escape=False), unsafe_allow_html=True)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
@@ -105,6 +134,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["VoiceEMR", "VoiceENR", "VoiceSDK", "Voi
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
     voiceemr_data = df[df['연관 제품'] == 'VoiceEMR'].reset_index(drop=True)
+    voiceemr_data.index.name = 'No'
     count_voiceemr = len(voiceemr_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
@@ -118,6 +148,7 @@ with tab1:
 
 with tab2:
     voiceenr_data = df[df['연관 제품'] == 'VoiceENR'].reset_index(drop=True)
+    voiceenr_data.index.name = 'No'
     count_voiceenr = len(voiceenr_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
@@ -131,6 +162,7 @@ with tab2:
 
 with tab3:
     voicesdk_data = df[df['연관 제품'] == 'VoiceSDK'].reset_index(drop=True)
+    voicesdk_data.index.name = 'No'
     count_voicesdk = len(voicesdk_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
@@ -144,6 +176,7 @@ with tab3:
 
 with tab4:
     voicemark_data = df[df['연관 제품'] == 'VoiceMARK'].reset_index(drop=True)
+    voicemark_data.index.name = 'No'
     count_voicemark = len(voicemark_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
@@ -157,6 +190,7 @@ with tab4:
 
 with tab5:
     voicedoc_data = df[df['연관 제품'] == 'VoiceDOC'].reset_index(drop=True)
+    voicedoc_data.index.name = 'No'
     count_voicedoc = len(voicedoc_data)
 
     # 계약 관리가 "정식"인 데이터만 카운트
