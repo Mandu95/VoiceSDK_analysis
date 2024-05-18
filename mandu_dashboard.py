@@ -114,18 +114,23 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
                 <style>
                 .dataframe td, .dataframe th {
                     font-size: 12px; /* 글자 크기 조정 */
-                    white-space: nowrap; /* 한 줄로 표시 */
                     text-align: center; /* 중앙 정렬 */
                 }
+                .dataframe td {
+                    white-space: nowrap; /* 한 줄로 표시 */
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 200px;
+                }
                 .dataframe {
-                    table-layout: fixed;
+                    table-layout: auto;
                     width: 100%;
                 }
                 </style>
                 """, unsafe_allow_html=True)
 
             # HTML 허용하여 데이터프레임 표시
-            st.markdown(paged_df.to_html(escape=False), unsafe_allow_html=True)
+            st.markdown(paged_df.to_html(escape=False, index=True, index_names=True), unsafe_allow_html=True)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
 
 # 탭메뉴 영역
