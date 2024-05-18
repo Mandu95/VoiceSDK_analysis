@@ -21,39 +21,51 @@ def paginate_data(dataframe, page_number, items_per_page):
     end_index = start_index + items_per_page
     return dataframe.iloc[start_index:end_index]
 
+# 세션 상태를 초기화하는 함수
+def init_session_state(tab_label):
+    if f'{tab_label}_filtered_df' not in st.session_state:
+        st.session_state[f'{tab_label}_filtered_df'] = None
+    if f'{tab_label}_page_number' not in st.session_state:
+        st.session_state[f'{tab_label}_page_number'] = 1
+
 # 탭메뉴 영역
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
 
 def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
-    col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
+    # 세션 상태 초기화
+    init_session_state(tab_label)
 
-    # 필터 초기화
-    filtered_df = None
+    col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
 
     # 텍스트와 버튼을 분리하여 표시
     with col1:
         st.write("고객")
         if st.button(f"{customers}", key=f"{tab_label}_고객"):
-            filtered_df = dataframe
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe
+            st.session_state[f'{tab_label}_page_number'] = 1
 
     with col2:
         st.write("정식계약")
         if st.button(f"{contracts}", key=f"{tab_label}_정식계약"):
-            filtered_df = dataframe[dataframe['계약관리'] == '정식']
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '정식']
+            st.session_state[f'{tab_label}_page_number'] = 1
 
     with col3:
         st.write("데모계약")
         if st.button(f"{demos}", key=f"{tab_label}_데모계약"):
-            filtered_df = dataframe[dataframe['계약관리'] == '데모']
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '데모']
+            st.session_state[f'{tab_label}_page_number'] = 1
 
     with col4:
         st.write("파악불가")
         if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
-            filtered_df = dataframe[dataframe['계약관리'].isnull()]
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].isnull()]
+            st.session_state[f'{tab_label}_page_number'] = 1
 
-    # 버튼 클릭 시에만 데이터프레임 표시
-    if filtered_df is not None:
+    # 필터링된 데이터프레임이 세션 상태에 저장되어 있을 때만 표시
+    if st.session_state[f'{tab_label}_filtered_df'] is not None:
+        filtered_df = st.session_state[f'{tab_label}_filtered_df']
         total_items = len(filtered_df)
         total_pages = (total_items + items_per_page - 1) // items_per_page
 
@@ -75,7 +87,15 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         """, unsafe_allow_html=True)
 
         st.markdown(f'<div class="number-input-wrapper-{tab_label}">', unsafe_allow_html=True)
-        page_number = st.number_input(f'Page number for {tab_label}', min_value=1, max_value=total_pages, step=1, value=1, key=tab_label)
+        page_number = st.number_input(
+            f'Page number for {tab_label}', 
+            min_value=1, 
+            max_value=total_pages, 
+            step=1, 
+            value=st.session_state[f'{tab_label}_page_number'], 
+            key=f'page_{tab_label}',
+            on_change=lambda: st.session_state.update({f'{tab_label}_page_number': st.session_state[f'page_{tab_label}']})
+        )
         st.markdown('</div>', unsafe_allow_html=True)
 
         paged_df = paginate_data(filtered_df, page_number, items_per_page)
@@ -83,7 +103,6 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
 
         st.dataframe(paged_df, height=table_height, width=table_width)
         st.write(f"Displaying rows {page_number * items_per_page - (items_per_page - 1)} to {min(page_number * items_per_page, total_items)} of {total_items}")
-
 
 
 
