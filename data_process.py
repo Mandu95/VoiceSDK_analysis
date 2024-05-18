@@ -17,6 +17,8 @@ data1 = data[0]['properties']
 
 print(data[0]['properties'][60]['계약구분']['rollup']['array'])
 url_data = data[0]['url']
+url_df = url_data.to_frame(name='URL')
+print(url_df)
 
 
 

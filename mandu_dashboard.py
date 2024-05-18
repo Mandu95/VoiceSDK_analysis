@@ -4,7 +4,7 @@ import data_process
 st.set_page_config(layout="wide")
 
 df = data_process.df
-URL = data_process.url_data
+URL = data_process.url_df
 
 def make_clickable(name, url):
     return f'<a href="{url}" target="_blank">{name}</a>'

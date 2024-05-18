@@ -141,7 +141,6 @@ def extract_data(data, row_name):
 
                                 value_list = find_same_data(value_list)
                                 row_data.append(value_list)
-                                print(value_list)
                             else:
                                 row_data.append(None)
                         elif data[A][B]['rollup']['type'] == "number":
