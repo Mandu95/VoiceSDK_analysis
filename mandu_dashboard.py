@@ -54,14 +54,6 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     total_items = len(filtered_df)
     total_pages = (total_items + items_per_page - 1) // items_per_page
 
-    with col1:
-        st.metric(label="고객", value=customers)
-    with col2:
-        st.metric(label="정식계약", value=contracts)
-    with col3:
-        st.metric(label="데모계약", value=demos)
-    with col4:
-        st.metric(label="파악불가", value=unknown)
     # CSS를 사용하여 입력 상자의 크기 및 정렬 조절
     st.markdown(f"""
         <style>
