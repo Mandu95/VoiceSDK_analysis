@@ -15,7 +15,8 @@ data = nc.notion_readDatabase(all_key)
 # Dataframe에서 properties 속성만 추출하는 것
 data1 = data[0]['properties']
 
-url_data = data[0]['url']
+# print(data[0]['properties'][60]['계약구분']['rollup']['array'])
+# url_data = data[0]['url']
 
 
 
