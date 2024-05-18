@@ -10,17 +10,22 @@ url_data = data_process.url_df
 
 
 # 페이지 레이아웃
-col_header, col_button = st.columns([8, 2])
+col_header, col_buttons = st.columns([8, 2])
 with col_header:
     st.subheader("PuzzleAI's 사업부 대시보드")
 
 
-with col_button:
+with col_buttons:
     st.markdown(
         """
         <style>
-        .sharepoint-button {
-            background-color: #4CAF50; /* Green */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .notion-button {
+            background-color: #00bfa6; /* Notion 시그니처 색상 */
             border: none;
             color: white;
             padding: 10px 24px;
@@ -33,20 +38,42 @@ with col_button:
             border-radius: 12px;
             transition-duration: 0.4s;
         }
-
-        .sharepoint-button:hover {
+        .notion-button:hover {
             background-color: white;
             color: black;
-            border: 2px solid #4CAF50;
+            border: 2px solid #00bfa6;
+        }
+        .onedrive-button {
+            background-color: #0078d4; /* OneDrive 시그니처 색상 */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition-duration: 0.4s;
+        }
+        .onedrive-button:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #0078d4;
         }
         </style>
-        <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-            <button class="sharepoint-button">사업부 공유폴더</button>
-        </a>
+        <div class="button-container">
+            <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
+                <button class="notion-button">고객 관리</button>
+            </a>
+            <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
+                <button class="onedrive-button">사업부 공유폴더</button>
+            </a>
+        </div>
         """,
         unsafe_allow_html=True
     )
-
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
 
