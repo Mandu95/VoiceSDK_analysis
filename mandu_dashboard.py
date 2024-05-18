@@ -25,16 +25,10 @@ with col_header:
     st.subheader("PuzzleAI's 사업부 대시보드")
 
 with col_button:
-    st.markdown(
-        """
-        <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">
-                SharePoint Link
-            </button>
-        </a>
-        """,
-        unsafe_allow_html=True
-    )
+    if st.button('SharePoint Link'):
+        js = "window.open('https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp')"
+        html = f"<script>{js}</script>"
+        st.markdown(html, unsafe_allow_html=True)
 
 st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
