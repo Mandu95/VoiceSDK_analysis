@@ -15,6 +15,8 @@ data = nc.notion_readDatabase(all_key)
 # Dataframe에서 properties 속성만 추출하는 것
 data1 = data[0]['properties']
 
+url_data = data['url']
+
 
 # 표 View 하기 위한 속성 추출
 row_name = mandu_function.df_col(data1)
