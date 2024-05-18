@@ -56,13 +56,13 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
     with col2:
         st.write("정식계약")
         if st.button(f"{contracts}", key=f"{tab_label}_정식계약"):
-            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '정식']
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].str.contains('정식', na=False)]
             st.session_state[f'{tab_label}_page_number'] = 1
 
     with col3:
         st.write("데모계약")
         if st.button(f"{demos}", key=f"{tab_label}_데모계약"):
-            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '데모']
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].str.contains('데모', na=False)]
             st.session_state[f'{tab_label}_page_number'] = 1
 
     with col4:
