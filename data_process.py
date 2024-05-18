@@ -44,8 +44,6 @@ df = mandu_function.change_contract_data(data2, df)
 
 
 
-
-
 # print(df[0:1])
 # 제품 필터 추출
 # goods_filter = mandu_function.extract_goods_item(data)
