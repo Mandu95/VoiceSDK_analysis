@@ -14,14 +14,34 @@ col_header, col_button = st.columns([8, 2])
 with col_header:
     st.subheader("PuzzleAI's 사업부 대시보드")
 
+
 with col_button:
-    # 사업부 공유폴더 버튼을 생성하고 JavaScript로 새 탭에서 URL을 열도록 설정
     st.markdown(
         """
+        <style>
+        .sharepoint-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition-duration: 0.4s;
+        }
+
+        .sharepoint-button:hover {
+            background-color: white;
+            color: black;
+            border: 2px solid #4CAF50;
+        }
+        </style>
         <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-            <button style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">
-                사업부 공유폴더
-            </button>
+            <button class="sharepoint-button">사업부 공유폴더</button>
         </a>
         """,
         unsafe_allow_html=True
