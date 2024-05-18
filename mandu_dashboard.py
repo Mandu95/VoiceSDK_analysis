@@ -5,6 +5,7 @@ st.set_page_config(layout="wide")
 
 df = data_process.df
 URL = data_process.url_data
+
 def make_clickable(name, url):
     return f'<a href="{url}" target="_blank">{name}</a>'
 
@@ -22,7 +23,6 @@ table_width = 2000  # 테이블 너비 (픽셀 단위)
 
 # 페이지당 항목 수 설정
 items_per_page = 10
-
 
 def paginate_data(dataframe, page_number, items_per_page):
     start_index = (page_number - 1) * items_per_page
@@ -52,29 +52,33 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
         if st.button(f"{customers}", key=f"{tab_label}_고객"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe
             st.session_state[f'{tab_label}_page_number'] = 1
+            st.session_state[f'{tab_label}_start_index'] = 1  # 'No' 열을 1부터 시작
 
     with col2:
         st.write("정식계약")
         if st.button(f"{contracts}", key=f"{tab_label}_정식계약"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '정식']
             st.session_state[f'{tab_label}_page_number'] = 1
+            st.session_state[f'{tab_label}_start_index'] = 1  # 'No' 열을 1부터 시작
 
     with col3:
         st.write("데모계약")
         if st.button(f"{demos}", key=f"{tab_label}_데모계약"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '데모']
             st.session_state[f'{tab_label}_page_number'] = 1
+            st.session_state[f'{tab_label}_start_index'] = 1  # 'No' 열을 1부터 시작
 
     with col4:
         st.write("파악불가")
         if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].isnull()]
             st.session_state[f'{tab_label}_page_number'] = 1
+            st.session_state[f'{tab_label}_start_index'] = 1  # 'No' 열을 1부터 시작
 
     # 필터링된 데이터프레임이 세션 상태에 저장되어 있을 때만 표시
     if st.session_state[f'{tab_label}_filtered_df'] is not None:
         filtered_df = st.session_state[f'{tab_label}_filtered_df']
-        
+
         if filtered_df.empty:
             st.markdown(
                 """
@@ -98,23 +102,26 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             col5, col6 = st.columns([10, 1])
             with col6:
                 page_number = st.number_input(
-                    f'Page number for {tab_label}', 
-                    min_value=1, 
-                    max_value=total_pages, 
-                    step=1, 
-                    value=st.session_state[f'{tab_label}_page_number'], 
+                    f'Page number for {tab_label}',
+                    min_value=1,
+                    max_value=total_pages,
+                    step=1,
+                    value=st.session_state[f'{tab_label}_page_number'],
                     key=f'page_{tab_label}'
                 )
                 st.session_state[f'{tab_label}_page_number'] = page_number
 
             paged_df = paginate_data(filtered_df, st.session_state[f'{tab_label}_page_number'], items_per_page)
-            paged_df.index += 1
+            
+            # 인덱스를 1부터 시작하도록 설정 (버튼 클릭 시에만)
+            start_index = st.session_state.get(f'{tab_label}_start_index', 1)
+            paged_df.index = range(start_index, start_index + len(paged_df))
 
             st.dataframe(paged_df, height=table_height, width=table_width)
             st.write(f"Displaying rows {st.session_state[f'{tab_label}_page_number'] * items_per_page - (items_per_page - 1)} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, total_items)} of {total_items}")
 
-
-
+            # 다음 페이지로 넘어갈 때 start_index 업데이트
+            st.session_state[f'{tab_label}_start_index'] = start_index + len(paged_df)
 
 # 각 탭에 데이터프레임 및 페이징 기능 적용
 with tab1:
