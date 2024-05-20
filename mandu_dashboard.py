@@ -15,7 +15,7 @@ logging.basicConfig(filename='data_sync.log',
                     level=logging.INFO, format='%(asctime)s - %(message)s')
 
 # 데이터 로드
-df = data_process.df
+df = data_process.product_management
 url_data = data_process.url_df
 
 # CSS 파일 로드 및 불필요한 요소 숨기기

@@ -143,6 +143,7 @@ def extract_goods_item(data):
 # 제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수
 def change_contract_data(data, df):
     """제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수"""
+
     for A in range(len(df)):
         temp = df.loc[A, '계약관리']
         if temp is None:
@@ -151,4 +152,17 @@ def change_contract_data(data, df):
             if temp == data['id'][B]:
                 new_value = safe_get(data, ['properties', B, '계약구분', 'select', 'name'])
                 df.loc[A, '계약관리'] = new_value
+    return df
+
+
+# 기타서류 DB의 [발송 대상]속성과 제품 현황 관리 DB의 [업체 이름] 데이터를 제품 현황 관리 DB의 id 기준으로 맞추는 함수
+def change_company_name_data(data, df):
+    for A in range(len(df)):
+        temp = df.loc[A, '발송 대상']
+        if temp is None:
+            continue  # temp가 None이면 건너뛰기
+        for B in range(len(data)):
+            if temp == data['id'][B]:
+                new_value = safe_get(data, ['properties', B, '업체 이름', 'select', 'name'])
+                df.loc[A, '발송 대상'] = new_value
     return df
