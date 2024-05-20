@@ -57,16 +57,29 @@ def display_paginated_table(dataframe, tab_label):
 
 def show_other_documents_management():
     st.subheader("기타 문서 관리")
-    # 기타 문서 관리에 대한 내용을 여기에 추가합니다.
     st.write("업체로 발송 된 견적서, MOU 및 NDA 체결 문서를 볼 수 있습니다:sunglasses:")
 
-    # etc_document 데이터프레임 복사 및 인덱스 재설정
-    etc_document_copy = etc_document.reset_index(drop=True)
-    etc_document_copy.index = etc_document_copy.index + 1
-    etc_document_copy.index.name = 'No'
-    
-    # etc_document 데이터프레임을 페이징하여 표시
-    display_paginated_table(etc_document_copy, "기타 문서 관리")
+    tabs = ["전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
+    selected_tab = st.tabs(tabs)
+
+    for i, tab in enumerate(tabs):
+        with selected_tab[i]:
+            if tab == "전체":
+                filtered_data = etc_document
+            else:
+                filtered_data = etc_document[etc_document['문서이름'].str.contains(tab, case=False, na=False)]
+
+            filtered_data = filtered_data.reset_index(drop=True)
+            filtered_data.index = filtered_data.index + 1
+            filtered_data.index.name = 'No'
+
+            if filtered_data.empty:
+                st.markdown(
+                    """
+                    <div class="no-data">데이터가 없습니다</div>
+                    """, unsafe_allow_html=True)
+            else:
+                display_paginated_table(filtered_data, tab)
 
 # 호출 예제
 if __name__ == "__main__":
