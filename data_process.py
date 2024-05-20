@@ -31,11 +31,12 @@ contract_management_db = data[1]
 product_management = mandu_function.change_contract_data(contract_management_db, product_management)
 
 # 기타서류 DB에서 properties 속성만 추출
-data3 = data[2]['properties']
+etc_document = data[2]['properties']
+
 # 표 View를 위한 속성 추출
-etc_document_row_name = mandu_function.df_col(data3)
+etc_document_row_name = mandu_function.df_col(etc_document)
 # 값 추출
-etc_document = mandu_function.extract_data(data3, etc_document_row_name)
+etc_document = mandu_function.extract_data(etc_document, etc_document_row_name)
 # 두 번째 DB의 데이터 사용
 product_management_db = data[0]
 etc_document = mandu_function.change_company_name_data(product_management_db,etc_document)
