@@ -113,6 +113,10 @@ def get_value_from_property(property):
         return safe_get(property, ['select', 'name'])
     elif property['type'] == "date":
         return safe_get(property, ['date', 'start'])
+    elif property['type'] == "number":
+        return safe_get(property, ['number'])
+    elif property['type'] == "url":
+        return safe_get(property, ['url'])
     elif property['type'] == "title":
         return safe_get(property, ['title', 0, 'text', 'content']) if safe_get(property, ['title', 0, 'type']) == "text" else None
 
