@@ -111,6 +111,8 @@ def get_value_from_property(property):
         return safe_get(property, ['email'])
     elif property['type'] == "select":
         return safe_get(property, ['select', 'name'])
+    elif property['type'] == "date":
+        return safe_get(property, ['date', 'start'])
     elif property['type'] == "title":
         return safe_get(property, ['title', 0, 'text', 'content']) if safe_get(property, ['title', 0, 'type']) == "text" else None
 
