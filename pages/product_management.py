@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import data_process
 
-
 def show_product_management():
     # 데이터 로드
     df = data_process.product_management

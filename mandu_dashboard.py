@@ -37,18 +37,21 @@ st.sidebar.title("탭 메뉴")
 
 # 메뉴 선택을 위한 세션 상태 초기화
 if "page" not in st.session_state:
-    st.session_state.page = "제품 현황 관리"
+    st.session_state.page = "Home"
 
 # 선택 박스를 사용하여 메뉴 선택
-menu = st.sidebar.selectbox("탭 메뉴", ["제품 현황 관리", "계약서 관리", "기타 문서 관리"], index=[
-                            "제품 현황 관리", "계약서 관리", "기타 문서 관리"].index(st.session_state.page))
+menu = st.sidebar.selectbox("탭 메뉴", ["Home", "제품 현황 관리", "계약서 관리", "기타 문서 관리"], index=[
+                            "Home", "제품 현황 관리", "계약서 관리", "기타 문서 관리"].index(st.session_state.page))
 
 # 선택된 메뉴를 세션 상태에 저장
 st.session_state.page = menu
 
 # 선택된 메뉴에 따라 페이지 표시
 def load_page(page_name):
-    if page_name == "제품 현황 관리":
+    if page_name == "Home":
+        st.title("Welcome to PuzzleAI's Dashboard")
+        st.write("Use the sidebar to navigate to different sections.")
+    elif page_name == "제품 현황 관리":
         from pages import product_management
         product_management.show_product_management()
     elif page_name == "계약서 관리":
