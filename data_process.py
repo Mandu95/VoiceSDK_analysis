@@ -7,7 +7,7 @@ nc = notion_DB_call.notion_API()
 
 # 조회할 DB 키 리스트
 all_key = ["69aeff6ca32d4466ad4748dde3939e8b",
-           "49e1a704e0ae41679775e9f1194d9068"]
+           "49e1a704e0ae41679775e9f1194d9068","e3230b6283354a798dfe0636f5e340a1"]
 
 # DB 데이터 추출
 data = nc.notion_readDatabase(all_key)
@@ -31,4 +31,10 @@ df = mandu_function.extract_data(data1, row_name)
 data2 = data[1]
 df = mandu_function.change_contract_data(data2, df)
 
-print(df.head())
+# 기타서류 DB에서 properties 속성만 추출
+data3 = data[2]['properties']
+# 표 View를 위한 속성 추출
+etc_document_row_name = mandu_function.df_col(data3)
+# 값 추출
+etc_document = mandu_function.extract_data(data3, etc_document_row_name)
+print(etc_document)
