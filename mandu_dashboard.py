@@ -1,8 +1,17 @@
 import streamlit as st
 import pandas as pd
 import data_process
+import time
+import threading
+import schedule
+from datetime import datetime
+import logging
 
 st.set_page_config(layout="wide")
+
+# 로그 설정
+logging.basicConfig(filename='data_sync.log',
+                    level=logging.INFO, format='%(asctime)s - %(message)s')
 
 # 데이터 로드
 df = data_process.df
@@ -276,3 +285,33 @@ setup_tab(tab3, 'VoiceENR', 'VoiceENR')
 setup_tab(tab4, 'VoiceSDK', 'VoiceSDK')
 setup_tab(tab5, 'VoiceMARK', 'VoiceMARK')
 setup_tab(tab6, 'VoiceDOC', 'VoiceDOC')
+
+
+# 데이터 동기화를 위한 함수
+def update_data():
+    global df, url_data
+    df = data_process.df
+    url_data = data_process.url_df
+    logging.info("데이터 로드 성공")
+    st.experimental_rerun()
+
+
+# 매일 오전 9시와 오후 4시에 데이터를 동기화하도록 예약
+schedule.every().day.at("09:00").do(update_data)
+schedule.every().day.at("16:00").do(update_data)
+
+# 백그라운드에서 스케줄러 실행
+
+
+def run_scheduler():
+    while True:
+        now = datetime.now()
+        if now.weekday() < 5:  # 월요일(0)부터 금요일(4)까지만 실행
+            schedule.run_pending()
+        time.sleep(1)
+
+
+# 백그라운드에서 스케줄러 실행
+scheduler_thread = threading.Thread(target=run_scheduler)
+scheduler_thread.daemon = True
+scheduler_thread.start()
