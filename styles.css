@@ -1,0 +1,52 @@
+@font-face {
+    font-family: 'AppleSDGothicNeoR00';
+    src: url('https://example.com/path/to/AppleSDGothicNeoR00.ttf') format('truetype'); /* 글꼴 파일 경로를 업데이트해야 합니다 */
+}
+html, body, [class*="css"] {
+    font-family: 'AppleSDGothicNeoR00';
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.button {
+    padding: 10px 24px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition-duration: 0.4s;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 150px; /* 모든 버튼의 최소 너비를 동일하게 설정 */
+}
+.notion-button {
+    background-color: #00bfa6; /* Notion 시그니처 색상 */
+}
+.notion-button:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid #00bfa6;
+}
+.onedrive-button {
+    background-color: #0078d4; /* OneDrive 시그니처 색상 */
+}
+.onedrive-button:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid #0078d4;
+}
+
+.no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 36px;
+    color: red;
+}
