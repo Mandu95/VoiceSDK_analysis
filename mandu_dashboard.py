@@ -174,17 +174,17 @@ def display_paginated_table(dataframe, tab_label):
 # 데이터 탭을 표시하는 함수
 
 
-def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
+def display_tab(dataframe, tab_label, customers, contracts, demos, send_docu, unknown):
     """
     각 탭에 대한 데이터를 필터링하고 표시하는 함수.
     """
     init_session_state(tab_label)
 
-    col1, col2, col3, col4 = st.columns([3, 3, 3, 3])
+    col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
 
     with col1:
-        st.write("고객")
-        if st.button(f"{customers}", key=f"{tab_label}_고객"):
+        st.write("전체")
+        if st.button(f"{customers}", key=f"{tab_label}_전체"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe
             st.session_state[f'{tab_label}_page_number'] = 1
 
@@ -201,13 +201,20 @@ def display_tab(dataframe, tab_label, customers, contracts, demos, unknown):
             st.session_state[f'{tab_label}_page_number'] = 1
 
     with col4:
+        st.write("견적서 발송")
+        if st.button(f"{send_docu}", key=f"{tab_label}_견적발송"):
+            st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['상태'] == '견적발송']
+            st.session_state[f'{tab_label}_page_number'] = 1
+
+    with col5:
         st.write("파악불가")
         if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
             st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].isnull(
-            )]
+            ) & (dataframe['상태'] != '견적발송')]
             st.session_state[f'{tab_label}_page_number'] = 1
 
     filtered_df = st.session_state[f'{tab_label}_filtered_df']
+
     if filtered_df.empty:
         st.markdown(
             """
@@ -253,11 +260,14 @@ def setup_tab(tab, product_name, tab_label):
         product_data[product_data['계약관리'].str.contains('정식', na=False)])
     count_demos = len(
         product_data[product_data['계약관리'].str.contains('데모', na=False)])
-    count_unknown = len(product_data[product_data['계약관리'].isnull()])
+    send_docu = len(
+        product_data[product_data['상태'].str.contains('견적발송', na=False)])
+    count_unknown = len(
+        product_data[product_data['계약관리'].isnull() & (product_data['상태'] != '견적발송')])
 
     with tab:
         display_tab(product_data, tab_label, count_total,
-                    count_contracts, count_demos, count_unknown)
+                    count_contracts, count_demos, send_docu, count_unknown)
 
 
 # 각 탭에 대해 setup_tab 함수 호출
