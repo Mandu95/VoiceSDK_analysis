@@ -86,7 +86,8 @@ def show_product_management():
 
         def create_button(column, label, data_filter, count):
             with column:
-                if st.button(f"{label} ({count})", key=f"{tab_label}_{label}"):
+                st.write(label)
+                if st.button(f"{count}", key=f"{tab_label}_{label}"):
                     st.session_state[f'{tab_label}_filtered_df'] = data_filter
                     st.session_state[f'{tab_label}_page_number'] = 1
 
