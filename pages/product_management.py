@@ -1,17 +1,21 @@
 import streamlit as st
 import pandas as pd
-import data_process
+from data_process import product_management  # 데이터 로드
+
 
 def show_product_management():
-    # 데이터 로드
-    df = data_process.product_management
+    df = product_management  # 데이터프레임 설정
 
-    st.subheader("제품 현황 관리")
+    st.subheader("PuzzleAI's")
 
     # 페이지 레이아웃 설정
     col_header, col_buttons = st.columns([8, 2])
     with col_header:
-        st.subheader("PuzzleAI's 사업부 대시보드")
+        st.subheader("제품 현황관리")
+
+    # styles.css 파일 로드
+    with open("styles.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     with col_buttons:
         st.markdown(
@@ -28,17 +32,14 @@ def show_product_management():
             unsafe_allow_html=True
         )
 
-    st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
+    st.write("Notion DB를 기준으로 분석한 자료이며, 오전 9시와 오후 4시 1일 2회 동기화 됩니다.:sunglasses:")
 
     # 표 높이와 너비 동적으로 설정하는 함수
     def get_table_dimensions():
         return 385, 2400  # 너비를 더 크게 설정
 
-    # 표의 높이와 너비 설정
-    table_height, table_width = get_table_dimensions()
-
-    # 페이지당 항목 수 설정
-    items_per_page = 10
+    table_height, table_width = get_table_dimensions()  # 표의 높이와 너비 설정
+    items_per_page = 10  # 페이지당 항목 수 설정
 
     # 데이터프레임을 페이징하는 함수
     def paginate_data(dataframe, page_number, items_per_page):
@@ -96,51 +97,32 @@ def show_product_management():
         init_session_state(tab_label)
         col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
 
-        with col1:
-            st.write("전체")
-            if st.button(f"{customers}", key=f"{tab_label}_전체"):
-                st.session_state[f'{tab_label}_filtered_df'] = dataframe
-                st.session_state[f'{tab_label}_page_number'] = 1
+        def create_button(column, label, data_filter):
+            with column:
+                st.write(label)
+                if st.button(f"{label}", key=f"{tab_label}_{label}"):
+                    st.session_state[f'{tab_label}_filtered_df'] = data_filter
+                    st.session_state[f'{tab_label}_page_number'] = 1
 
-        with col2:
-            st.write("정식계약")
-            if st.button(f"{contracts}", key=f"{tab_label}_정식계약"):
-                st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '정식']
-                st.session_state[f'{tab_label}_page_number'] = 1
-
-        with col3:
-            st.write("데모계약")
-            if st.button(f"{demos}", key=f"{tab_label}_데모계약"):
-                st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'] == '데모']
-                st.session_state[f'{tab_label}_page_number'] = 1
-
-        with col4:
-            st.write("견적서 발송")
-            if st.button(f"{send_docu}", key=f"{tab_label}_견적발송"):
-                st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['상태'] == '견적발송']
-                st.session_state[f'{tab_label}_page_number'] = 1
-
-        with col5:
-            st.write("파악불가")
-            if st.button(f"{unknown}", key=f"{tab_label}_파악불가"):
-                st.session_state[f'{tab_label}_filtered_df'] = dataframe[dataframe['계약관리'].isnull(
-                ) & (dataframe['상태'] != '견적발송')]
-                st.session_state[f'{tab_label}_page_number'] = 1
+        create_button(col1, "전체", dataframe)
+        create_button(col2, "정식계약", dataframe[dataframe['계약관리'] == '정식'])
+        create_button(col3, "데모계약", dataframe[dataframe['계약관리'] == '데모'])
+        create_button(col4, "견적발송", dataframe[dataframe['상태'] == '견적발송'])
+        create_button(col5, "파악불가", dataframe[dataframe['계약관리'].isnull() & (
+            dataframe['상태'] != '견적발송')])
 
         filtered_df = st.session_state[f'{tab_label}_filtered_df']
-
         if filtered_df.empty:
-            st.markdown(
-                """
-                <div class="no-data">데이터가 없습니다</div>
-                """, unsafe_allow_html=True)
+            st.markdown("<div class='no-data'>데이터가 없습니다</div>",
+                        unsafe_allow_html=True)
         else:
             display_paginated_table(filtered_df, tab_label)
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-        ["전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"])
+    tab_labels = ["전체", "VoiceEMR", "VoiceENR",
+                  "VoiceSDK", "VoiceMARK", "VoiceDOC"]
+    tabs = st.tabs(tab_labels)
 
-    with tab1:
+    with tabs[0]:
         all_data = df.reset_index(drop=True)
         all_data.index = all_data.index + 1
         all_data.index.name = 'No'
@@ -165,8 +147,10 @@ def show_product_management():
             display_tab(product_data, tab_label, count_total,
                         count_contracts, count_demos, send_docu, count_unknown)
 
-    setup_tab(tab2, 'VoiceEMR', 'VoiceEMR')
-    setup_tab(tab3, 'VoiceENR', 'VoiceENR')
-    setup_tab(tab4, 'VoiceSDK', 'VoiceSDK')
-    setup_tab(tab5, 'VoiceMARK', 'VoiceMARK')
-    setup_tab(tab6, 'VoiceDOC', 'VoiceDOC')
+    for i, label in enumerate(tab_labels[1:], start=1):
+        setup_tab(tabs[i], label, label)
+
+
+# 호출 예제
+if __name__ == "__main__":
+    show_product_management()

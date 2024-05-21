@@ -1,11 +1,10 @@
 import streamlit as st
-import pandas as pd
 import data_process
-import time
 import threading
 import schedule
 from datetime import datetime
 import logging
+import time
 
 # 페이지 설정
 st.set_page_config(page_title="PuzzleAI's Dashboard", layout="wide")
@@ -14,57 +13,29 @@ st.set_page_config(page_title="PuzzleAI's Dashboard", layout="wide")
 logging.basicConfig(filename='data_sync.log',
                     level=logging.INFO, format='%(asctime)s - %(message)s')
 
-# 데이터 로드
-df = data_process.product_management
-url_data = data_process.url_df
+# CSS 파일 로드 및 기본 제목과 메뉴 항목 숨기기
 
-# CSS 파일 로드 및 불필요한 요소 숨기기
-with open("styles.css", "r", encoding="utf-8") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# 추가 CSS를 사용하여 기본 제목과 메뉴 항목 숨기기
-hide_streamlit_style = """
-    <style>
-    /* 기본 사이드바 제목과 메뉴 항목 숨기기 */
-    .css-1d391kg {visibility: hidden;}
-    .css-1y4p8pa {visibility: hidden;}
-    </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+def load_css():
+    with open("styles.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# 사이드바에 선택 박스 추가
-st.sidebar.title("탭 메뉴")
+    st.markdown("""
+        <style>
+        .css-1d391kg, .css-1y4p8pa {visibility: hidden;}
+        </style>
+    """, unsafe_allow_html=True)
 
-# 메뉴 선택을 위한 세션 상태 초기화
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
+# 초기 페이지 설정
 
-# 선택 박스를 사용하여 메뉴 선택
-menu = st.sidebar.selectbox("탭 메뉴", ["Home", "제품 현황 관리", "계약서 관리", "기타 문서 관리"], index=[
-                            "Home", "제품 현황 관리", "계약서 관리", "기타 문서 관리"].index(st.session_state.page))
 
-# 선택된 메뉴를 세션 상태에 저장
-st.session_state.page = menu
-
-# 선택된 메뉴에 따라 페이지 표시
-def load_page(page_name):
-    if page_name == "Home":
-        st.title("Welcome to PuzzleAI's Dashboard")
-        st.write("Use the sidebar to navigate to different sections.")
-    elif page_name == "제품 현황 관리":
-        from pages import product_management
-        product_management.show_product_management()
-    elif page_name == "계약서 관리":
-        from pages import contract_management
-        contract_management.show_contract_management()
-    elif page_name == "기타 문서 관리":
-        from pages import other_documents_management
-        other_documents_management.show_other_documents_management()
-
-# 페이지 로드
-load_page(st.session_state.page)
+def set_initial_page():
+    st.title("Welcome to PuzzleAI's Dashboard")
+    st.write("Use the sidebar to navigate to different sections.")
 
 # 데이터 동기화를 위한 함수
+
+
 def update_data():
     global df, url_data
     df = data_process.df
@@ -72,19 +43,35 @@ def update_data():
     logging.info("데이터 로드 성공")
     st.experimental_rerun()
 
-# 매일 오전 9시와 오후 4시에 데이터를 동기화하도록 예약
-schedule.every().day.at("09:00").do(update_data)
-schedule.every().day.at("16:00").do(update_data)
+# 스케줄 설정
+
+
+def setup_schedule():
+    schedule.every().day.at("09:00").do(update_data)
+    schedule.every().day.at("16:00").do(update_data)
 
 # 백그라운드에서 스케줄러 실행
+
+
 def run_scheduler():
     while True:
-        now = datetime.now()
-        if now.weekday() < 5:  # 월요일(0)부터 금요일(4)까지만 실행
+        if datetime.now().weekday() < 5:
             schedule.run_pending()
         time.sleep(1)
 
-# 백그라운드에서 스케줄러 실행
-scheduler_thread = threading.Thread(target=run_scheduler)
-scheduler_thread.daemon = True
-scheduler_thread.start()
+# 메인 함수
+
+
+def main():
+    load_css()
+    set_initial_page()
+    setup_schedule()
+
+    # 스케줄러를 백그라운드에서 실행
+    scheduler_thread = threading.Thread(target=run_scheduler)
+    scheduler_thread.daemon = True
+    scheduler_thread.start()
+
+
+if __name__ == "__main__":
+    main()
