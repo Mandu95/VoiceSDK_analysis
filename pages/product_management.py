@@ -1,38 +1,13 @@
 import streamlit as st
-import pandas as pd
 from data_process import product_management  # 데이터 로드
 
 
 def show_product_management():
     df = product_management  # 데이터프레임 설정
 
-    st.subheader("PuzzleAI's")
+    st.subheader("제품 현황 관리")
 
-    # 페이지 레이아웃 설정
-    col_header, col_buttons = st.columns([8, 2])
-    with col_header:
-        st.subheader("제품 현황관리")
-
-    # styles.css 파일 로드
-    with open("styles.css", "r", encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-    with col_buttons:
-        st.markdown(
-            """
-            <div class="button-container">
-                <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
-                    <button class="button notion-button">고객 관리</button>
-                </a>
-                <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-                    <button class="button onedrive-button">사업부 공유폴더</button>
-                </a>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.write("Notion DB를 기준으로 분석한 자료이며, 오전 9시와 오후 4시 1일 2회 동기화 됩니다.:sunglasses:")
+    st.write("Notion DB를 기준으로 분석한 자료이며, 오전 8시, 12시, 15시 하루 3회 동기화 됩니다.:sunglasses:")
 
     # 표 높이와 너비 동적으로 설정하는 함수
     def get_table_dimensions():

@@ -2,10 +2,14 @@ import streamlit as st
 from data_process import etc_document  # 데이터프레임을 data_process 모듈에서 불러옴
 
 # 표 높이와 너비 동적으로 설정하는 함수
+
+
 def get_table_dimensions():
     return 385, 2400  # 표의 높이와 너비를 설정
 
 # 데이터프레임을 페이징하는 함수
+
+
 def paginate_data(dataframe, page_number, items_per_page):
     """
     데이터프레임을 페이지 번호에 따라 분할하여 반환하는 함수.
@@ -19,12 +23,15 @@ def paginate_data(dataframe, page_number, items_per_page):
     return paged_df
 
 # 데이터 프레임을 표시하고 페이징하는 함수
+
+
 def display_paginated_table(dataframe, tab_label):
     """
     데이터프레임을 페이지 단위로 나누어 표시하는 함수.
     """
     if f'{tab_label}_filtered_df' not in st.session_state:
-        st.session_state[f'{tab_label}_filtered_df'] = dataframe  # 기본값은 전체 데이터프레임
+        # 기본값은 전체 데이터프레임
+        st.session_state[f'{tab_label}_filtered_df'] = dataframe
     if f'{tab_label}_page_number' not in st.session_state:
         st.session_state[f'{tab_label}_page_number'] = 1  # 기본 페이지 번호는 1
 
@@ -46,7 +53,7 @@ def display_paginated_table(dataframe, tab_label):
         st.session_state[f'{tab_label}_page_number'] = page_number
 
     paged_df = paginate_data(dataframe, page_number, items_per_page)
-    
+
     # 표의 높이와 너비 설정
     table_height, table_width = get_table_dimensions()
 
@@ -54,6 +61,7 @@ def display_paginated_table(dataframe, tab_label):
     st.dataframe(paged_df, height=table_height, width=table_width)
     st.write(
         f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
+
 
 def show_other_documents_management():
     st.subheader("기타 문서 관리")
@@ -67,7 +75,8 @@ def show_other_documents_management():
             if tab == "전체":
                 filtered_data = etc_document
             else:
-                filtered_data = etc_document[etc_document['문서이름'].str.contains(tab, case=False, na=False)]
+                filtered_data = etc_document[etc_document['문서이름'].str.contains(
+                    tab, case=False, na=False)]
 
             filtered_data = filtered_data.reset_index(drop=True)
             filtered_data.index = filtered_data.index + 1
@@ -80,6 +89,7 @@ def show_other_documents_management():
                     """, unsafe_allow_html=True)
             else:
                 display_paginated_table(filtered_data, tab)
+
 
 # 호출 예제
 if __name__ == "__main__":

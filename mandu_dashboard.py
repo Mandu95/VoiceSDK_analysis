@@ -30,16 +30,37 @@ def load_css():
 
 
 def set_initial_page():
-    st.title("Welcome to PuzzleAI's Dashboard")
-    st.write("Use the sidebar to navigate to different sections.")
+
+    # 페이지 레이아웃 설정
+    col_header, col_buttons = st.columns([8, 2])
+    with col_header:
+        st.header("Welcome to PuzzleAI's Dashboard")
+
+    # styles.css 파일 로드
+    with open("styles.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    with col_buttons:
+        st.markdown(
+            """
+            <div class="button-container">
+                <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
+                    <button class="button notion-button">고객 관리</button>
+                </a>
+                <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
+                    <button class="button onedrive-button">사업부 공유폴더</button>
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
 # 데이터 동기화를 위한 함수
-
-
 def update_data():
-    global df, url_data
-    df = data_process.df
-    url_data = data_process.url_df
+    global product_management, etc_document
+    product_management = data_process.product_management
+    etc_document = data_process.etc_document
     logging.info("데이터 로드 성공")
     st.experimental_rerun()
 
@@ -47,8 +68,9 @@ def update_data():
 
 
 def setup_schedule():
-    schedule.every().day.at("09:00").do(update_data)
-    schedule.every().day.at("16:00").do(update_data)
+    schedule.every().day.at("08:00").do(update_data)
+    schedule.every().day.at("12:00").do(update_data)
+    schedule.every().day.at("15:00").do(update_data)
 
 # 백그라운드에서 스케줄러 실행
 
