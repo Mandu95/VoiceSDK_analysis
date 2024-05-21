@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from data_process import product_management  # 데이터 로드
 
 
@@ -61,8 +62,13 @@ def show_product_management():
             st.session_state[f'{tab_label}_page_number'] = page_number
 
         paged_df = paginate_data(dataframe, page_number, items_per_page)
-        styled_df = paged_df.style.applymap(
-            highlight_remaining_days, subset=['계약잔여일'])
+
+        if '계약잔여일' in paged_df.columns:
+            styled_df = paged_df.style.applymap(
+                highlight_remaining_days, subset=['계약잔여일'])
+        else:
+            styled_df = paged_df
+
         st.dataframe(styled_df, height=table_height, width=table_width)
         st.write(
             f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
