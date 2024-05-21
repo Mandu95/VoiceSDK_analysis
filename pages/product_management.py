@@ -7,7 +7,6 @@ def show_product_management():
     df = product_management  # 데이터프레임 설정
 
     st.subheader("제품 현황 관리")
-
     st.write("Notion DB를 기준으로 분석한 자료이며, 오전 8시, 12시, 15시 하루 3회 동기화 됩니다.:sunglasses:")
 
     # 표 높이와 너비 동적으로 설정하는 함수
@@ -74,23 +73,32 @@ def show_product_management():
             f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
     # 데이터 탭을 표시하는 함수
-    def display_tab(dataframe, tab_label, customers, contracts, demos, send_docu, unknown):
+    def display_tab(dataframe, tab_label):
         init_session_state(tab_label)
         col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
 
-        def create_button(column, label, data_filter):
+        total_count = len(dataframe)
+        contracts_count = len(dataframe[dataframe['계약관리'] == '정식'])
+        demos_count = len(dataframe[dataframe['계약관리'] == '데모'])
+        send_docu_count = len(dataframe[dataframe['상태'] == '견적발송'])
+        unknown_count = len(dataframe[dataframe['계약관리'].isnull() & (
+            dataframe['상태'] != '견적발송')])
+
+        def create_button(column, label, data_filter, count):
             with column:
-                st.write(label)
-                if st.button(f"{label}", key=f"{tab_label}_{label}"):
+                if st.button(f"{label} ({count})", key=f"{tab_label}_{label}"):
                     st.session_state[f'{tab_label}_filtered_df'] = data_filter
                     st.session_state[f'{tab_label}_page_number'] = 1
 
-        create_button(col1, "전체", dataframe)
-        create_button(col2, "정식계약", dataframe[dataframe['계약관리'] == '정식'])
-        create_button(col3, "데모계약", dataframe[dataframe['계약관리'] == '데모'])
-        create_button(col4, "견적발송", dataframe[dataframe['상태'] == '견적발송'])
+        create_button(col1, "전체", dataframe, total_count)
+        create_button(
+            col2, "정식계약", dataframe[dataframe['계약관리'] == '정식'], contracts_count)
+        create_button(
+            col3, "데모계약", dataframe[dataframe['계약관리'] == '데모'], demos_count)
+        create_button(
+            col4, "견적발송", dataframe[dataframe['상태'] == '견적발송'], send_docu_count)
         create_button(col5, "파악불가", dataframe[dataframe['계약관리'].isnull() & (
-            dataframe['상태'] != '견적발송')])
+            dataframe['상태'] != '견적발송')], unknown_count)
 
         filtered_df = st.session_state[f'{tab_label}_filtered_df']
         if filtered_df.empty:
@@ -114,19 +122,8 @@ def show_product_management():
         product_data.index = product_data.index + 1
         product_data.index.name = 'No'
 
-        count_total = len(product_data)
-        count_contracts = len(
-            product_data[product_data['계약관리'].str.contains('정식', na=False)])
-        count_demos = len(
-            product_data[product_data['계약관리'].str.contains('데모', na=False)])
-        send_docu = len(
-            product_data[product_data['상태'].str.contains('견적발송', na=False)])
-        count_unknown = len(
-            product_data[product_data['계약관리'].isnull() & (product_data['상태'] != '견적발송')])
-
         with tab:
-            display_tab(product_data, tab_label, count_total,
-                        count_contracts, count_demos, send_docu, count_unknown)
+            display_tab(product_data, tab_label)
 
     for i, label in enumerate(tab_labels[1:], start=1):
         setup_tab(tabs[i], label, label)

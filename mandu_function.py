@@ -1,6 +1,7 @@
 import pandas as pd
 from collections import Counter
 
+
 def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함수
     count_data = len(data)
     if count_data < 1:
@@ -8,12 +9,15 @@ def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함
     else:
         try:
             for A in range(count_data):
-                data[A] = pd.DataFrame.from_dict(data=data[A], orient="columns")
+                data[A] = pd.DataFrame.from_dict(
+                    data=data[A], orient="columns")
         except Exception as e:
             print("dic to dataframe 변환 실패 : ", e)
         return data
 
 # dic 형태의 데이터에서 데이터를 추출 할 때 Nontype 에러가 발생하지 않도록 해주는 함수
+
+
 def safe_get(d, keys, default=None):
     """안전하게 중첩된 딕셔너리에서 값을 가져오는 헬퍼 함수"""
     for key in keys:
@@ -24,6 +28,8 @@ def safe_get(d, keys, default=None):
     return d
 
 # Notion의 날짜 데이터는 ISO 8601 날짜 문자열이기 때문 년/월/일로 변환해주는 함수
+
+
 def format_date(date_str):
     """ISO 8601 날짜 문자열을 년/월/일 형식으로 변환하는 함수"""
     if date_str:
@@ -32,6 +38,7 @@ def format_date(date_str):
         except (ValueError, TypeError):
             return None
     return None
+
 
 def notion_function(notion_data):
     """Notion 데이터 처리 함수"""
@@ -48,6 +55,7 @@ def notion_function(notion_data):
     print(len(notion_data))
     return notion_data
 
+
 def find_same_data(list_data):
     """리스트에서 중복되지 않은 데이터 추출 함수"""
     temp = []
@@ -56,11 +64,13 @@ def find_same_data(list_data):
             temp.append(A)
     return temp
 
+
 def count_value(list_data):
     """리스트 데이터 카운트 함수"""
     counter = Counter(list_data)
     print(counter)
     return counter
+
 
 def df_col(data):
     """데이터프레임 컬럼 추출 함수"""
@@ -68,6 +78,7 @@ def df_col(data):
     temp.reverse()
     print(temp)
     return temp
+
 
 def extract_data(data, row_name):
     """제품 현황 관리 DB 데이터를 표로 View 해주기 위한 함수"""
@@ -90,6 +101,7 @@ def extract_data(data, row_name):
         temp_value.append(row_data)  # 행 데이터를 temp_value에 추가
 
     return pd.concat([empty_df, pd.DataFrame(temp_value, columns=row_name)], ignore_index=True)
+
 
 def get_value_from_property(property):
     """개별 속성에서 값을 추출하는 헬퍼 함수"""
@@ -120,15 +132,18 @@ def get_value_from_property(property):
     elif property['type'] == "title":
         return safe_get(property, ['title', 0, 'text', 'content']) if safe_get(property, ['title', 0, 'type']) == "text" else None
 
+
 def get_rollup_value(property):
     """Rollup 속성에서 값을 추출하는 함수"""
     if property['rollup']['type'] == "array":
-        value_list = [safe_get(property, ['rollup', 'array', Y, 'select', 'name']) for Y in range(len(property['rollup']['array']))]
+        value_list = [safe_get(property, ['rollup', 'array', Y, 'select', 'name'])
+                      for Y in range(len(property['rollup']['array']))]
         return find_same_data(value_list) or None
     elif property['rollup']['type'] == "number":
         return safe_get(property, ['rollup', 'number'])
     elif property['rollup']['type'] == "date":
         return format_date(safe_get(property, ['rollup', 'date', 'start']))
+
 
 # 제품 현황 관리 DB에서 제품 value 추출하는 함수 [현재 사용 안함]
 def extract_goods_item(data):
@@ -146,6 +161,7 @@ def extract_goods_item(data):
     goods_fliter = find_same_data(goods_fliter)
     return goods_fliter
 
+
 # 제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수
 def change_contract_data(data, df):
     """제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수"""
@@ -156,7 +172,8 @@ def change_contract_data(data, df):
             continue  # temp가 None이면 건너뛰기
         for B in range(len(data)):
             if temp == data['id'][B]:
-                new_value = safe_get(data, ['properties', B, '계약구분', 'select', 'name'])
+                new_value = safe_get(
+                    data, ['properties', B, '계약구분', 'select', 'name'])
                 df.loc[A, '계약관리'] = new_value
     return df
 
@@ -169,6 +186,26 @@ def change_company_name_data(data, df):
             continue  # temp가 None이면 건너뛰기
         for B in range(len(data)):
             if temp == data['id'][B]:
-                new_value = safe_get(data, ['properties', B, '업체 이름', 'select', 'name'])
+                new_value = safe_get(
+                    data, ['properties', B, '업체 이름', 'select', 'name'])
                 df.loc[A, '발송 대상'] = new_value
+    return df
+
+
+# 관계형 데이터 값에 대해 원본 db와 비교해서 텍스트로 변환해주는 함수
+def change_data_type(data, df):
+    for A in range(len(df)):
+        temp = df.loc[A, "제품 현황 관리"]
+
+        if temp is None:
+            continue  # temp가 None이면 건너뛰기
+
+        for B in range(len(data)):
+
+            if temp == data['id'][B]:
+
+                new_value = safe_get(
+                    data, ['properties', B, '업체 이름', 'title', 0, 'plain_text'])
+                df.loc[A, "제품 현황 관리"] = new_value
+
     return df
