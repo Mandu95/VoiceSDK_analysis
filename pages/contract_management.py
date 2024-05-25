@@ -74,7 +74,7 @@ def show_contract_management():
             )
 
         if search_query:
-            dataframe = dataframe[dataframe['업체명'].str.contains(search_query, case=False, na=False)]
+            dataframe = dataframe[dataframe['계약명'].str.contains(search_query, case=False, na=False)]
 
         if dataframe.empty:
             st.markdown("<div class='no-data'>데이터가 없습니다</div>", unsafe_allow_html=True)

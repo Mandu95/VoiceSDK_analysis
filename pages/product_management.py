@@ -1,7 +1,5 @@
 import streamlit as st
-import pandas as pd
 from data_process import product_management  # 데이터 로드
-
 
 def show_product_management():
     df = product_management  # 데이터프레임 설정
@@ -21,8 +19,7 @@ def show_product_management():
         start_index = (page_number - 1) * items_per_page
         end_index = start_index + items_per_page
         paged_df = dataframe.iloc[start_index:end_index]
-        paged_df.index = range(
-            start_index + 1, start_index + 1 + len(paged_df))
+        paged_df.index = range(start_index + 1, start_index + 1 + len(paged_df))
         return paged_df
 
     # 세션 상태를 초기화하는 함수
@@ -31,6 +28,8 @@ def show_product_management():
             st.session_state[f'{tab_label}_filtered_df'] = df
         if f'{tab_label}_page_number' not in st.session_state:
             st.session_state[f'{tab_label}_page_number'] = 1
+        if 'search_query' not in st.session_state:
+            st.session_state['search_query'] = ''
 
     # "계약잔여일"이 90일보다 작은 경우 노란색으로 강조하는 함수
     def highlight_remaining_days(val):
@@ -45,11 +44,10 @@ def show_product_management():
     def display_paginated_table(dataframe, tab_label):
         init_session_state(tab_label)
         total_items = len(dataframe)
-        total_pages = max(
-            1, (total_items + items_per_page - 1) // items_per_page)
+        total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
 
-        col5, col6 = st.columns([10, 1])
-        with col6:
+        col1, col2 = st.columns([10, 1])
+        with col2:
             page_number = st.number_input(
                 f'Page number for {tab_label}',
                 min_value=1,
@@ -72,64 +70,54 @@ def show_product_management():
         st.write(
             f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
-    # 데이터 탭을 표시하는 함수
+    # 데이터 탭을 표시하고 검색 기능 추가
     def display_tab(dataframe, tab_label):
         init_session_state(tab_label)
-        col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
+        search_query = st.session_state['search_query']
+        
+        col1, col2 = st.columns([8, 2])
 
-        total_count = len(dataframe)
-        contracts_count = len(dataframe[dataframe['계약관리'] == '정식'])
-        demos_count = len(dataframe[dataframe['계약관리'] == '데모'])
-        send_docu_count = len(dataframe[dataframe['상태'] == '견적발송'])
-        unknown_count = len(dataframe[dataframe['계약관리'].isnull() & (
-            dataframe['상태'] != '견적발송')])
+        with col1:
+            # 검색 기능 추가
+            search_query = st.text_input("", search_query, placeholder="업체 이름 또는 병원 이름을 입력해주세요", key='search_input')
+            st.session_state['search_query'] = search_query
 
-        def create_button(column, label, data_filter, count):
-            with column:
-                st.write(label)
-                if st.button(f"{count}", key=f"{tab_label}_{label}"):
-                    st.session_state[f'{tab_label}_filtered_df'] = data_filter
-                    st.session_state[f'{tab_label}_page_number'] = 1
+        with col2:
+            # 탭 메뉴를 selectbox로 대체
+            tab_label = st.selectbox(
+                "제품 구분",
+                ["전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"],
+                key='select_tab'
+            )
 
-        create_button(col1, "전체", dataframe, total_count)
-        create_button(
-            col2, "정식계약", dataframe[dataframe['계약관리'] == '정식'], contracts_count)
-        create_button(
-            col3, "데모계약", dataframe[dataframe['계약관리'] == '데모'], demos_count)
-        create_button(
-            col4, "견적발송", dataframe[dataframe['상태'] == '견적발송'], send_docu_count)
-        create_button(col5, "파악불가", dataframe[dataframe['계약관리'].isnull() & (
-            dataframe['상태'] != '견적발송')], unknown_count)
-
-        filtered_df = st.session_state[f'{tab_label}_filtered_df']
-        if filtered_df.empty:
-            st.markdown("<div class='no-data'>데이터가 없습니다</div>",
-                        unsafe_allow_html=True)
+        if tab_label == "전체":
+            filtered_data = dataframe
         else:
-            display_paginated_table(filtered_df, tab_label)
+            filtered_data = dataframe[dataframe['연관 제품'].apply(lambda x: tab_label in x if isinstance(x, list) else tab_label == x)]
 
-    tab_labels = ["전체", "VoiceEMR", "VoiceENR",
-                  "VoiceSDK", "VoiceMARK", "VoiceDOC"]
-    tabs = st.tabs(tab_labels)
+        if search_query:
+            filtered_data = filtered_data[filtered_data['업체 이름'].str.contains(search_query, case=False, na=False)]
 
-    with tabs[0]:
-        all_data = df.reset_index(drop=True)
-        all_data.index = all_data.index + 1
-        all_data.index.name = 'No'
-        display_paginated_table(all_data, "전체")
+        if filtered_data.empty:
+            st.markdown("<div class='no-data'>데이터가 없습니다</div>", unsafe_allow_html=True)
+        else:
+            display_paginated_table(filtered_data, tab_label)
 
-    def setup_tab(tab, product_name, tab_label):
-        product_data = df[df['연관 제품'] == product_name].reset_index(drop=True)
-        product_data.index = product_data.index + 1
-        product_data.index.name = 'No'
+    # 세션 초기화
+    init_session_state("전체")
+    
+    # 데이터 표시
+    tab_label = st.session_state['select_tab'] if 'select_tab' in st.session_state else "전체"
+    if tab_label == "전체":
+        filtered_data = product_management
+    else:
+        filtered_data = product_management[product_management['연관 제품'].apply(lambda x: tab_label in x if isinstance(x, list) else tab_label == x)]
 
-        with tab:
-            display_tab(product_data, tab_label)
+    filtered_data = filtered_data.reset_index(drop=True)
+    filtered_data.index = filtered_data.index + 1
+    filtered_data.index.name = 'No'
 
-    for i, label in enumerate(tab_labels[1:], start=1):
-        setup_tab(tabs[i], label, label)
+    display_tab(filtered_data, tab_label)
 
-
-# 호출 예제
 if __name__ == "__main__":
     show_product_management()
