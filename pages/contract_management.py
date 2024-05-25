@@ -1,7 +1,6 @@
 import streamlit as st
 from data_process import contract_management  # 데이터프레임을 data_process 모듈에서 불러옴
 
-
 def show_contract_management():
     st.subheader("계약서 관리")
     st.write("정식/데모 계약서를 확인할 수 있습니다.:sunglasses:")
@@ -20,8 +19,7 @@ def show_contract_management():
         start_index = (page_number - 1) * items_per_page
         end_index = start_index + items_per_page
         paged_df = dataframe.iloc[start_index:end_index]
-        paged_df.index = range(
-            start_index + 1, start_index + 1 + len(paged_df))
+        paged_df.index = range(start_index + 1, start_index + 1 + len(paged_df))
         return paged_df
 
     # 세션 상태를 초기화하는 함수
@@ -30,13 +28,14 @@ def show_contract_management():
             st.session_state[f'{tab_label}_filtered_df'] = contract_management
         if f'{tab_label}_page_number' not in st.session_state:
             st.session_state[f'{tab_label}_page_number'] = 1
+        if f'search_query_{tab_label}' not in st.session_state:
+            st.session_state[f'search_query_{tab_label}'] = ''
 
     # 데이터 프레임을 표시하고 페이징하는 함수
     def display_paginated_table(dataframe, tab_label):
         init_session_state(tab_label)
         total_items = len(dataframe)
-        total_pages = max(
-            1, (total_items + items_per_page - 1) // items_per_page)
+        total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
 
         col1, col2 = st.columns([10, 1])
         with col2:
@@ -52,61 +51,51 @@ def show_contract_management():
 
         paged_df = paginate_data(dataframe, page_number, items_per_page)
         st.dataframe(paged_df, height=table_height, width=table_width)
-        st.write(
-            f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
+        st.write(f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
 
-    # 데이터 탭을 표시하는 함수
+    # 데이터 탭을 표시하고 검색 기능 추가
     def display_tab(dataframe, tab_label):
         init_session_state(tab_label)
-        col1, col2, col3 = st.columns([3, 3, 3])
+        search_query = st.session_state[f'search_query_{tab_label}']
+        
+        col1, col2 = st.columns([8, 2])
 
-        total_count = len(dataframe)
-        sell_count = len(dataframe[dataframe['매입/매출'] == '매출'])
-        buy_count = len(dataframe[dataframe['매입/매출'] == '매입'])
+        with col1:
+            # 검색 기능 추가
+            search_query = st.text_input("업체 또는 병원명을 입력하세요.:", search_query, key=f'search_input_{tab_label}')
+            st.session_state[f'search_query_{tab_label}'] = search_query
 
-        def create_button(column, label, data_filter, count):
-            with column:
-                st.write(label)
-                if st.button(f"{count}", key=f"{tab_label}_{label}"):
-                    st.session_state[f'{tab_label}_filtered_df'] = data_filter
-                    st.session_state[f'{tab_label}_page_number'] = 1
+        with col2:
+            # 탭 메뉴를 selectbox로 대체
+            tab_label = st.selectbox(
+                "제품 구분",
+                ["전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"],
+                key=f'select_tab_{tab_label}'
+            )
 
-        create_button(col1, "전체", dataframe, total_count)
-        create_button(
-            col2, "매출", dataframe[dataframe['매입/매출'] == '매출'], sell_count)
-        create_button(
-            col3, "매입", dataframe[dataframe['매입/매출'] == '매입'], buy_count)
+        if search_query:
+            dataframe = dataframe[dataframe['업체명'].str.contains(search_query, case=False, na=False)]
 
-        filtered_df = st.session_state[f'{tab_label}_filtered_df']
-        if filtered_df.empty:
-            st.markdown("<div class='no-data'>데이터가 없습니다</div>",
-                        unsafe_allow_html=True)
+        if dataframe.empty:
+            st.markdown("<div class='no-data'>데이터가 없습니다</div>", unsafe_allow_html=True)
         else:
-            display_paginated_table(filtered_df, tab_label)
+            display_paginated_table(dataframe, tab_label)
 
-    tabs = ["전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
-    selected_tab = st.tabs(tabs)
+    # 세션 초기화
+    init_session_state("전체")
+    
+    # 데이터 표시
+    tab_label = st.session_state['select_tab_전체'] if 'select_tab_전체' in st.session_state else "전체"
+    if tab_label == "전체":
+        filtered_data = contract_management
+    else:
+        filtered_data = contract_management[contract_management['제품'].apply(lambda x: tab_label in x if isinstance(x, list) else False)]
 
-    for i, tab in enumerate(tabs):
-        with selected_tab[i]:
-            if tab == "전체":
-                filtered_data = contract_management
-            else:
-                # 필터링 결과를 디버그 출력으로 확인
-                filtered_data = contract_management[contract_management['제품'] == tab]
-                st.write(f"Filtered data for tab {tab}:")
-                st.write(filtered_data)
+    filtered_data = filtered_data.reset_index(drop=True)
+    filtered_data.index = filtered_data.index + 1
+    filtered_data.index.name = 'No'
 
-            filtered_data = filtered_data.reset_index(drop=True)
-            filtered_data.index = filtered_data.index + 1
-            filtered_data.index.name = 'No'
-
-            if filtered_data.empty:
-                st.markdown("<div class='no-data'>데이터가 없습니다</div>",
-                            unsafe_allow_html=True)
-            else:
-                display_tab(filtered_data, tab)
-
+    display_tab(filtered_data, tab_label)
 
 if __name__ == "__main__":
     show_contract_management()
