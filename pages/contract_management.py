@@ -62,7 +62,7 @@ def show_contract_management():
 
         with col1:
             # 검색 기능 추가
-            search_query = st.text_input("업체 또는 병원명을 입력하세요.:", search_query, key=f'search_input_{tab_label}')
+            search_query = st.text_input("", search_query, placeholder="검색어를 입력하세요 (업체 또는 병원명):", key=f'search_input_{tab_label}')
             st.session_state[f'search_query_{tab_label}'] = search_query
 
         with col2:
@@ -89,7 +89,7 @@ def show_contract_management():
     if tab_label == "전체":
         filtered_data = contract_management
     else:
-        filtered_data = contract_management[contract_management['제품'].apply(lambda x: tab_label in x if isinstance(x, list) else False)]
+        filtered_data = contract_management[contract_management['제품'].apply(lambda x: tab_label in x if isinstance(x, list) else str(x) == tab_label)]
 
     filtered_data = filtered_data.reset_index(drop=True)
     filtered_data.index = filtered_data.index + 1
