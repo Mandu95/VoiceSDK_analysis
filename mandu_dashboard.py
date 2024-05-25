@@ -68,9 +68,8 @@ def update_data():
 
 
 def setup_schedule():
-    schedule.every().day.at("08:00").do(update_data)
+    schedule.every().day.at("07:50").do(update_data)
     schedule.every().day.at("12:00").do(update_data)
-    schedule.every().day.at("15:00").do(update_data)
 
 # 백그라운드에서 스케줄러 실행
 
