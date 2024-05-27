@@ -31,6 +31,11 @@ contract_management_db = data[1]
 product_management = mandu_function.change_contract_data(
     contract_management_db, product_management)
 
+etc_document_db = data[2]
+
+product_management = mandu_function.change_etc_docu_data(
+    etc_document_db, product_management)
+
 ###############################################################################################
 
 # 기타서류 DB에서 properties 속성만 추출

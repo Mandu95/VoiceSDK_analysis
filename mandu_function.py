@@ -178,6 +178,28 @@ def change_contract_data(data, df):
     return df
 
 
+# 제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수
+def change_etc_docu_data(data, df):
+    """제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수"""
+
+    for A in range(len(df)):
+        temp = df.loc[A, '기타문서 (견적서, NDA 등)']
+        if temp is None:
+            continue  # temp가 None이면 건너뛰기
+        for B in range(len(data)):
+            if temp == data['id'][B]:
+
+                # 여러 개의 plain_text 값을 수집
+                titles = []
+                for item in data['properties'][B]['문서이름']['title']:
+                    titles.append(item['plain_text'])
+
+                new_value = ', '.join(titles)  # 여러 값을 쉼표로 구분하여 문자열로 결합
+
+                df.loc[A, '기타문서 (견적서, NDA 등)'] = new_value
+    return df
+
+
 # 기타서류 DB의 [발송 대상]속성과 제품 현황 관리 DB의 [업체 이름] 데이터를 제품 현황 관리 DB의 id 기준으로 맞추는 함수
 def change_company_name_data(data, df):
     for A in range(len(df)):
