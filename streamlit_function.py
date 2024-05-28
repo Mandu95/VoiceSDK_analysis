@@ -98,7 +98,7 @@ def display_html_table(dataframe, tab_label, page_number, table_height, table_wi
     table_html = f'''
     <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
         {table_html}
-    </div>
+
     '''
 
     st.write(table_html, unsafe_allow_html=True)
@@ -171,7 +171,7 @@ def display_html_table_for_other_docs(dataframe, tab_label, items_per_page):
     table_html = f'''
     <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
         {table_html}
-    </div>
+
     '''
 
     st.write(table_html, unsafe_allow_html=True)
