@@ -159,3 +159,17 @@ def change_relation_data(dataframe, origin_dataframe, row_name1, row_name2):
                     dataframe.loc[A, row_name1] = new_value
 
     return dataframe
+
+
+def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함수
+    count_data = len(data)
+    if count_data < 1:
+        print("데이터가 없습니다. 확인 부탁드립니다.")
+    else:
+        try:
+            for A in range(count_data):
+                data[A] = pd.DataFrame.from_dict(
+                    data=data[A], orient="columns")
+        except Exception as e:
+            print("dic to dataframe 변환 실패 : ", e)
+        return data
