@@ -65,12 +65,28 @@ def format_product_list(value):
 def display_html_table(dataframe, tab_label, page_number, table_height, table_width, items_per_page):
     """데이터 프레임을 HTML로 변환하여 표시하는 함수"""
     if '페이지URL' in dataframe.columns:
-        dataframe['업체 이름'] = dataframe.apply(
-            lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["업체 이름"]}</a>', axis=1)
+        if '업체 이름' in dataframe.columns:
+            dataframe['업체 이름'] = dataframe.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["업체 이름"]}</a>', axis=1)
+        if '계약명' in dataframe.columns:
+            dataframe['계약명'] = dataframe.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["계약명"]}</a>', axis=1)
         dataframe = dataframe.drop(columns=['페이지URL'])
 
+    if '사본링크' in dataframe.columns:
+        dataframe['사본링크'] = dataframe.apply(
+            lambda row: f'<a href="{row["사본링크"]}" style="color: black;">계약서 확인</a>', axis=1)
+
+    dataframe = dataframe.drop(
+        columns=["제품 현황 관리", "제품", "계약구분"], errors='ignore')
+
+    # 특정 열의 값을 금액 단위로 포맷팅
+    currency_columns = ['라이선스 총액', '계약단가', '계약총액']
+    for col in currency_columns:
+        if col in dataframe.columns:
+            dataframe[col] = dataframe[col].apply(format_currency)
+
     paged_df = paginate_data(dataframe, page_number, items_per_page)
-    table_html = paged_df.to_html(escape=False, index=False)
     styled_df = paged_df.style.set_table_styles(
         [{
             'selector': 'th',
