@@ -88,6 +88,16 @@ def display_html_table(dataframe, tab_label):
             lambda x: f'<a href="{x}" target="_blank">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['사본링크'])
 
+    # "페이지URL"을 "문서이름"에 하이퍼링크로 추가
+    if '페이지URL' in paged_df.columns:
+        paged_df['문서이름'] = paged_df.apply(
+            lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["문서이름"]}</a>', axis=1)
+        paged_df = paged_df.drop(columns=['페이지URL'])
+
+    # '제품' 열 제거
+    if '제품' in paged_df.columns:
+        paged_df = paged_df.drop(columns=['제품'])
+
     # 적용할 열에 대한 포맷팅 함수 적용
     currency_columns = ['라이선스 총액', '계약단가', '계약총액']
     for col in currency_columns:
@@ -118,7 +128,7 @@ def display_html_table(dataframe, tab_label):
     table_html = f'''
     <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
         {table_html}
-
+    </div>
     '''
 
     # 데이터프레임을 지정된 크기로 표시 (HTML로 스타일링 포함)

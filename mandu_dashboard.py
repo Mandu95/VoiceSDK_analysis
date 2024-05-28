@@ -1,5 +1,5 @@
 import streamlit as st
-import data_process
+import Data_anal
 import threading
 import schedule
 from datetime import datetime
@@ -59,8 +59,8 @@ def set_initial_page():
 # 데이터 동기화를 위한 함수
 def update_data():
     global product_management, etc_document
-    product_management = data_process.product_management
-    etc_document = data_process.etc_document
+    product_management = Data_anal.product_management
+    etc_document = Data_anal.etc_document
     logging.info("데이터 로드 성공")
     st.experimental_rerun()
 

@@ -56,12 +56,12 @@ etc_document = mandu_function.change_company_name_data(
 contract_management = data[1]['properties']
 # 계약서 관리 DB View를 위한 속성 추출
 contract_management_row_name = mandu_function.df_col(contract_management)
-print(contract_management[0])
+
 # 값 추출
 contract_management = mandu_function.extract_data(
     contract_management, contract_management_row_name)
 
-
+print(contract_management.loc[0])
 # 제품 현황 관리 DB에서 데이터 값 비교하고 변환
 product_management_db = data[0]
 

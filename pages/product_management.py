@@ -10,6 +10,7 @@ def show_product_management():
 
     st.subheader("제품 현황 관리")
     st.write("Notion DB를 기준으로 분석한 자료이며, 오전 8시, 12시, 15시 하루 3회 동기화 됩니다.:sunglasses:")
+    items_per_page = 10  # 페이지당 항목 수 설정
 
     # 세션 초기화
     sf.init_session_state(df, "전체")
@@ -28,7 +29,7 @@ def show_product_management():
     filtered_data.index = filtered_data.index + 1
     filtered_data.index.name = 'No'
 
-    sf.display_tab(df, filtered_data, tab_label, items_per_page=10)
+    sf.display_tab(df, filtered_data, tab_label, items_per_page)
 
 
 if __name__ == "__main__":

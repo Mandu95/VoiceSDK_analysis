@@ -1,8 +1,11 @@
 import streamlit as st
-from Data_anal import contract_manage  # 데이터프레임을 data_process 모듈에서 불러옴
+import pandas as pd
+from Data_anal import contract_manage  # 데이터 로드
+import streamlit_function as sf  # streamlit_function 모듈 임포트
 
 
 def show_contract_management():
+
     st.subheader("계약서 관리")
     st.write("정식/데모 계약서를 확인할 수 있습니다.:sunglasses:")
 
@@ -13,10 +16,15 @@ def show_contract_management():
     table_height, table_width = get_table_dimensions()  # 표의 높이와 너비 설정
     items_per_page = 10  # 페이지당 항목 수 설정
 
+    # 특정 열의 값을 금액 단위로 포맷팅하는 함수
+    def format_currency(value):
+        try:
+            return f"{int(value):,}"
+        except (ValueError, TypeError):
+            return value
+
+    # 데이터프레임을 페이지 번호에 따라 분할하여 반환하는 함수
     def paginate_data(dataframe, page_number, items_per_page):
-        """
-        데이터프레임을 페이지 번호에 따라 분할하여 반환하는 함수.
-        """
         start_index = (page_number - 1) * items_per_page
         end_index = start_index + items_per_page
         paged_df = dataframe.iloc[start_index:end_index]
@@ -32,6 +40,49 @@ def show_contract_management():
             st.session_state[f'{tab_label}_page_number'] = 1
         if f'search_query_{tab_label}' not in st.session_state:
             st.session_state[f'search_query_{tab_label}'] = ''
+
+    # 데이터 프레임을 HTML로 변환하여 표시하는 함수
+    def display_html_table(dataframe, tab_label):
+        if '페이지URL' in dataframe.columns:
+            dataframe['계약명'] = dataframe.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["계약명"]}</a>', axis=1)
+            dataframe = dataframe.drop(columns=['페이지URL'])
+
+        if '사본링크' in dataframe.columns:
+            dataframe['사본링크'] = dataframe.apply(
+                lambda row: f'<a href="{row["사본링크"]}" style="color: black;">계약서 확인</a>', axis=1)
+
+        dataframe = dataframe.drop(
+            columns=["제품 현황 관리", "제품", "계약구분"], errors='ignore')
+
+        # 특정 열의 값을 금액 단위로 포맷팅
+        currency_columns = ['라이선스 총액', '계약단가', '계약총액']
+        for col in currency_columns:
+            if col in dataframe.columns:
+                dataframe[col] = dataframe[col].apply(format_currency)
+
+        # 표의 높이와 너비 설정
+        table_height, table_width = get_table_dimensions()
+
+        # 데이터프레임을 HTML로 변환하여 스타일 추가 (열 이름만 가운데 정렬)
+        styled_df = dataframe.style.set_table_styles(
+            [{
+                'selector': 'th',
+                'props': [('text-align', 'center')]
+            }]
+        ).set_properties(**{'text-align': 'left'})
+
+        table_html = styled_df.to_html(escape=False, index=False)
+
+        table_html = f'''
+        <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
+            {table_html}
+        </div>
+        '''
+
+        st.write(table_html, unsafe_allow_html=True)
+        st.write(
+            f"Displaying rows {(st.session_state[f'{tab_label}_page_number'] - 1) * items_per_page + 1} to {min(st.session_state[f'{tab_label}_page_number'] * items_per_page, len(dataframe))} of {len(dataframe)}")
 
     # 데이터 프레임을 표시하고 페이징하는 함수
     def display_paginated_table(dataframe, tab_label):
@@ -53,9 +104,14 @@ def show_contract_management():
             st.session_state[f'{tab_label}_page_number'] = page_number
 
         paged_df = paginate_data(dataframe, page_number, items_per_page)
-        st.dataframe(paged_df, height=table_height, width=table_width)
-        st.write(
-            f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}")
+
+        if '계약잔여일' in paged_df.columns:
+            styled_df = paged_df.style.applymap(
+                sf.highlight_remaining_days, subset=['계약잔여일'])
+        else:
+            styled_df = paged_df
+
+        display_html_table(styled_df, tab_label)
 
     # 데이터 탭을 표시하고 검색 기능 추가
     def display_tab(dataframe, tab_label):
