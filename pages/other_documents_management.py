@@ -1,5 +1,5 @@
 import streamlit as st
-from data_process import etc_document  # 데이터프레임을 data_process 모듈에서 불러옴
+from Data_anal import etc_manage  # 데이터프레임을 data_process 모듈에서 불러옴
 
 # 표 높이와 너비 동적으로 설정하는 함수
 
@@ -158,9 +158,9 @@ def show_other_documents_management():
 
     # 탭 메뉴와 검색어에 따른 데이터 필터링
     if tab_label == "전체":
-        filtered_data = etc_document
+        filtered_data = etc_manage
     else:
-        filtered_data = etc_document[etc_document['문서이름'].str.contains(
+        filtered_data = etc_manage[etc_manage['문서이름'].str.contains(
             tab_label, case=False, na=False)]
 
     if search_query:
