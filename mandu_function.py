@@ -112,7 +112,7 @@ def get_value_from_property(property):
     elif property['type'] == "last_edited_time":
         return format_date(safe_get(property, ['last_edited_time']))
     elif property['type'] == "relation":
-        return safe_get(property, ['relation', 0, 'id']) if property['relation'] else None
+        return [safe_get(relation, ['id']) for relation in property['relation']] if property['relation'] else None
     elif property['type'] == "formula":
         return safe_get(property, ['formula', 'string']) if property['formula']['type'] == "string" else safe_get(property, ['formula', 'number'])
     elif property['type'] == "status":
@@ -178,7 +178,6 @@ def change_contract_data(data, df):
     return df
 
 
-# 제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수
 def change_etc_docu_data(data, df):
     """제품 현황 관리 DB의 [계약구분]속성과 계약관리 DB의 [계약관리] 데이터를 계약관리 DB의 id 기준으로 맞추는 함수"""
 
@@ -186,17 +185,36 @@ def change_etc_docu_data(data, df):
         temp = df.loc[A, '기타문서 (견적서, NDA 등)']
         if temp is None:
             continue  # temp가 None이면 건너뛰기
-        for B in range(len(data)):
-            if temp == data['id'][B]:
 
-                # 여러 개의 plain_text 값을 수집
-                titles = []
-                for item in data['properties'][B]['문서이름']['title']:
-                    titles.append(item['plain_text'])
+        # temp가 리스트일 경우 각 요소를 확인
+        if isinstance(temp, list):
+            new_values = []
+            for t in temp:
+                for B in range(len(data)):
+                    if t == data['id'][B]:
+                        # 여러 개의 plain_text 값을 수집
+                        titles = []
+                        for item in data['properties'][B]['문서이름']['title']:
+                            titles.append(item['plain_text'])
 
-                new_value = ', '.join(titles)  # 여러 값을 쉼표로 구분하여 문자열로 결합
+                        new_value = ', '.join(titles)  # 여러 값을 쉼표로 구분하여 문자열로 결합
+                        new_values.append(new_value if t ==
+                                          data['id'][B] else t)
 
-                df.loc[A, '기타문서 (견적서, NDA 등)'] = new_value
+            # 쉼표로 구분된 문자열로 변환하여 할당
+            df.loc[A, '기타문서 (견적서, NDA 등)'] = ', '.join(new_values)
+        else:
+            # temp가 단일 값일 경우 기존 로직 사용
+            for B in range(len(data)):
+                if temp == data['id'][B]:
+                    # 여러 개의 plain_text 값을 수집
+                    titles = []
+                    for item in data['properties'][B]['문서이름']['title']:
+                        titles.append(item['plain_text'])
+
+                    new_value = ', '.join(titles)  # 여러 값을 쉼표로 구분하여 문자열로 결합
+
+                    df.loc[A, '기타문서 (견적서, NDA 등)'] = new_value
     return df
 
 
