@@ -65,7 +65,6 @@ def format_product_list(value):
 def ensure_required_columns(dataframe):
     """필요한 열이 존재하지 않을 경우 기본값을 추가하는 함수"""
     required_columns = {
-        '문서이름': 'N/A',
         '페이지URL': '',
         '사본링크': '',
         '발송 대상': '',
@@ -119,7 +118,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
 
     paged_df = paginate_data(dataframe, page_number, items_per_page)
 
-    # Drop specific columns and add links
+    # Drop specific columns and add links based on tab_label
     if '발송 대상' in paged_df.columns:
         paged_df = paged_df.drop(columns=['발송 대상'])
     if '사본링크' in paged_df.columns:
@@ -127,8 +126,12 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             lambda x: f'<a href="{x}" target="_blank" style="color: black;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['사본링크'])
     if '페이지URL' in paged_df.columns:
-        paged_df['문서이름'] = paged_df.apply(
-            lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["문서이름"]}</a>', axis=1)
+        if tab_label == "계약서 관리":
+            paged_df['계약명'] = paged_df.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["계약명"]}</a>', axis=1)
+        elif tab_label == "제품 현황 관리":
+            paged_df['업체 이름'] = paged_df.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["업체 이름"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
     if '제품' in paged_df.columns:
         paged_df = paged_df.drop(columns=['제품'])
@@ -150,7 +153,24 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
 
     table_html = styled_df.to_html(escape=False, index=False)
     table_html = f'''
-    <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
+    <div style="height: {table_height}; width: {table_width}; overflow: auto;">
+        <style>
+            table {{
+                width: 100%;
+                table-layout: auto;
+            }}
+            th, td {{
+                text-align: left;
+                padding: 8px;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
+            td {{
+                word-wrap: break-word;
+                white-space: normal;
+            }}
+        </style>
         {table_html}
     </div>
     '''
