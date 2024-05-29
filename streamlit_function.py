@@ -79,6 +79,27 @@ def ensure_required_columns(dataframe):
     return dataframe
 
 
+def filter_dataframe(dataframe, tab_label, search_query, selected_product):
+    """검색어와 선택된 제품에 따라 데이터프레임을 필터링하는 함수"""
+    if tab_label == "계약서 관리":
+        filter_column = '계약명'
+    elif tab_label == "제품 현황 관리":
+        filter_column = '업체 이름'
+    elif tab_label == "기타 문서 관리":
+        filter_column = '문서이름'
+    else:
+        filter_column = None
+
+    if search_query and filter_column:
+        dataframe = dataframe[dataframe[filter_column].str.contains(
+            search_query, case=False, na=False)]
+    if selected_product != "전체" and filter_column:
+        dataframe = dataframe[dataframe[filter_column].str.contains(
+            selected_product, case=False, na=False)]
+
+    return dataframe
+
+
 def display_html_table(dataframe, tab_label, items_per_page, search_query="", selected_product="전체"):
     """데이터 프레임을 HTML로 변환하여 표시하는 함수"""
 
@@ -91,15 +112,9 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
     if f'{tab_label}_page_number' not in st.session_state:
         st.session_state[f'{tab_label}_page_number'] = 1
 
-    # Filter based on search query
-    if search_query:
-        dataframe = dataframe[dataframe['업체 이름'].str.contains(
-            search_query, case=False, na=False)]
-
-    # Filter based on selected product
-    if selected_product != "전체":
-        dataframe = dataframe[dataframe['연관 제품'].apply(
-            lambda x: selected_product in x if isinstance(x, list) else selected_product == x)]
+    # Filter the dataframe
+    dataframe = filter_dataframe(
+        dataframe, tab_label, search_query, selected_product)
 
     total_items = len(dataframe)
     total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
@@ -132,6 +147,9 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
         elif tab_label == "제품 현황 관리":
             paged_df['업체 이름'] = paged_df.apply(
                 lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["업체 이름"]}</a>', axis=1)
+        elif tab_label == "기타 문서 관리":
+            paged_df['문서이름'] = paged_df.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["문서이름"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
     if '제품' in paged_df.columns:
         paged_df = paged_df.drop(columns=['제품'])
@@ -151,7 +169,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
         [{'selector': 'th', 'props': [('text-align', 'center')]}]
     ).set_properties(**{'text-align': 'left'})
 
-    table_html = styled_df.to_html(escape=False, index=False)
+    table_html = styled_df.to_html(escape=False)
     table_html = f'''
     <div style="height: {table_height}; width: {table_width}; overflow: auto;">
         <style>
@@ -190,7 +208,7 @@ def display_tab(dataframe, tab_label, items_per_page):
 
     with col1:
         search_query = st.text_input(
-            "", search_query, placeholder="업체 이름 또는 병원 이름을 입력해주세요", key='search_input')
+            "", search_query, placeholder="검색어를 입력해주세요", key='search_input')
         st.session_state['search_query'] = search_query
 
     with col2:
