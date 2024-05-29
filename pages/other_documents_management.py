@@ -2,6 +2,8 @@ import streamlit as st
 from Data_anal import etc_manage  # 데이터프레임을 data_process 모듈에서 불러옴
 import streamlit_function as sf  # streamlit_function 모듈 임포트
 
+st.set_page_config(page_title="기타 서류 조회", layout="wide")
+
 
 def show_other_documents_management():
     st.subheader("기타 문서 관리")
