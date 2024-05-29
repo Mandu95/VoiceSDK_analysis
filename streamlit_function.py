@@ -27,6 +27,14 @@ def init_session_state(df, tab_label):
         st.session_state[f'{tab_label}_page_number'] = 1
     if 'search_query' not in st.session_state:
         st.session_state['search_query'] = ''
+    if f'{tab_label}_selected_product' not in st.session_state:
+        st.session_state[f'{tab_label}_selected_product'] = '전체'
+
+
+def reset_session_state(tab_label):
+    """세션 상태를 초기화하는 함수"""
+    st.session_state['search_query'] = ''
+    st.session_state[f'{tab_label}_selected_product'] = '전체'
 
 
 def highlight_remaining_days(val):
@@ -116,6 +124,25 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
     dataframe = filter_dataframe(
         dataframe, tab_label, search_query, selected_product)
 
+    if dataframe.empty:
+        st.markdown(
+            """
+            <style>
+                body[data-theme="light"] .empty-message {
+                    color: black;
+                }
+                body[data-theme="dark"] .empty-message {
+                    color: white;
+                }
+            </style>
+            <div class="empty-message" style='display: flex; justify-content: center; align-items: center; height: 50vh;'>
+                <h2 style='font-weight: bold;'>데이터가 존재하지 않습니다. 신규 데이터가 등록되면 표시됩니다.</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        return
+
     total_items = len(dataframe)
     total_pages = max(1, (total_items + items_per_page - 1) // items_per_page)
 
@@ -138,18 +165,18 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
         paged_df = paged_df.drop(columns=['발송 대상'])
     if '사본링크' in paged_df.columns:
         paged_df['문서확인'] = paged_df['사본링크'].apply(
-            lambda x: f'<a href="{x}" target="_blank" style="color: black;">문서 확인하기</a>')
+            lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['사본링크'])
     if '페이지URL' in paged_df.columns:
         if tab_label == "계약서 관리":
             paged_df['계약명'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["계약명"]}</a>', axis=1)
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["계약명"]}</a>', axis=1)
         elif tab_label == "제품 현황 관리":
             paged_df['업체 이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["업체 이름"]}</a>', axis=1)
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["업체 이름"]}</a>', axis=1)
         elif tab_label == "기타 문서 관리":
             paged_df['문서이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: black;">{row["문서이름"]}</a>', axis=1)
+                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["문서이름"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
     if '제품' in paged_df.columns:
         paged_df = paged_df.drop(columns=['제품'])
@@ -167,12 +194,30 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
     table_height, table_width = get_table_dimensions()
     styled_df = paged_df.style.set_table_styles(
         [{'selector': 'th', 'props': [('text-align', 'center')]}]
-    ).set_properties(**{'text-align': 'left'})
+    ).set_properties(
+        **{'text-align': 'left'},
+        subset=pd.IndexSlice[:, :]
+    ).set_properties(
+        **{'text-align': 'center'},
+        subset=pd.IndexSlice[:, ['문서확인']]
+    )
 
     table_html = styled_df.to_html(escape=False)
     table_html = f'''
     <div style="height: {table_height}; width: {table_width}; overflow: auto;">
         <style>
+            body[data-theme="light"] th {{
+                color: black;
+            }}
+            body[data-theme="dark"] th {{
+                color: white;
+            }}
+            body[data-theme="light"] td {{
+                color: black;
+            }}
+            body[data-theme="dark"] td {{
+                color: white;
+            }}
             table {{
                 width: 100%;
                 table-layout: auto;
@@ -188,6 +233,10 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
                 word-wrap: break-word;
                 white-space: normal;
             }}
+            a {{
+                color: inherit;
+                text-decoration: none;
+            }}
         </style>
         {table_html}
     </div>
@@ -202,7 +251,13 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
 def display_tab(dataframe, tab_label, items_per_page):
     """데이터 탭을 표시하고 검색 기능 추가"""
     init_session_state(dataframe, tab_label)
+
+    if st.button("필터 초기화"):
+        reset_session_state(tab_label)
+
     search_query = st.session_state.get('search_query', "")
+    selected_product = st.session_state.get(
+        f'{tab_label}_selected_product', "전체")
 
     col1, col2 = st.columns([8, 2])
 
@@ -213,7 +268,8 @@ def display_tab(dataframe, tab_label, items_per_page):
 
     with col2:
         selected_product = st.selectbox("제품 구분", [
-                                        "전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"], key='select_tab')
+            "전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"], key='select_tab')
+        st.session_state[f'{tab_label}_selected_product'] = selected_product
 
     display_html_table(dataframe, tab_label, items_per_page,
                        search_query, selected_product)
