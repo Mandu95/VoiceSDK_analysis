@@ -16,13 +16,13 @@ def show_embedded_page(url, width=1200, height=800):
 st.set_page_config(page_title="임베디드 페이지", layout="wide")
 
 # 제목 표시
-st.title("임베디드 페이지 예제")
-st.write("아래에 임베디드 페이지가 표시됩니다.")
+st.title("PuzzleAI's 음성인식모델 검증 페이지")
+st.write("검증 데이터를 첨부하여 결과를 받아볼 수 있습니다.")
 
 # 임베디드 페이지 표시
-show_embedded_page(
-    "https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/EuMpFSiPx5hNjrQL2TXyIYwBX4300ryjo3abEzYr7dS0mw?e=JbmCuy", width=1200, height=800)
+url = "https://pzdiffchecker.streamlit.app/"
+show_embedded_page(url, width=1200, height=800)
 
 # 실행 예제
 if __name__ == "__main__":
-    show_embedded_page()
+    show_embedded_page(url)
