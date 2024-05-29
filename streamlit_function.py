@@ -133,8 +133,8 @@ def display_html_table_for_other_docs(dataframe, tab_label, items_per_page):
     if '발송 대상' in paged_df.columns:
         paged_df = paged_df.drop(columns=['발송 대상'])
     if '사본링크' in paged_df.columns:
-        paged_df['문서 확인하기'] = paged_df['사본링크'].apply(
-            lambda x: f'<a href="{x}" target="_blank">문서 확인하기</a>')
+        paged_df['문서확인'] = paged_df['사본링크'].apply(
+            lambda x: f'<a href="{x}" target="_blank" style="color: black;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['사본링크'])
 
     if '페이지URL' in paged_df.columns:
@@ -171,7 +171,7 @@ def display_html_table_for_other_docs(dataframe, tab_label, items_per_page):
     table_html = f'''
     <div style="height: {table_height}px; width: {table_width}px; overflow: auto;">
         {table_html}
-
+    </div>
     '''
 
     st.write(table_html, unsafe_allow_html=True)
