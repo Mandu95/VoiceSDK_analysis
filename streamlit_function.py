@@ -34,22 +34,6 @@ def reset_session_state(tab_label):
     st.session_state[f'{tab_label}_selected_product'] = '전체'
 
 
-def format_currency(value):
-    """특정 열의 값을 금액 단위로 포맷팅하는 함수"""
-    try:
-        return f"{int(value):,}"
-    except (ValueError, TypeError):
-        return value
-
-
-def format_license_count(value):
-    """'라이선스 수' 열의 값을 일반 숫자 텍스트로 포맷팅하는 함수 (소숫점 제거)"""
-    try:
-        return f"{int(value)}"
-    except (ValueError, TypeError):
-        return value
-
-
 def filter_dataframe(dataframe, tab_label, search_query, selected_product):
     """검색어와 선택된 제품에 따라 데이터프레임을 필터링하는 함수"""
     if tab_label == "계약서 관리":
@@ -138,30 +122,22 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
         elif tab_label == "기타 문서 관리" and '문서이름' in paged_df.columns:
             paged_df['문서이름'] = paged_df.apply(
                 lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["문서이름"]}</a>', axis=1)
+
+        elif tab_label == "업무 관리" and '업무' in paged_df.columns:
+            paged_df['업무'] = paged_df.apply(
+                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["업무"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
 
-    # Format currency and license count
-    currency_columns = ['계약단가', '라이선스 총액', '계약총액']
-    for col in currency_columns:
-        if col in paged_df.columns:
-            paged_df[col] = paged_df[col].apply(format_currency)
-
-    number_columns = ['라이선스 수', '계약잔여일']
-    for col in number_columns:
-        if col in paged_df.columns:
-            paged_df[col] = paged_df[col].apply(format_license_count)
-
-    # NaN 또는 None 값을 빈 문자열로 대체
-    paged_df = paged_df.fillna('')
+    # # NaN 또는 None 값을 빈 문자열로 대체
+    # paged_df = paged_df.fillna('')
 
     paged_df = paged_df.applymap(str)
     table_height, table_width = get_table_dimensions()
 
     # 실제로 존재하는 열만 고려하여 스타일 적용
-    right_align_columns = [
-        col for col in currency_columns + number_columns if col in paged_df.columns]
+    right_align_columns = []
     left_align_columns = [col for col in [
-        '업체 이름', '계약명', '문서이름'] if col in paged_df.columns]
+        '업체 이름', '계약명', '문서이름', '업무'] if col in paged_df.columns]
 
     # 스타일 설정
     column_styles = [{'selector': 'th', 'props': [('text-align', 'center')]}]

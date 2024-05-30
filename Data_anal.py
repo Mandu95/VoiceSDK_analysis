@@ -36,6 +36,9 @@ def sync_notion_data():
     etc_manage = function.change_relation_data(
         etc_manage, notion_data[0], "발송 대상", "업체 이름")
 
+    Task = function.change_relation_data(
+        Task, notion_data[0], "분류", "업체 이름")
+
     # 데이터 프레임 숫자를 금액 단위로, 일반 숫자 텍스트로 변환하는 부분
     # 금액 단위로 변환되는 열 목록
     currency_columns = ["계약단가", "라이선스 총액", "계약총액"]
