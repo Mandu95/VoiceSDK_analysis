@@ -30,7 +30,6 @@ def load_css():
 
 
 def set_initial_page():
-
     # 페이지 레이아웃 설정
     col_header, col_buttons = st.columns([8, 2])
     with col_header:
@@ -55,8 +54,9 @@ def set_initial_page():
             unsafe_allow_html=True
         )
 
-
 # 데이터 동기화를 위한 함수
+
+
 def update_data():
     global product_management, etc_document
     product_management = Data_anal.product_management
@@ -80,6 +80,14 @@ def run_scheduler():
             schedule.run_pending()
         time.sleep(1)
 
+# 필터링된 데이터를 반환하는 함수
+
+
+def filter_data(data, filter_option):
+    if filter_option == "전체":
+        return data
+    return data[data['제품'] == filter_option]
+
 # 메인 함수
 
 
@@ -92,6 +100,11 @@ def main():
     scheduler_thread = threading.Thread(target=run_scheduler)
     scheduler_thread.daemon = True
     scheduler_thread.start()
+
+    # 탭 구성
+    tab_titles = ["전체", "VoiceEMR", "VoiceENR",
+                  "VoiceSDK", "VoiceMARK", "VoiceDOC"]
+    tabs = st.tabs(tab_titles)
 
 
 if __name__ == "__main__":
