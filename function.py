@@ -1,11 +1,12 @@
 import pandas as pd
+import numpy as np
 
 
 # notion data를 row_name, Properites, URL 추출해서 저장
 def extract_properties_to_array(data):
 
     # 빈 이중배열 선언
-    empty_array = [[] for _ in range(3)]
+    empty_array = [[] for _ in range(4)]
 
     for idx, notion_data in enumerate(data):
         # notion 데이터 [properties]만 추출
@@ -174,65 +175,45 @@ def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함
             print("dic to dataframe 변환 실패 : ", e)
         return data
 
+
+# 값이 숫자인지 확인하는 함수
+def is_number(s):
+    """입력이 숫자인지 확인하는 함수."""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 # 금액 단위 숫자로 변환하는 함수
 
 
 def convert_currency_format(df, columns):
-    """
-    지정된 열을 금액 형식으로 변환합니다.
-
-    Args:
-    df (pd.DataFrame): 변환할 데이터 프레임.
-    columns (list): 금액 형식으로 변환할 열 이름 리스트.
-
-    Returns:
-    pd.DataFrame: 변환된 데이터 프레임.
-    """
+    """지정된 열을 금액 형식으로 변환하는 함수."""
     for col in columns:
         if col in df.columns:
-            # 열이 데이터 프레임에 존재하는지 확인하고, 존재하면 금액 형식으로 변환
+            # 값이 비어있거나 NaN인 경우를 제외하고 금액 형식으로 변환
             df[col] = df[col].apply(
-                lambda x: f"{int(x):,}원" if pd.notnull(x) else x)
+                lambda x: f"{int(x):,}원" if pd.notnull(x) and is_number(x) else x)
     return df
 
-# 일반 숫자 텍스트로 변환하는 함수
+# 금액 숫자 텍스트로 변환하는 함수
 
 
 def convert_number_text_format(df, columns):
-    """
-    지정된 열을 숫자 텍스트 형식으로 변환합니다.
-
-    Args:
-    df (pd.DataFrame): 변환할 데이터 프레임.
-    columns (list): 숫자 텍스트 형식으로 변환할 열 이름 리스트.
-
-    Returns:
-    pd.DataFrame: 변환된 데이터 프레임.
-    """
+    """지정된 열을 숫자 텍스트 형식으로 변환하는 함수."""
     for col in columns:
         if col in df.columns:
-            # 열이 데이터 프레임에 존재하는지 확인하고, 존재하면 숫자 텍스트 형식으로 변환
+            # 값이 비어있거나 NaN인 경우를 제외하고 숫자 텍스트 형식으로 변환
             df[col] = df[col].apply(
-                lambda x: f"{int(x)}" if pd.notnull(x) else x)
+                lambda x: f"{int(x)}" if pd.notnull(x) and is_number(x) else x)
     return df
 
-# 금액단위, 일반 숫자 텍스트 변환을 동시에 하기 위한 함수
+# 금액 단위 변환, 숫자 텍스트 변환을 동시에 하기 위한 함수
 
 
 def process_dataframe(df, currency_columns, number_columns):
-    """
-    데이터 프레임을 받아 지정된 열들을 금액 형식 및 숫자 텍스트 형식으로 변환합니다.
-
-    Args:
-    df (pd.DataFrame): 변환할 데이터 프레임.
-    currency_columns (list): 금액 형식으로 변환할 열 이름 리스트.
-    number_columns (list): 숫자 텍스트 형식으로 변환할 열 이름 리스트.
-
-    Returns:
-    pd.DataFrame: 변환된 데이터 프레임.
-    """
-    # 금액 형식으로 변환
+    """데이터 프레임을 처리하여 지정된 열들을 변환하는 함수."""
     df = convert_currency_format(df, currency_columns)
-    # 숫자 텍스트 형식으로 변환
     df = convert_number_text_format(df, number_columns)
     return df
