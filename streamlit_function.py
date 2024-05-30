@@ -42,6 +42,8 @@ def filter_dataframe(dataframe, tab_label, search_query, selected_product):
         filter_column = '업체 이름'
     elif tab_label == "기타 문서 관리":
         filter_column = '문서이름'
+    elif tab_label == "업무 관리":
+        filter_column = '분류'
     else:
         filter_column = None
 
@@ -194,7 +196,6 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             }}
         </style>
         {table_html}
-    </div>
     '''
 
     st.write(table_html, unsafe_allow_html=True)
@@ -222,8 +223,17 @@ def display_tab(dataframe, tab_label, items_per_page):
         st.session_state['search_query'] = search_query
 
     with col2:
-        selected_product = st.selectbox("제품 구분", [
-                                        "전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"], key='select_tab')
+        if tab_label == "업무 관리":
+            product_options = ["전체"] + \
+                dataframe['분류'].dropna().unique().tolist()
+            product_options = [
+                option for option in product_options if option.strip()]
+        else:
+            product_options = ["전체", "VoiceEMR", "VoiceENR",
+                               "VoiceSDK", "VoiceMARK", "VoiceDOC"]
+
+        selected_product = st.selectbox(
+            "제품 구분", product_options, key='select_tab')
         st.session_state[f'{tab_label}_selected_product'] = selected_product
 
     display_html_table(dataframe, tab_label, items_per_page,
