@@ -8,14 +8,11 @@ def get_table_dimensions():
 
 
 def paginate_data(dataframe, page_number, items_per_page):
-    """
-    데이터프레임을 페이지 번호에 따라 분할하여 반환하는 함수.
-    """
+    """데이터프레임을 페이지 번호에 따라 분할하여 반환하는 함수"""
     start_index = (page_number - 1) * items_per_page
     end_index = start_index + items_per_page
     paged_df = dataframe.iloc[start_index:end_index]
-    paged_df.index = range(
-        start_index + 1, start_index + 1 + len(paged_df))
+    paged_df.index = range(start_index + 1, start_index + 1 + len(paged_df))
     return paged_df
 
 
@@ -37,16 +34,6 @@ def reset_session_state(tab_label):
     st.session_state[f'{tab_label}_selected_product'] = '전체'
 
 
-def highlight_remaining_days(val):
-    """계약잔여일이 90일보다 작은 경우 노란색으로 강조하는 함수"""
-    try:
-        if int(val) < 90:
-            return 'background-color: yellow'
-    except (ValueError, TypeError):
-        return ''
-    return ''
-
-
 def format_currency(value):
     """특정 열의 값을 금액 단위로 포맷팅하는 함수"""
     try:
@@ -61,30 +48,6 @@ def format_license_count(value):
         return f"{int(value)}"
     except (ValueError, TypeError):
         return value
-
-
-def format_product_list(value):
-    """'제품' 열의 리스트 형태 값을 텍스트로 나열"""
-    if isinstance(value, list):
-        return ", ".join(value)
-    return value
-
-
-def ensure_required_columns(dataframe):
-    """필요한 열이 존재하지 않을 경우 기본값을 추가하는 함수"""
-    required_columns = {
-        '페이지URL': '',
-        '사본링크': '',
-        '발송 대상': '',
-        '라이선스 총액': 0,
-        '계약단가': 0,
-        '계약총액': 0,
-        '라이선스 수': 0
-    }
-    for column, default_value in required_columns.items():
-        if column not in dataframe.columns:
-            dataframe[column] = default_value
-    return dataframe
 
 
 def filter_dataframe(dataframe, tab_label, search_query, selected_product):
@@ -109,18 +72,12 @@ def filter_dataframe(dataframe, tab_label, search_query, selected_product):
 
 
 def display_html_table(dataframe, tab_label, items_per_page, search_query="", selected_product="전체"):
-    """데이터 프레임을 HTML로 변환하여 표시하는 함수"""
-
-    # Ensure required columns
-    dataframe = ensure_required_columns(dataframe)
-
-    # Initialize session state
+    """데이터프레임을 HTML로 변환하여 스트림릿에 표시하는 함수"""
     if f'{tab_label}_filtered_df' not in st.session_state:
         st.session_state[f'{tab_label}_filtered_df'] = dataframe
     if f'{tab_label}_page_number' not in st.session_state:
         st.session_state[f'{tab_label}_page_number'] = 1
 
-    # Filter the dataframe
     dataframe = filter_dataframe(
         dataframe, tab_label, search_query, selected_product)
 
@@ -161,45 +118,68 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
     paged_df = paginate_data(dataframe, page_number, items_per_page)
 
     # Drop specific columns and add links based on tab_label
-    if '발송 대상' in paged_df.columns:
-        paged_df = paged_df.drop(columns=['발송 대상'])
     if '사본링크' in paged_df.columns:
         paged_df['문서확인'] = paged_df['사본링크'].apply(
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['사본링크'])
+
+    if '기타문서 (견적서, NDA 등)' in paged_df.columns:
+        paged_df['문서확인'] = paged_df['기타문서 (견적서, NDA 등)'].apply(
+            lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
+        paged_df = paged_df.drop(columns=['기타문서 (견적서, NDA 등)'])
+
     if '페이지URL' in paged_df.columns:
-        if tab_label == "계약서 관리":
+        if tab_label == "계약서 관리" and '계약명' in paged_df.columns:
             paged_df['계약명'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["계약명"]}</a>', axis=1)
-        elif tab_label == "제품 현황 관리":
+                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["계약명"]}</a>', axis=1)
+        elif tab_label == "제품 현황 관리" and '업체 이름' in paged_df.columns:
             paged_df['업체 이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["업체 이름"]}</a>', axis=1)
-        elif tab_label == "기타 문서 관리":
+                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["업체 이름"]}</a>', axis=1)
+        elif tab_label == "기타 문서 관리" and '문서이름' in paged_df.columns:
             paged_df['문서이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" style="color: inherit;">{row["문서이름"]}</a>', axis=1)
+                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["문서이름"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
-    if '제품' in paged_df.columns:
-        paged_df = paged_df.drop(columns=['제품'])
 
     # Format currency and license count
-    currency_columns = ['라이선스 총액', '계약단가', '계약총액']
+    currency_columns = ['계약단가', '라이선스 총액', '계약총액']
     for col in currency_columns:
         if col in paged_df.columns:
             paged_df[col] = paged_df[col].apply(format_currency)
-    if '라이선스 수' in paged_df.columns:
-        paged_df['라이선스 수'] = paged_df['라이선스 수'].apply(format_license_count)
 
-    # Apply HTML table styles and convert to HTML
+    number_columns = ['라이선스 수', '계약잔여일']
+    for col in number_columns:
+        if col in paged_df.columns:
+            paged_df[col] = paged_df[col].apply(format_license_count)
+
+    # NaN 또는 None 값을 빈 문자열로 대체
+    paged_df = paged_df.fillna('')
+
     paged_df = paged_df.applymap(str)
     table_height, table_width = get_table_dimensions()
+
+    # 실제로 존재하는 열만 고려하여 스타일 적용
+    right_align_columns = [
+        col for col in currency_columns + number_columns if col in paged_df.columns]
+    left_align_columns = [col for col in [
+        '업체 이름', '계약명', '문서이름'] if col in paged_df.columns]
+
+    # 스타일 설정
+    column_styles = [{'selector': 'th', 'props': [('text-align', 'center')]}]
+
+    for col in right_align_columns:
+        column_styles.append({'selector': f'td.col{paged_df.columns.get_loc(col)}', 'props': [
+                             ('text-align', 'right')]})
+
+    for col in left_align_columns:
+        column_styles.append({'selector': f'td.col{paged_df.columns.get_loc(col)}', 'props': [
+                             ('text-align', 'left')]})
+
     styled_df = paged_df.style.set_table_styles(
-        [{'selector': 'th', 'props': [('text-align', 'center')]}]
-    ).set_properties(
-        **{'text-align': 'left'},
-        subset=pd.IndexSlice[:, :]
+        column_styles
     ).set_properties(
         **{'text-align': 'center'},
-        subset=pd.IndexSlice[:, ['문서확인']]
+        subset=pd.IndexSlice[:, [
+            col for col in paged_df.columns if col not in right_align_columns + left_align_columns]]
     )
 
     table_html = styled_df.to_html(escape=False)
@@ -223,7 +203,6 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
                 table-layout: auto;
             }}
             th, td {{
-                text-align: left;
                 padding: 8px;
             }}
             th {{
@@ -239,6 +218,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             }}
         </style>
         {table_html}
+    </div>
     '''
 
     st.write(table_html, unsafe_allow_html=True)
@@ -248,7 +228,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
 
 
 def display_tab(dataframe, tab_label, items_per_page):
-    """데이터 탭을 표시하고 검색 기능 추가"""
+    """탭을 표시하고 검색 및 필터 기능을 추가하는 함수"""
     init_session_state(dataframe, tab_label)
 
     if st.button("필터 초기화"):
@@ -267,7 +247,7 @@ def display_tab(dataframe, tab_label, items_per_page):
 
     with col2:
         selected_product = st.selectbox("제품 구분", [
-            "전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"], key='select_tab')
+                                        "전체", "VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"], key='select_tab')
         st.session_state[f'{tab_label}_selected_product'] = selected_product
 
     display_html_table(dataframe, tab_label, items_per_page,
