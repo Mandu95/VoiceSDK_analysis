@@ -6,6 +6,7 @@ from datetime import datetime
 import logging
 import time
 
+
 # 페이지 설정
 st.set_page_config(page_title="PuzzleAI's Dashboard", layout="wide")
 
@@ -58,9 +59,10 @@ def set_initial_page():
 
 
 def update_data():
-    global product_management, etc_document
+    global product_management, etc_document, contract_manage
     product_management = Data_anal.product_management
     etc_document = Data_anal.etc_document
+    contract_manage = Data_anal.contract_manage
     logging.info("데이터 로드 성공")
     st.experimental_rerun()
 
