@@ -12,7 +12,7 @@ def sync_notion_data():
 
     # 조회할 노션 key 리스트, key가 있다고 다 되는건 아니고 노션에서 연계등록 해야함.
     all_key = ["69aeff6ca32d4466ad4748dde3939e8b",
-               "49e1a704e0ae41679775e9f1194d9068", "e3230b6283354a798dfe0636f5e340a1"]  # [제품 현황 관리, 계약관리, 기타서류]
+               "49e1a704e0ae41679775e9f1194d9068", "e3230b6283354a798dfe0636f5e340a1", "63724ababa844d25811a503019b157ba"]  # [제품 현황 관리, 계약관리, 기타서류, 업무]
 
     # 노션 DB 데이터 추출
     notion_data = nc.notion_readDatabase(all_key)
@@ -24,6 +24,7 @@ def sync_notion_data():
     product_manage = function.make_dataframe(notion_data_result[0])
     contract_manage = function.make_dataframe(notion_data_result[1])
     etc_manage = function.make_dataframe(notion_data_result[2])
+    Task = function.make_dataframe(notion_data_result[3])
 
     # [제품 현황 관리, 계약관리, 기타서류] 관계형 데이터 텍스트로 기입
     product_manage = function.change_relation_data(
@@ -49,7 +50,10 @@ def sync_notion_data():
     etc_manage = function.process_dataframe(
         etc_manage, currency_columns, number_columns)
 
-    return product_manage, contract_manage, etc_manage
+    Task = function.process_dataframe(
+        Task, currency_columns, number_columns)
+
+    return product_manage, contract_manage, etc_manage, Task
 
 
 def run_at_specific_times():
@@ -72,7 +76,7 @@ def start_sync_in_background():
 
 
 # 모듈이 임포트될 때 최초 한 번 실행
-product_manage, contract_manage, etc_manage = sync_notion_data()
+product_manage, contract_manage, etc_manage, Task = sync_notion_data()
 
 # 동기화 작업을 백그라운드에서 시작
 start_sync_in_background()
