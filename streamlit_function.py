@@ -218,6 +218,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             }}
         </style>
         {table_html}
+    </div>
     '''
 
     st.write(table_html, unsafe_allow_html=True)
