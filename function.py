@@ -173,3 +173,66 @@ def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함
         except Exception as e:
             print("dic to dataframe 변환 실패 : ", e)
         return data
+
+# 금액 단위 숫자로 변환하는 함수
+
+
+def convert_currency_format(df, columns):
+    """
+    지정된 열을 금액 형식으로 변환합니다.
+
+    Args:
+    df (pd.DataFrame): 변환할 데이터 프레임.
+    columns (list): 금액 형식으로 변환할 열 이름 리스트.
+
+    Returns:
+    pd.DataFrame: 변환된 데이터 프레임.
+    """
+    for col in columns:
+        if col in df.columns:
+            # 열이 데이터 프레임에 존재하는지 확인하고, 존재하면 금액 형식으로 변환
+            df[col] = df[col].apply(
+                lambda x: f"{int(x):,}원" if pd.notnull(x) else x)
+    return df
+
+# 일반 숫자 텍스트로 변환하는 함수
+
+
+def convert_number_text_format(df, columns):
+    """
+    지정된 열을 숫자 텍스트 형식으로 변환합니다.
+
+    Args:
+    df (pd.DataFrame): 변환할 데이터 프레임.
+    columns (list): 숫자 텍스트 형식으로 변환할 열 이름 리스트.
+
+    Returns:
+    pd.DataFrame: 변환된 데이터 프레임.
+    """
+    for col in columns:
+        if col in df.columns:
+            # 열이 데이터 프레임에 존재하는지 확인하고, 존재하면 숫자 텍스트 형식으로 변환
+            df[col] = df[col].apply(
+                lambda x: f"{int(x)}" if pd.notnull(x) else x)
+    return df
+
+# 금액단위, 일반 숫자 텍스트 변환을 동시에 하기 위한 함수
+
+
+def process_dataframe(df, currency_columns, number_columns):
+    """
+    데이터 프레임을 받아 지정된 열들을 금액 형식 및 숫자 텍스트 형식으로 변환합니다.
+
+    Args:
+    df (pd.DataFrame): 변환할 데이터 프레임.
+    currency_columns (list): 금액 형식으로 변환할 열 이름 리스트.
+    number_columns (list): 숫자 텍스트 형식으로 변환할 열 이름 리스트.
+
+    Returns:
+    pd.DataFrame: 변환된 데이터 프레임.
+    """
+    # 금액 형식으로 변환
+    df = convert_currency_format(df, currency_columns)
+    # 숫자 텍스트 형식으로 변환
+    df = convert_number_text_format(df, number_columns)
+    return df
