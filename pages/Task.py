@@ -10,7 +10,7 @@ def show_product_management():
         columns=['요청자', '담당부서', '파일과 미디어', '관련 문서', '사업부 달력 (관련 일정)'])  # 필요한 열만 남기고 제거
 
     # 열 순서 변경
-    columns_order = ['업무', '상태', '담당자',
+    columns_order = ['분류', '업무', '상태', '담당자',
                      '업무기간', '요청자', '우선순위']
     df = df.reindex(columns=columns_order)
 
