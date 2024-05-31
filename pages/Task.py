@@ -1,5 +1,5 @@
 import streamlit as st
-from Data_anal import Task  # 데이터 로드
+from ready_data import Task  # 데이터 로드
 import streamlit_function as sf  # streamlit_function 모듈 임포트
 
 st.set_page_config(page_title="업체 조회", layout="wide")
