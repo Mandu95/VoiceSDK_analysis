@@ -50,9 +50,12 @@ def filter_dataframe(dataframe, tab_label, search_query, selected_product):
     if search_query and filter_column:
         dataframe = dataframe[dataframe[filter_column].str.contains(
             search_query, case=False, na=False)]
+
     if selected_product != "전체" and filter_column:
-        dataframe = dataframe[dataframe[filter_column].str.contains(
-            selected_product, case=False, na=False)]
+        # Debug print to see what's being filtered
+        print(f"Filtering {filter_column} for {selected_product}")
+        # Changed from 'str.contains' to direct equality
+        dataframe = dataframe[dataframe[filter_column] == selected_product]
 
     return dataframe
 
@@ -130,8 +133,8 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
                 lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["업무"]}</a>', axis=1)
         paged_df = paged_df.drop(columns=['페이지URL'])
 
-    # # NaN 또는 None 값을 빈 문자열로 대체
-    # paged_df = paged_df.fillna('')
+    # NaN 또는 None 값을 빈 문자열로 대체
+    paged_df = paged_df.fillna('')
 
     paged_df = paged_df.applymap(str)
     table_height, table_width = get_table_dimensions()
