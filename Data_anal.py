@@ -30,6 +30,8 @@ def sync_notion_data():
     product_manage = function.change_relation_data(
         product_manage, notion_data[2], "기타문서 (견적서, NDA 등)", "문서이름")
     product_manage = function.change_relation_data(
+        product_manage, notion_data[2], "📦 업무 일정", "업무")
+    product_manage = function.change_relation_data(
         product_manage, notion_data[1], "계약관리", "계약명")
     contract_manage = function.change_relation_data(
         contract_manage, notion_data[0], "제품 현황 관리", "업체 이름")
