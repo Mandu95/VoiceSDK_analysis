@@ -241,3 +241,44 @@ def display_tab(dataframe, tab_label, items_per_page):
 
     display_html_table(dataframe, tab_label, items_per_page,
                        search_query, selected_product)
+
+
+
+
+def dashboard_button_df(df,column_name,status_list_counts,tab_name):
+        
+        # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+        df['납품병원'] = df['납품병원'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+
+        # status_list는 제품 현황관리의 "상태" 리스트, isinstance는 변수의 타입이 무엇인지 확인하는 것
+        if isinstance(status_list_counts[0], list):
+            col_count = len(status_list_counts[0])
+            cols = st.columns(col_count)
+
+            # 클릭된 항목을 저장할 세션 상태 추가
+            if 'clicked_item' not in st.session_state:
+                st.session_state.clicked_item = None
+           # enumerate는 리스트 값과 인덱스 추출하는 것
+            for idx, item in enumerate(status_list_counts[0]):
+                with cols[idx]:
+                    # 진행 상태 값에 대한 수치 표현을 버튼으로 생성
+                    if st.button(f"{item} : {status_list_counts[1][item]}", key=f"{tab_name}_{item}_{idx}"):
+                        if st.session_state.clicked_item == item:
+                            st.session_state.clicked_item = None
+                        else:
+                            st.session_state.clicked_item = item
+
+            # 클릭된 항목과 연관된 데이터프레임 표시 (notion_df[0]에서만 필터링)
+            if st.session_state.clicked_item:
+                filtered_df = df[df['상태'].str.contains(st.session_state.clicked_item, na=False)]
+                
+                if len(filtered_df) == 0:
+                    st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
+                else:
+                    filtered_df = filtered_df.reset_index(drop=True)  # 인덱스 열 제거
+                    filtered_df.index += 1  # 인덱스를 1부터 시작
+                    filtered_df.index.name = "No" 
+
+
+                
+                st.dataframe(filtered_df)

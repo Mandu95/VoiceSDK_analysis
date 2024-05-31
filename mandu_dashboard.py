@@ -1,5 +1,6 @@
 import streamlit as st
-import Data_anal
+import streamlit_function
+import real_data_analysis
 import threading
 import schedule
 from datetime import datetime
@@ -58,55 +59,50 @@ def set_initial_page():
 # 데이터 동기화를 위한 함수
 
 
-def update_data():
-    global product_management, etc_document, contract_manage
-    product_management = Data_anal.product_management
-    etc_document = Data_anal.etc_document
-    contract_manage = Data_anal.contract_manage
-    logging.info("데이터 로드 성공")
-    st.experimental_rerun()
-
-# 스케줄 설정
-
-
-def setup_schedule():
-    schedule.every().day.at("07:50").do(update_data)
-    schedule.every().day.at("12:00").do(update_data)
-
-# 백그라운드에서 스케줄러 실행
-
-
-def run_scheduler():
-    while True:
-        if datetime.now().weekday() < 5:
-            schedule.run_pending()
-        time.sleep(1)
-
-# 필터링된 데이터를 반환하는 함수
-
-
-def filter_data(data, filter_option):
-    if filter_option == "전체":
-        return data
-    return data[data['제품'] == filter_option]
-
-# 메인 함수
 
 
 def main():
     load_css()
     set_initial_page()
-    setup_schedule()
 
-    # 스케줄러를 백그라운드에서 실행
-    scheduler_thread = threading.Thread(target=run_scheduler)
-    scheduler_thread.daemon = True
-    scheduler_thread.start()
+
 
     # 탭 구성
-    tab_titles = ["전체", "VoiceEMR", "VoiceENR",
+    tab_titles = ["VoiceEMR", "VoiceENR",
                   "VoiceSDK", "VoiceMARK", "VoiceDOC"]
     tabs = st.tabs(tab_titles)
+
+    with tabs[0]:
+        # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
+        notion_df, result = real_data_analysis.main("VoiceEMR")
+        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceEMR")
+
+    with tabs[1]:
+        # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
+        notion_df, result = real_data_analysis.main("VoiceENR")
+
+        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceENR")
+
+    with tabs[2]:
+        # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
+        notion_df, result = real_data_analysis.main("VoiceSDK")
+        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceSDK")
+
+
+    with tabs[3]:
+        # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
+        notion_df, result = real_data_analysis.main("VoiceMARK")
+
+        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceMARK")
+
+
+
+    with tabs[4]:
+        st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
+
+        # streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceDOC")
+
+
 
 
 if __name__ == "__main__":
