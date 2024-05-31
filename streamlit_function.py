@@ -278,7 +278,4 @@ def dashboard_button_df(df,column_name,status_list_counts,tab_name):
                     filtered_df = filtered_df.reset_index(drop=True)  # 인덱스 열 제거
                     filtered_df.index += 1  # 인덱스를 1부터 시작
                     filtered_df.index.name = "No" 
-
-
-                
-                st.dataframe(filtered_df)
+                    st.dataframe(filtered_df)
