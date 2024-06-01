@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 
 
@@ -247,8 +248,16 @@ def display_tab(dataframe, tab_label, items_per_page):
 
 def dashboard_button_df(df,column_name,status_list_counts,tab_name):
         
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=['연관 제품','기타문서 (견적서, NDA 등)',"페이지URL","📦 업무 일정","계약 횟수","계약관리"])  
+
+        # 데이터프레임 열 순서 변경
+        columns_order = ["업체 이름","상태","개발언어","담당자 이메일","컨택 업체 담당자","계약종료일","계약잔여일","라이선스 수","납품병원","정보 최신화 날짜"]
+        df = df.reindex(columns=columns_order)
         # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
         df['납품병원'] = df['납품병원'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+
+
 
         # status_list는 제품 현황관리의 "상태" 리스트, isinstance는 변수의 타입이 무엇인지 확인하는 것
         if isinstance(status_list_counts[0], list):
@@ -276,6 +285,65 @@ def dashboard_button_df(df,column_name,status_list_counts,tab_name):
                     st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
                 else:
                     filtered_df = filtered_df.reset_index(drop=True)  # 인덱스 열 제거
-                    filtered_df.index += 1  # 인덱스를 1부터 시작
-                    filtered_df.index.name = "No" 
-                    st.dataframe(filtered_df)
+                    display_dataframe(filtered_df)
+
+
+
+def display_dataframe(df):
+
+    # '납품병원' 열 숨기기
+    if '납품병원' in df.columns:
+        df = df.drop('납품병원', axis=1)
+
+    # 데이터프레임을 HTML로 변환
+    df_html = df.to_html(index=False, escape=False)
+
+   # 사용자 정의 CSS 및 HTML 삽입
+    table_html = f'''
+    <div style="height: 400px; width: 100vw; overflow: auto; margin: auto;">
+        <style>
+            body[data-theme="light"] th {{
+                color: black;
+            }}
+            body[data-theme="dark"] th {{
+                color: white;
+            }}
+            body[data-theme="light"] td {{
+                color: black;
+            }}
+            body[data-theme="dark"] td {{
+                color: white;
+            }}
+            th, td {{
+                padding: 8px;
+                border: 1px solid #ddd;
+                word-wrap: break-word;
+            }}
+            table {{
+                width: 100%;
+                table-layout: auto; /* 첫 번째 열을 제외한 나머지 열의 너비를 고정 */
+                border-collapse: collapse;
+            }}
+            th {{
+                background-color: #f2f2f2;
+                text-align: center; /* 기본적으로 모든 헤더 값 가운데 정렬 */
+            }}
+            td {{
+                text-align: center; /* 기본적으로 모든 행 값 가운데 정렬 */
+            }}
+            td:first-child {{
+                width: auto; /* 첫 번째 열은 자동 너비 */
+                text-align: left; 
+            }}
+
+            a {{
+                color: inherit;
+                text-decoration: none;
+            }}
+        </style>
+        {df_html}
+    </div>
+    '''
+
+    # 데이터프레임 표시
+    components.html(table_html, height=400, scrolling=True)
