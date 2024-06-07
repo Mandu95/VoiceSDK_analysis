@@ -205,7 +205,7 @@ def display_tab(dataframe, tab_label, items_per_page):
     """탭을 표시하고 검색 및 필터 기능을 추가하는 함수"""
     init_session_state(dataframe, tab_label)
 
-    if st.button("필터 초기화"):
+    if st.button("필터 초기화", key=f"{tab_label}_reset_button"):
         reset_session_state(tab_label)
 
     search_query = st.session_state.get('search_query', "")
@@ -216,7 +216,7 @@ def display_tab(dataframe, tab_label, items_per_page):
 
     with col1:
         search_query = st.text_input(
-            "", search_query, placeholder="검색어를 입력해주세요", key='search_input')
+            "", search_query, placeholder="검색어를 입력해주세요", key=f"{tab_label}_search_input")
         st.session_state['search_query'] = search_query
 
     with col2:
@@ -230,7 +230,7 @@ def display_tab(dataframe, tab_label, items_per_page):
                                "VoiceSDK", "VoiceMARK", "VoiceDOC"]
 
         selected_product = st.selectbox(
-            "제품 구분", product_options, key='select_tab')
+            "제품 구분", product_options, key=f"{tab_label}_select_tab")
         st.session_state[f'{tab_label}_selected_product'] = selected_product
 
     display_html_table(dataframe, tab_label, items_per_page,

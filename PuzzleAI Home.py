@@ -59,13 +59,9 @@ def set_initial_page():
 # 데이터 동기화를 위한 함수
 
 
-
-
 def main():
     load_css()
     set_initial_page()
-
-
 
     # 탭 구성
     tab_titles = ["VoiceEMR", "VoiceENR",
@@ -75,34 +71,33 @@ def main():
     with tabs[0]:
         # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
         notion_df, result = real_data_analysis.main("VoiceEMR")
-        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceEMR")
+        streamlit_function.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceEMR")
 
     with tabs[1]:
         # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
         notion_df, result = real_data_analysis.main("VoiceENR")
 
-        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceENR")
+        streamlit_function.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceENR")
 
     with tabs[2]:
         # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
         notion_df, result = real_data_analysis.main("VoiceSDK")
-        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceSDK")
-
+        streamlit_function.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceSDK")
 
     with tabs[3]:
         # 여기 VoiceEMR 페이지에 보여줄 데이터를 추가하세요.
         notion_df, result = real_data_analysis.main("VoiceMARK")
 
-        streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceMARK")
-
-
+        streamlit_function.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceMARK")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
 
         # streamlit_function.dashboard_button_df(notion_df[0],"상태",result,"VoiceDOC")
-
-
 
 
 if __name__ == "__main__":
