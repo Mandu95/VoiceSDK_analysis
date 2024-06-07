@@ -246,17 +246,36 @@ def display_tab(dataframe, tab_label, items_per_page):
 
 def dashboard_button_df(df, column_name, status_list_counts, tab_name):
 
-    # 필요한 열만 남기고 제거
-    df = df.drop(columns=['연관 제품', '기타문서 (견적서, NDA 등)',
-                 "페이지URL", "📦 업무 일정", "계약 횟수", "계약관리"])
+    if tab_name == "VoiceSDK":
 
-    # 데이터프레임 열 순서 변경
-    columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
-                     "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "납품병원", "정보 최신화 날짜"]
-    df = df.reindex(columns=columns_order)
-    # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-    df['납품병원'] = df['납품병원'].apply(
-        lambda x: ', '.join(x) if isinstance(x, list) else x)
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=['연관 제품', '기타문서 (견적서, NDA 등)',
+                              "페이지URL", "📦 업무 일정", "계약 횟수", "계약관리"])
+
+        # 데이터프레임 열 순서 변경
+        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "납품병원", "정보 최신화 날짜"]
+        df = df.reindex(columns=columns_order)
+        # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+        df['납품병원'] = df['납품병원'].apply(
+            lambda x: ', '.join(x) if isinstance(x, list) else x)
+        # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+        df['개발언어'] = df['개발언어'].apply(
+            lambda x: ', '.join(x) if isinstance(x, list) else x)
+
+    else:
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=['연관 제품', '기타문서 (견적서, NDA 등)',
+                              "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리"])
+
+        # 데이터프레임 열 순서 변경
+        columns_order = ["업체 이름", "상태", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "납품병원", "정보 최신화 날짜"]
+        df = df.reindex(columns=columns_order)
+
+        # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+        df['납품병원'] = df['납품병원'].apply(
+            lambda x: ', '.join(x) if isinstance(x, list) else x)
 
     # status_list는 제품 현황관리의 "상태" 리스트, isinstance는 변수의 타입이 무엇인지 확인하는 것
     if isinstance(status_list_counts[0], list):
