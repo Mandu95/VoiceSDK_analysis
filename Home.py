@@ -1,6 +1,7 @@
 import streamlit as st
 import logging
 import streamlit_function as sf
+import login_function as lf
 
 # 메인 콘텐츠 표시
 
@@ -51,9 +52,9 @@ def main():
         main_content()
     else:
         if st.session_state['signup']:
-            sf.signup_screen()
+            lf.signup_screen()
         else:
-            sf.login_screen()
+            lf.login_screen()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-import streamlit as st
-import yaml
-import os
-import hashlib
+import requests
+from bs4 import BeautifulSoup
 
 
 def get_table_dimensions():
@@ -65,8 +63,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
     if f'{tab_label}_page_number' not in st.session_state:
         st.session_state[f'{tab_label}_page_number'] = 1
 
-    dataframe = filter_dataframe(
-        dataframe, search_query, selected_product)
+    dataframe = filter_dataframe(dataframe, search_query, selected_product)
 
     if dataframe.empty:
         st.markdown(
@@ -177,32 +174,39 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             body[data-theme="dark"] td {{
                 color: white;
             }}
-            table {{
-                width: 100%;
-                table-layout: auto;
-            }}
             th, td {{
                 padding: 8px;
+                border: 1px solid #ddd;
+                word-wrap: break-word;
+            }}
+            table {{
+                width: 100%;
+                table-layout: auto; /* 첫 번째 열을 제외한 나머지 열의 너비를 고정 */
+                border-collapse: collapse;
             }}
             th {{
                 background-color: #f2f2f2;
+                text-align: center; /* 기본적으로 모든 헤더 값 가운데 정렬 */
             }}
             td {{
-                word-wrap: break-word;
-                white-space: normal;
+                text-align: center; /* 기본적으로 모든 행 값 가운데 정렬 */
             }}
+            td:first-child {{
+                width: auto; /* 첫 번째 열은 자동 너비 */
+                text-align: left; 
+            }}
+
             a {{
                 color: inherit;
                 text-decoration: none;
             }}
         </style>
         {table_html}
+    </div>
     '''
 
-    st.write(table_html, unsafe_allow_html=True)
-    st.write(
-        f"Displaying rows {(page_number - 1) * items_per_page + 1} to {min(page_number * items_per_page, total_items)} of {total_items}"
-    )
+    # 데이터프레임 표시
+    components.html(table_html, height=400, scrolling=True)
 
 
 def display_tab(dataframe, tab_label, items_per_page):
@@ -364,88 +368,23 @@ def display_dataframe(df):
     components.html(table_html, height=400, scrolling=True)
 
 
-# 사용자 데이터를 저장할 파일 경로
-USER_DATA_FILE = 'user_data.yaml'
+def Crawling_page_text(url):
+    try:
+        # 페이지 가져오기
+        response = requests.get(url)
+        response.raise_for_status()  # 요청이 성공했는지 확인
 
-# 사용자 데이터를 로드하거나 파일이 없으면 초기화
+        # BeautifulSoup으로 HTML 파싱
+        soup = BeautifulSoup(response.text, 'html.parser')
 
+        # 모든 텍스트 추출 (태그 사이의 텍스트)
+        text = soup.get_text(separator=' ', strip=True)
 
-def load_user_data():
-    if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, 'r') as file:
-            return yaml.safe_load(file)
-    else:
-        return {"users": {}}
+        return text
 
-# 사용자 데이터를 저장
-
-
-def save_user_data(user_data):
-    with open(USER_DATA_FILE, 'w') as file:
-        yaml.dump(user_data, file)
-
-# 비밀번호를 해싱하는 함수
-
-
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-# 로그인 화면 표시
-
-
-def login_screen():
-    st.title("Login")
-
-    login_form = st.form("login_form")
-    email = login_form.text_input("Email")
-    password = login_form.text_input("Password", type="password")
-    login_button = login_form.form_submit_button("Login")
-
-    if login_button:
-        user_data = load_user_data()
-        hashed_password = hash_password(password)
-
-        if email in user_data["users"] and user_data["users"][email]["password"] == hashed_password:
-            st.session_state["logged_in"] = True
-            st.session_state["email"] = email
-            st.experimental_rerun()
-        else:
-            st.error("Invalid email or password")
-
-    st.button("Sign Up", on_click=lambda: st.session_state.update(
-        {"signup": True}))
-
-# 회원가입 화면 표시
-
-
-def signup_screen():
-    st.title("Sign Up")
-
-    signup_form = st.form("signup_form")
-    email = signup_form.text_input("Email")
-    username = signup_form.text_input("Username")
-    password = signup_form.text_input("Password", type="password")
-    signup_button = signup_form.form_submit_button("Sign Up")
-
-    if signup_button:
-        if "@puzzle-ai.com" not in email:
-            st.error("Email must contain @puzzle-ai.com")
-        else:
-            user_data = load_user_data()
-            if email in user_data["users"]:
-                st.error("Email already exists")
-            else:
-                user_data["users"][email] = {
-                    "username": username,
-                    "password": hash_password(password)
-                }
-                save_user_data(user_data)
-                st.success("Sign up successful! Please log in.")
-                st.session_state["signup"] = False
-                st.experimental_rerun()
-
-    st.button("Back to Login",
-              on_click=lambda: st.session_state.update({"signup": False}))
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching {url}: {e}")
+        return None
 
 # CSS 파일 로드 및 기본 제목과 메뉴 항목 숨기기
 
