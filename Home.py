@@ -12,6 +12,9 @@ def main_content():
 
     import real_data_analysis
 
+    # 로그아웃 버튼 추가
+    lf.add_logout_button()
+
     # 탭 구성
     tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
     tabs = st.tabs(tab_titles)

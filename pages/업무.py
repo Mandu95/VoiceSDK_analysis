@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit_function as sf  # streamlit_function 모듈 임포트
+import login_function as lf  # 로그인 모듈 임포트
 
 st.set_page_config(page_title="업체 조회", layout="wide")
 
@@ -10,7 +11,11 @@ if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
     st.stop()
 
 else:
+
     from ready_data import Task  # 데이터 로드
+
+    # 로그아웃 버튼 추가
+    lf.add_logout_button()
 
     def show_product_management():
         df = Task.drop(

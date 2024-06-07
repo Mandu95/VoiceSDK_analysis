@@ -85,3 +85,13 @@ def signup_screen():
 
     st.button("Back to Login",
               on_click=lambda: st.session_state.update({"signup": False}))
+
+# 로그아웃 버튼 추가
+
+
+def add_logout_button():
+    if st.sidebar.button("Logout"):
+        st.session_state["logged_in"] = False
+        st.session_state["signup"] = False
+        st.session_state["email"] = ""
+        st.experimental_rerun()

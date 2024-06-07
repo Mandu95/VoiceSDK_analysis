@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import streamlit_function as sf  # streamlit_function 모듈 임포트
+import login_function as lf  # 로그인 모듈 임포트
 
 st.set_page_config(page_title="데이터 조회", layout="wide")
 
@@ -11,6 +12,10 @@ if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
 
 else:
     from ready_data import product_manage, etc_manage, contract_manage  # 데이터 로드
+
+    # 로그아웃 버튼 추가
+    lf.add_logout_button()
+
     # 계약서 관리 페이지 함수
     st.subheader("데이터 조회")
     st.write("업체 상태, 계약서, 견적서 등 데이터를 직접 조회합니다.:sunglasses:")
