@@ -112,7 +112,8 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['기타문서 (견적서, NDA 등)'])
 
-    paged_df = URL_insert(paged_df)
+    if '페이지URL' in paged_df.columns:
+        paged_df = URL_insert(paged_df)
 
     # NaN 또는 None 값을 빈 문자열로 대체
     paged_df = paged_df.fillna('')
