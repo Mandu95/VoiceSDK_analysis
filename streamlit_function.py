@@ -112,21 +112,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
         paged_df = paged_df.drop(columns=['기타문서 (견적서, NDA 등)'])
 
-    if '페이지URL' in paged_df.columns:
-        if tab_label == "계약서 관리" and '계약명' in paged_df.columns:
-            paged_df['계약명'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["계약명"]}</a>', axis=1)
-        elif tab_label == "제품 현황 관리" and '업체 이름' in paged_df.columns:
-            paged_df['업체 이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["업체 이름"]}</a>', axis=1)
-        elif tab_label == "기타 문서 관리" and '문서이름' in paged_df.columns:
-            paged_df['문서이름'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["문서이름"]}</a>', axis=1)
-
-        elif tab_label == "업무 관리" and '업무' in paged_df.columns:
-            paged_df['업무'] = paged_df.apply(
-                lambda row: f'<a href="{row["페이지URL"]}" target="_blank" style="color: inherit;">{row["업무"]}</a>', axis=1)
-        paged_df = paged_df.drop(columns=['페이지URL'])
+    URL_insert(paged_df)
 
     # NaN 또는 None 값을 빈 문자열로 대체
     paged_df = paged_df.fillna('')
@@ -247,6 +233,7 @@ def display_tab(dataframe, tab_label, items_per_page):
 
 def dashboard_button_df(df, column_name, status_list_counts, tab_name):
 
+    URL_insert(df)
     if tab_name == "VoiceSDK":
 
         # 필요한 열만 남기고 제거
@@ -424,3 +411,14 @@ def set_initial_page():
             """,
             unsafe_allow_html=True
         )
+
+
+def URL_insert(df):
+
+    # '페이지URL' 열이 있는지 확인
+    if '페이지URL' in df.columns:
+        # 첫 번째 열에 하이퍼링크 직접 적용
+        df.iloc[:, 0] = df.apply(
+            lambda x: f'<a href="{x["페이지URL"]}" target="_blank">{x.iloc[0]}</a>', axis=1)
+
+    return df
