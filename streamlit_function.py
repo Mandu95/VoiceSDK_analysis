@@ -35,28 +35,21 @@ def reset_session_state(tab_label):
     st.session_state[f'{tab_label}_selected_product'] = '전체'
 
 
-def filter_dataframe(dataframe, tab_label, search_query, selected_product):
+def filter_dataframe(dataframe, search_query, selected_product):
     """검색어와 선택된 제품에 따라 데이터프레임을 필터링하는 함수"""
-    if tab_label == "계약서 관리":
-        filter_column = '계약명'
-    elif tab_label == "제품 현황 관리":
-        filter_column = '업체 이름'
-    elif tab_label == "기타 문서 관리":
-        filter_column = '문서이름'
-    elif tab_label == "업무 관리":
-        filter_column = '분류'
-    else:
-        filter_column = None
 
-    if search_query and filter_column:
-        dataframe = dataframe[dataframe[filter_column].str.contains(
-            search_query, case=False, na=False)]
+    # 두 번째 열의 이름 가져오기
+    second_column = dataframe.columns[0]
 
-    if selected_product != "전체" and filter_column:
-        # Debug print to see what's being filtered
-        print(f"Filtering {filter_column} for {selected_product}")
-        # Changed from 'str.contains' to direct equality
-        dataframe = dataframe[dataframe[filter_column] == selected_product]
+    # 검색어에 따라 필터링
+    if search_query:
+        dataframe = dataframe[dataframe.apply(lambda row: row.astype(
+            str).str.contains(search_query, case=False, na=False).any(), axis=1)]
+
+    # 선택된 제품에 따라 필터링 (두 번째 열의 값이 선택된 제품을 포함하는지 확인)
+    if selected_product != "전체":
+        dataframe = dataframe[dataframe[second_column].str.contains(
+            selected_product, case=False, na=False)]
 
     return dataframe
 
@@ -69,7 +62,7 @@ def display_html_table(dataframe, tab_label, items_per_page, search_query="", se
         st.session_state[f'{tab_label}_page_number'] = 1
 
     dataframe = filter_dataframe(
-        dataframe, tab_label, search_query, selected_product)
+        dataframe, search_query, selected_product)
 
     if dataframe.empty:
         st.markdown(
