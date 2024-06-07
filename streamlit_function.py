@@ -306,7 +306,7 @@ def display_dataframe(df):
 
    # 사용자 정의 CSS 및 HTML 삽입
     table_html = f'''
-    <div style="height: 400px; width: 100vw; overflow: auto; margin: auto;">
+    <div style="height: 200px; width: 100%; overflow: auto; margin: auto;">
         <style>
             body[data-theme="light"] th {{
                 color: black;
