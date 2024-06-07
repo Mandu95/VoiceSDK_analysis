@@ -63,35 +63,35 @@ def filter_data_contains(df_data, page_label):
     if page_label == "VoiceEMR":
         temp = []
         for A in df_data:
-            print(A)
+
             A = A[A.iloc[:, 0].astype(str).str.contains("VoiceEMR", na=False)]
             temp.append(A)
 
     elif page_label == "VoiceENR":
         temp = []
         for A in df_data:
-            print(A)
+
             A = A[A.iloc[:, 0].astype(str).str.contains("VoiceENR", na=False)]
             temp.append(A)
 
     elif page_label == "VoiceMARK":
         temp = []
         for A in df_data:
-            print(A)
+
             A = A[A.iloc[:, 0].astype(str).str.contains("VoiceMARK", na=False)]
             temp.append(A)
 
     elif page_label == "VoiceSDK":
         temp = []
         for A in df_data:
-            print(A)
+
             A = A[A.iloc[:, 0].astype(str).str.contains("VoiceSDK", na=False)]
             temp.append(A)
 
     elif page_label == "VoiceDOC":
         temp = []
         for A in df_data:
-            print(A)
+
             A = A[A.iloc[:, 0].astype(str).str.contains("VoiceDOC", na=False)]
             temp.append(A)
 
