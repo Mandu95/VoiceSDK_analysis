@@ -3,13 +3,14 @@ import pandas as pd
 from ready_data import product_manage, etc_manage, contract_manage  # 데이터 로드
 import streamlit_function as sf  # streamlit_function 모듈 임포트
 
-st.set_page_config(page_title="관련 자료", layout="wide")
+st.set_page_config(page_title="데이터 조회", layout="wide")
 
 # 계약서 관리 페이지 함수
+st.subheader("데이터 조회")
+st.write("업체 상태, 계약서, 견적서 등 데이터를 직접 조회합니다.:sunglasses:")
 
 
 def show_contract_management():
-    st.subheader("계약서 조회")
     st.write("정식/데모 계약서를 확인할 수 있습니다.:sunglasses:")
 
     # 필요 없는 열을 제거
@@ -25,7 +26,6 @@ def show_contract_management():
 
 
 def show_other_documents_management():
-    st.subheader("기타 문서 관리")
     st.write("업체로 발송 된 견적서, MOU 및 NDA 체결 문서를 볼 수 있습니다:sunglasses:")
 
     df = etc_manage.drop(
@@ -51,20 +51,19 @@ def show_product_management():
                      '컨택 업체 담당자', '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
     df = df.reindex(columns=columns_order)
 
-    st.subheader("제품 현황 관리")
-    st.write("Notion DB를 기준으로 분석한 자료이며, 오전 8시, 12시, 15시 하루 3회 동기화 됩니다.:sunglasses:")
+    st.write("Notion DB를 기준으로 분석한 자료이며, 오전 7시, 12시 하루 2회 동기화 됩니다.:sunglasses:")
 
     sf.display_tab(df, "제품 현황 관리", 10)
 
 
 # 탭 구성
-tab1, tab2, tab3 = st.tabs(["Contract", "Other Document", "Product"])
+tab1, tab2, tab3 = st.tabs(["업체", "계약서", "기타서류"])
 
 with tab1:
-    show_contract_management()
+    show_product_management()
 
 with tab2:
     show_other_documents_management()
 
 with tab3:
-    show_product_management()
+    show_contract_management()
