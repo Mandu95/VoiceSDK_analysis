@@ -47,7 +47,7 @@ def main_content():
 
 def main():
     st.set_page_config(page_title="PuzzleAI's Dashboard",
-                       layout="wide", theme="light")
+                       layout="wide")
 
     logging.basicConfig(filename='data_sync.log',
                         level=logging.INFO, format='%(asctime)s - %(message)s')
