@@ -1,12 +1,14 @@
 import time
-import datetime
 import threading
 import notion_DB_call
 import function
+import datetime
 
 
 def sync_notion_data():
     """노션 API를 호출하여 데이터베이스를 동기화하고 데이터 프레임을 반환하는 함수."""
+    print(f"[{datetime.datetime.now()}] 시작: 노션 데이터 동기화")
+
     # 노션 API 호출해서 DB 연결
     nc = notion_DB_call.notion_API()
 
@@ -16,15 +18,18 @@ def sync_notion_data():
 
     # 노션 DB 데이터 추출
     notion_data = nc.notion_readDatabase(all_key)
+    print(f"[{datetime.datetime.now()}] 노션 데이터베이스에서 데이터 추출 완료")
 
     # 노션 데이터를 row_name, Properties, URL 추출해서 저장
     notion_data_result = function.extract_properties_to_array(notion_data)
+    print(f"[{datetime.datetime.now()}] 데이터 속성 추출 완료")
 
     # [제품 현황 관리, 계약관리, 기타서류] 각 변수 할당
     product_manage = function.make_dataframe(notion_data_result[0])
     contract_manage = function.make_dataframe(notion_data_result[1])
     etc_manage = function.make_dataframe(notion_data_result[2])
     Task = function.make_dataframe(notion_data_result[3])
+    print(f"[{datetime.datetime.now()}] 데이터프레임 생성 완료")
 
     # [제품 현황 관리, 계약관리, 기타서류] 관계형 데이터 텍스트로 기입
     product_manage = function.change_relation_data(
@@ -58,25 +63,21 @@ def sync_notion_data():
     Task = function.process_dataframe(
         Task, currency_columns, number_columns)
 
+    print(f"[{datetime.datetime.now()}] 데이터 동기화 완료")
     return product_manage, contract_manage, etc_manage, Task
 
 
-def run_at_specific_times():
-    """특정 시간에 sync_notion_data 함수를 실행하는 함수."""
+def sync_periodically(interval=300):
+    """주기적으로 sync_notion_data 함수를 실행하는 함수."""
     while True:
-        current_time = datetime.datetime.now().time()
-        # 실행 시간 설정 (오전 7시, 오후 12시)
-        if current_time.hour == 7 and current_time.minute == 0 or current_time.hour == 12 and current_time.minute == 0:
-            sync_notion_data()
-            # 스크립트가 실행된 후 60초 동안 대기하여 같은 시간에 여러 번 실행되지 않도록 함
-            time.sleep(60)
-        # 1분마다 현재 시간을 확인
-        time.sleep(60)
+        sync_notion_data()
+        time.sleep(interval)
 
 
-def start_sync_in_background():
+def start_sync_in_background(interval=300):
     """동기화 작업을 백그라운드에서 시작하는 함수."""
-    sync_thread = threading.Thread(target=run_at_specific_times, daemon=True)
+    sync_thread = threading.Thread(
+        target=sync_periodically, args=(interval,), daemon=True)
     sync_thread.start()
 
 
@@ -85,3 +86,5 @@ product_manage, contract_manage, etc_manage, Task = sync_notion_data()
 
 # 동기화 작업을 백그라운드에서 시작
 start_sync_in_background()
+
+# 이 코드 이후에 필요한 다른 작업이나 실행 코드를 추가하세요.

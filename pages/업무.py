@@ -23,13 +23,14 @@ else:
 
         # 열 순서 변경
         columns_order = ['분류', '업무', '상태', '담당자',
-                         '업무기간', '요청자', '우선순위']
+                         '업무기간', '요청자', '우선순위', '페이지URL']
         df = df.reindex(columns=columns_order)
 
         st.subheader("업체 별 업무 진행상황 관리")
         st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
-        sf.display_tab(df, "업무 관리", 10)
+        df = sf.URL_insert(df)
+        sf.display_dataframe(df, "업무")
 
     if __name__ == "__main__":
         show_product_management()

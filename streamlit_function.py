@@ -137,12 +137,8 @@ def display_dataframe(df, page_name=None):
         # 검색 기능 적용: 첫 번째 열을 기준으로 검색
         if search_query:
             first_column = df.columns[0]
-            df = df[df[first_column].astype(str).str.contains(search_query)]
-
-        # 필터링된 데이터프레임 생성
-        if search_query:
-            df = df[df.apply(lambda row: row.astype(
-                str).str.contains(search_query), axis=1)]
+            df = df[df[first_column].astype(
+                str).str.contains(search_query, na=False)]
 
         # 제품 열의 리스트를 텍스트로 변환
         if '제품' in df.columns:
@@ -154,7 +150,8 @@ def display_dataframe(df, page_name=None):
             if page_name != "업무":
                 df = df[df['제품'] == selected_filter]
             else:
-                df = df[df['분류'] == selected_filter]
+                df = df[df['분류'].astype(str).str.contains(
+                    "["+selected_filter+"]", na=False)]
 
         if df.empty:
             # 데이터가 없는 경우 메시지 표시
