@@ -62,7 +62,7 @@ else:
         sf.display_tab(df, "제품 현황 관리", 10)
 
     # 탭 구성
-    tab1, tab2, tab3 = st.tabs(["업체추적", "계약서", "기타서류"])
+    tab1, tab2, tab3 = st.tabs(["업체추적", "기타서류", "계약서"])
 
     with tab1:
         show_product_management()
