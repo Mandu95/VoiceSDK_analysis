@@ -66,7 +66,7 @@ def dashboard_button_df(df, column_name, status_list_counts, tab_name):
                               "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
 
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "담당자 이메일", '제품',
+        columns_order = ["업체 이름", "상태", "담당자 이메일",
                          "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
@@ -110,8 +110,17 @@ def filter_selectbox(filter_key, options, default="전체"):
     return st.selectbox("필터 선택", options, index=options.index(default), key=filter_key)
 
 
+def reset_filter_button(filter_key, search_key):
+    """필터 초기화 버튼을 생성하는 함수"""
+    if st.button("필터 초기화", key=f"{filter_key}_reset_button"):
+        st.session_state[filter_key] = "전체"
+        st.session_state[search_key] = ""
+
+
 def display_dataframe(df, page_name=None):
     if page_name is not None:
+
+        reset_filter_button(f"{page_name}_filter", f"{page_name}_search")
 
         # 상단에 검색창과 선택박스 삽입
         col1, col2 = st.columns([8, 2])
@@ -125,10 +134,20 @@ def display_dataframe(df, page_name=None):
             selected_filter = filter_selectbox(
                 f"{page_name}_filter", filter_options)
 
+        # 검색 기능 적용: 첫 번째 열을 기준으로 검색
+        if search_query:
+            first_column = df.columns[0]
+            df = df[df[first_column].astype(str).str.contains(search_query)]
+
         # 필터링된 데이터프레임 생성
         if search_query:
             df = df[df.apply(lambda row: row.astype(
                 str).str.contains(search_query), axis=1)]
+
+        # 제품 열의 리스트를 텍스트로 변환
+        if '제품' in df.columns:
+            df['제품'] = df['제품'].apply(lambda x: ', '.join(
+                x) if isinstance(x, list) else x)
 
         if selected_filter != "전체":
 
@@ -137,23 +156,42 @@ def display_dataframe(df, page_name=None):
             else:
                 df = df[df['분류'] == selected_filter]
 
-        # 좌측 테이블과 우측 페이징을 위한 컬럼 배치
-        col1, col2 = st.columns([8, 2])
-        with col2:
-            # 페이징
-            items_per_page = 10  # 한 페이지에 보여줄 행의 개수
-            paged_df, total_pages, page_num = paginate_dataframe(
-                df, items_per_page, key_prefix=page_name)
+        if df.empty:
+            # 데이터가 없는 경우 메시지 표시
+            st.markdown(
+                """
+                <style>
+                    .empty-message {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 50vh;
+                        font-size: 2em;
+                        color: black;
+                    }
+                </style>
+                <div class="empty-message">검색 결과가 없습니다.</div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            # 좌측 테이블과 우측 페이징을 위한 컬럼 배치
+            col1, col2 = st.columns([8, 2])
+            with col2:
+                # 페이징
+                items_per_page = 10  # 한 페이지에 보여줄 행의 개수
+                paged_df, total_pages, page_num = paginate_dataframe(
+                    df, items_per_page, key_prefix=page_name)
 
-        # 데이터프레임을 HTML로 변환
-        df_html = paged_df.to_html(index=False, escape=False)
+            # 데이터프레임을 HTML로 변환
+            df_html = paged_df.to_html(index=False, escape=False)
 
-        # 테이블 높이 계산
-        table_height = calculate_table_height(paged_df)
+            # 테이블 높이 계산
+            table_height = calculate_table_height(paged_df)
 
-        # 데이터프레임 표시
-        components.html(show_table(df_html),
-                        height=table_height + 100, scrolling=True)
+            # 데이터프레임 표시
+            components.html(show_table(df_html),
+                            height=table_height + 100, scrolling=True)
 
     else:
         # 데이터프레임을 HTML로 변환
@@ -299,15 +337,18 @@ def paginate_dataframe(df, page_size, key_prefix=""):
     total_items = len(df)
     total_pages = (total_items + page_size - 1) // page_size
 
-    # 페이지 번호 선택
-    page_num = st.number_input(
-        f"Page number ({key_prefix})",
-        min_value=1,
-        max_value=total_pages,
-        step=1,
-        value=1,
-        key=f"{key_prefix}_page_num"
-    )
+    if total_pages > 0:
+        # 페이지 번호 선택
+        page_num = st.number_input(
+            f"Page number ({key_prefix})",
+            min_value=1,
+            max_value=total_pages,
+            step=1,
+            value=1,
+            key=f"{key_prefix}_page_num"
+        )
+    else:
+        page_num = 1
 
     start_index = (page_num - 1) * page_size
     end_index = start_index + page_size
