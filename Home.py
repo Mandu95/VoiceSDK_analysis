@@ -21,19 +21,23 @@ def main_content():
 
     with tabs[0]:
         notion_df, result = real_data_analysis.main("VoiceEMR")
-        sf.dashboard_button_df(notion_df[0], "상태", result, "VoiceEMR")
+        sf.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceEMR")
 
     with tabs[1]:
         notion_df, result = real_data_analysis.main("VoiceENR")
-        sf.dashboard_button_df(notion_df[0], "상태", result, "VoiceENR")
+        sf.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceENR")
 
     with tabs[2]:
         notion_df, result = real_data_analysis.main("VoiceSDK")
-        sf.dashboard_button_df(notion_df[0], "상태", result, "VoiceSDK")
+        sf.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceSDK")
 
     with tabs[3]:
         notion_df, result = real_data_analysis.main("VoiceMARK")
-        sf.dashboard_button_df(notion_df[0], "상태", result, "VoiceMARK")
+        sf.dashboard_button_df(
+            notion_df[0], "상태", result, "VoiceMARK")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
