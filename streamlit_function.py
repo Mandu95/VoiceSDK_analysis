@@ -129,10 +129,18 @@ def display_dataframe(df, page_name=None):
             search_query = search_box(f"{page_name}_search")
 
         with col2:
-            filter_options = ["전체", "VoiceEMR", "VoiceENR",
-                              "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
-            selected_filter = filter_selectbox(
-                f"{page_name}_filter", filter_options)
+            if page_name == "업무":
+                from ready_data import product_manage
+                filter_options = product_manage['업체 이름'].unique().tolist()
+                filter_options.insert(0, '전체')
+                selected_filter = filter_selectbox(
+                    f"{page_name}_filter", filter_options)
+
+            else:
+                filter_options = ["전체", "VoiceEMR", "VoiceENR",
+                                  "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
+                selected_filter = filter_selectbox(
+                    f"{page_name}_filter", filter_options)
 
         # 검색 기능 적용: 첫 번째 열을 기준으로 검색
         if search_query:
@@ -150,8 +158,7 @@ def display_dataframe(df, page_name=None):
             if page_name != "업무":
                 df = df[df['제품'] == selected_filter]
             else:
-                df = df[df['분류'].astype(str).str.contains(
-                    "["+selected_filter+"]", na=False)]
+                df = df[df['분류'] == selected_filter]
 
         if df.empty:
             # 데이터가 없는 경우 메시지 표시
