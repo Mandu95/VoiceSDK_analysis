@@ -180,6 +180,10 @@ def display_dataframe(df, page_name=None):
                 paged_df, total_pages, page_num = paginate_dataframe(
                     df, items_per_page, key_prefix=page_name)
 
+            if page_name != "업무":
+                paged_df = paged_df.drop(
+                    columns=['제품'])  # 필요한 열만 남기고 제거
+
             # 데이터프레임을 HTML로 변환
             df_html = paged_df.to_html(index=False, escape=False)
 
