@@ -13,7 +13,7 @@ def main_content():
     import real_data_analysis, ready_data
 
     company_df = ready_data.product_manage
-    # contract_df = ready_data.contract_manage
+    contract_df = ready_data.contract_manage
     # etc_df = ready_data.etc_manage
     # task_df = ready_data.Task
 

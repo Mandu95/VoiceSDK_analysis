@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import Home
 
 
 def init_session_state(df, tab_label):
@@ -103,6 +104,43 @@ def dashboard_button_df(df, column_name, tab_name):
         else:
             filtered_df = filtered_df.reset_index(drop=True)
             display_dataframe(filtered_df)
+            # "계약완료"가 클릭된 경우 "안녕" 표시
+            if st.session_state.clicked_item == "계약완료":
+                from ready_data import contract_manage
+                temp_df = contract_manage[contract_manage['제품'].astype(str).str.contains(tab_name)]
+
+                # '상태' 열을 기준으로 내림차순 정렬
+                temp_df  = temp_df .sort_values(by='계약명', ascending=False)
+                
+                # 탭 구성
+                tab_titles = ["전체","매출","매입", "정보없음"]
+                columns_order = ['계약명', '계약총액']
+                tabs = st.tabs(tab_titles)
+                with tabs[0]:
+
+                    temp_df0 = temp_df.reindex(columns=columns_order)
+                    # temp_df01 = temp_df[temp_df['계약명'].astype(str).str.contains("[24년]")]
+                    # sum24 = temp_df01['계약총액'].sum()
+                    # temp_df02 = temp_df[temp_df['계약명'].astype(str).str.contains("[23년]")]
+                    # sum23 = temp_df02['계약총액'].sum()
+                    st.write(f"문서개수 : {len(temp_df)}")
+                    display_dataframe(temp_df0)
+                with tabs[1]:
+                    temp_df1 = temp_df[temp_df['매입/매출'].astype(str).str.contains("매출")]
+                    st.write(f"문서개수 : {len(temp_df1)}")
+
+                    temp_df1 = temp_df1.reindex(columns=columns_order)
+                    display_dataframe(temp_df1)
+                with tabs[2]:
+                    temp_df2 = temp_df[temp_df['매입/매출'].astype(str).str.contains("매입")]
+                    st.write(f"문서개수 : {len(temp_df2)}")
+                    temp_df2 = temp_df2.reindex(columns=columns_order)
+                    display_dataframe(temp_df2)
+                with tabs[3]:
+                    temp_df3 = temp_df[temp_df['매입/매출'].astype(str).str.contains(" ")]
+                    st.write(f"문서개수 : {len(temp_df3)}")
+                    temp_df3 = temp_df3.reindex(columns=columns_order)
+                    display_dataframe(temp_df3)
 
 
 def search_box(search_key, default=""):
@@ -207,6 +245,25 @@ def display_dataframe(df, page_name=None):
     else:
         # 데이터프레임을 HTML로 변환
         df_html = df.to_html(index=False, escape=False)
+
+        if df.empty:
+            # 데이터가 없는 경우 메시지 표시
+            st.markdown(
+                """
+                <style>
+                    .empty-message {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 50vh;
+                        font-size: 2em;
+                        color: black;
+                    }
+                </style>
+                <div class="empty-message">검색 결과가 없습니다.</div>
+                """,
+                unsafe_allow_html=True
+            )
 
         # 데이터프레임 표시
         components.html(show_table(df_html), height=400, scrolling=True)
