@@ -71,9 +71,9 @@ def dashboard_button_df(df, column_name, tab_name):
         # 특정 값들의 개수를 추출하여 딕셔너리에 저장
         specific_counts = {value: value_counts.get(value, 0) for value in temp_values}
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "상태", "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
     # 상태별 카운트 계산
