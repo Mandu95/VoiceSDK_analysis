@@ -42,62 +42,67 @@ def filter_dataframe(dataframe, search_query, selected_product):
     return dataframe
 
 
-def dashboard_button_df(df, column_name, status_list_counts, tab_name):
-
+def dashboard_button_df(df, column_name, tab_name):
+    # URL 삽입 함수 호출
     URL_insert(df)
+
+    # tab_name에 따라 데이터프레임 필터링
+    if tab_name in df['제품'].unique():
+        df = df[df['제품'] == tab_name]
+
+    # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
-
+        temp_values = ['최초컨택', '자료발송', '사업설명', '실무자회의', '협약', '견적발송', 'POC', '계약완료']
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)',
-                              "페이지URL", "📦 업무 일정", "계약 횟수", "계약관리", "납품병원"])
-
+        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL", "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일", '제품',
-                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
-
         # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-        df['개발언어'] = df['개발언어'].apply(
-            lambda x: ', '.join(x) if isinstance(x, list) else x)
-
+        df['개발언어'] = df['개발언어'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
     else:
-        # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)',
-                              "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
+            temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
+        elif tab_name == "VoiceEMR":
+            temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
 
+        # 특정 열에서 값의 개수를 계산
+        value_counts = df[column_name].value_counts()
+        # 특정 값들의 개수를 추출하여 딕셔너리에 저장
+        specific_counts = {value: value_counts.get(value, 0) for value in temp_values}
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "담당자 이메일",
-                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "상태", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
-    # status_list는 제품 현황관리의 "상태" 리스트, isinstance는 변수의 타입이 무엇인지 확인하는 것
-    if isinstance(status_list_counts[0], list):
-        col_count = len(status_list_counts[0])
-        cols = st.columns(col_count)
+    # 상태별 카운트 계산
+    status_counts = df[column_name].value_counts().to_dict()
 
-        # 클릭된 항목을 저장할 세션 상태 추가
-        if 'clicked_item' not in st.session_state:
-            st.session_state.clicked_item = None
-       # enumerate는 리스트 값과 인덱스 추출하는 것
-        for idx, item in enumerate(status_list_counts[0]):
-            with cols[idx]:
-                # 진행 상태 값에 대한 수치 표현을 버튼으로 생성
-                if st.button(f"{item} : {status_list_counts[1][item]}", key=f"{tab_name}_{item}_{idx}"):
-                    if st.session_state.clicked_item == item:
-                        st.session_state.clicked_item = None
-                    else:
-                        st.session_state.clicked_item = item
+    # 상태 버튼 생성
+    col_count = len(temp_values)
+    cols = st.columns(col_count)
 
-        # 클릭된 항목과 연관된 데이터프레임 표시 (notion_df[0]에서만 필터링)
-        if st.session_state.clicked_item:
-            filtered_df = df[df['상태'].str.contains(
-                st.session_state.clicked_item, na=False)]
+    if 'clicked_item' not in st.session_state:
+        st.session_state.clicked_item = None
 
-            if len(filtered_df) == 0:
-                st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
-            else:
-                filtered_df = filtered_df.reset_index(drop=True)  # 인덱스 열 제거
-                display_dataframe(filtered_df)
+    for idx, item in enumerate(temp_values):
+        with cols[idx]:
+            count = status_counts.get(item, 0)
+            if st.button(f"{item} : {count}", key=f"{tab_name}_{item}_{idx}"):
+                if st.session_state.clicked_item == item:
+                    st.session_state.clicked_item = None
+                else:
+                    st.session_state.clicked_item = item
+
+    # 클릭된 항목과 연관된 데이터프레임 표시 (df에서 필터링)
+    if st.session_state.clicked_item:
+        filtered_df = df[df['상태'].str.contains(st.session_state.clicked_item, na=False)]
+        if len(filtered_df) == 0:
+            st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
+        else:
+            filtered_df = filtered_df.reset_index(drop=True)
+            display_dataframe(filtered_df)
 
 
 def search_box(search_key, default=""):
@@ -130,12 +135,10 @@ def display_dataframe(df, page_name=None):
 
         with col2:
             if page_name == "업무":
-                from ready_data import product_manage
-                filter_options = product_manage['업체 이름'].unique().tolist()
+                filter_options = df['분류'].dropna().unique().tolist()
                 filter_options.insert(0, '전체')
-                selected_filter = filter_selectbox(
-                    f"{page_name}_filter", filter_options)
-
+                selected_filter = filter_selectbox(f"{page_name}_filter", filter_options)
+                df = URL_insert(df)
             else:
                 filter_options = ["전체", "VoiceEMR", "VoiceENR",
                                   "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
@@ -327,10 +330,16 @@ def URL_insert(df):
         df = df.drop(columns=["페이지URL"])
 
     # Drop specific columns and add links based on tab_label
-    if '사본링크' in df.columns:
-        df['문서확인'] = df['사본링크'].apply(
+    if '사본링크'  in df.columns:
+        df['사본링크'] = df['사본링크'].apply(
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
-        df = df.drop(columns=['사본링크'])
+
+        
+    # Drop specific columns and add links based on tab_label
+    if '관련 문서'  in df.columns:
+        df['관련 문서'] = df['관련 문서'].apply(
+            lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
+
 
     if '기타문서 (견적서, NDA 등)' in df.columns:
         df['문서확인'] = df['기타문서 (견적서, NDA 등)'].apply(

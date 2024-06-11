@@ -10,7 +10,12 @@ def main_content():
     sf.load_css()
     sf.set_initial_page()
 
-    import real_data_analysis
+    import real_data_analysis, ready_data
+
+    company_df = ready_data.product_manage
+    # contract_df = ready_data.contract_manage
+    # etc_df = ready_data.etc_manage
+    # task_df = ready_data.Task
 
     # 로그아웃 버튼 추가
     lf.add_logout_button()
@@ -20,24 +25,20 @@ def main_content():
     tabs = st.tabs(tab_titles)
 
     with tabs[0]:
-        notion_df, result = real_data_analysis.main("VoiceEMR")
         sf.dashboard_button_df(
-            notion_df[0], "상태", result, "VoiceEMR")
+            company_df, "상태", "VoiceEMR")
 
     with tabs[1]:
-        notion_df, result = real_data_analysis.main("VoiceENR")
         sf.dashboard_button_df(
-            notion_df[0], "상태", result, "VoiceENR")
+            company_df, "상태", "VoiceENR")
 
     with tabs[2]:
-        notion_df, result = real_data_analysis.main("VoiceSDK")
         sf.dashboard_button_df(
-            notion_df[0], "상태", result, "VoiceSDK")
+            company_df, "상태", "VoiceSDK")
 
     with tabs[3]:
-        notion_df, result = real_data_analysis.main("VoiceMARK")
         sf.dashboard_button_df(
-            notion_df[0], "상태", result, "VoiceMARK")
+            company_df, "상태", "VoiceMARK")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")

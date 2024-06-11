@@ -19,17 +19,17 @@ else:
 
     def show_product_management():
         df = Task.drop(
-            columns=['요청자', '담당부서', '파일과 미디어', '관련 문서', '사업부 달력 (관련 일정)'])  # 필요한 열만 남기고 제거
+            columns=['요청자', '담당부서', '파일과 미디어', '사업부 달력 (관련 일정)'])  # 필요한 열만 남기고 제거
 
         # 열 순서 변경
         columns_order = ['분류', '업무', '상태', '담당자',
-                         '업무기간', '요청자', '우선순위', '페이지URL']
+                         '업무기간', '요청자', '우선순위', '페이지URL','관련 문서' ]
         df = df.reindex(columns=columns_order)
 
         st.subheader("업체 별 업무 진행상황 관리")
         st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
-        df = sf.URL_insert(df)
+  
         sf.display_dataframe(df, "업무")
 
     if __name__ == "__main__":

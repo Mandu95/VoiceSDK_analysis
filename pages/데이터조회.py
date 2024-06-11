@@ -28,7 +28,7 @@ else:
             columns=['제품 현황 관리', '계약경로', '매입/매출'])
 
         columns_order = ['계약명', '계약구분', '계약시작일', '라이선스 수', '계약단가', '제품',
-                         '라이선스 총액', '계약총액', '문서확인', '사본링크', '페이지URL']
+                         '라이선스 총액', '계약총액', '사본링크', '페이지URL']
         contract_manage_df_reordered = contract_manage_df.reindex(
             columns=columns_order)
 
@@ -45,7 +45,7 @@ else:
 
         # 데이터프레임 열 순서 변경
         columns_order = ['문서이름', '제품', '라이선스 수', '계약단가',
-                         '라이선스 총액', '계약총액', '견적 유효 마감일', '문서확인', '사본링크', '페이지URL']
+                         '라이선스 총액', '계약총액', '견적 유효 마감일', '사본링크', '페이지URL']
         etc_manage_df_reordered = etc_manage_df.reindex(columns=columns_order)
 
         # sf.display_tab 함수 호출
