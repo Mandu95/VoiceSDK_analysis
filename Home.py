@@ -10,15 +10,16 @@ def main_content():
     sf.load_css()
     sf.set_initial_page()
 
-    import real_data_analysis, ready_data
-
-    company_df = ready_data.product_manage
-    contract_df = ready_data.contract_manage
-    # etc_df = ready_data.etc_manage
-    # task_df = ready_data.Task
+    import real_data_analysis
+    import ready_data
 
     # 로그아웃 버튼 추가
     lf.add_logout_button()
+
+    company_df = ready_data.product_manage
+    # contract_df = ready_data.contract_manage
+    # etc_df = ready_data.etc_manage
+    # task_df = ready_data.Task
 
     # 탭 구성
     tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]

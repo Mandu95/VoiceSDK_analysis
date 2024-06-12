@@ -1,34 +1,77 @@
-import ready_data
 import pandas as pd
+import streamlit_function
 
 
-#    데이터프레임에서 특정 열의 값이 지정된 문자열을 포함하는 행만 추출합니다.
-def filter_data_contains(df_data, page_label):
-    """
-    Args:
-    df_data (pd.DataFrame): 데이터프레임
-    page_label (str): 필터링할 페이지 라벨
+def contract_data_analysis(contract_manage, tab_name):
 
-    Returns:
-    pd.DataFrame: 필터링된 데이터프레임
-    """
-    # tab_name에 따라 데이터프레임 필터링
-    if page_label in df_data['제품'].unique():
-        df_data = df_data[df_data['제품'] == page_label]
-    
-    return df_data
+    # "페이지URL" 열의 행 값을 데이터프레임 첫번째 열의 행 값의 하이퍼링크로 삽입하고 "페이지URL" 열 삭제
+    contract_manage = streamlit_function.URL_insert(contract_manage)
+
+    # "계약명" 열의 행 값을 기준으로 내림차순 정렬
+    contract_manage = contract_manage .sort_values(by='계약명', ascending=False)
+
+    # 계약서 데이터베이스에서 "제품" 열을 기준으로 1차 필터링하는 코드
+    contract_manage = contract_manage[contract_manage['제품'].astype(
+        str).str.contains(tab_name)]
+
+    # "계약명" 열의 행 값을 기준으로 내림차순 정렬
+    contract_manage = contract_manage .sort_values(by='계약명', ascending=False)
+
+    # 계약서 데이터베이스에서 "매입/매출" 열의 행 값을 기준으로 매입/매출/정보없음 구분하는 코드
+    # 매출 데이터만 추출
+    contract_manage_sell = contract_manage[contract_manage['매입/매출'].astype(
+        str).str.contains("매출")]
+    # 매출 데이터만 추출
+    contract_manage_buy = contract_manage[contract_manage['매입/매출'].astype(
+        str).str.contains("매입")]
+    # 매출 데이터만 추출
+    contract_manage_noinfo = contract_manage[contract_manage['매입/매출'].astype(
+        str).str.contains("")]
+
+    # 내가 페이지에 남기고 싶어하는 데이터베이스의 열의 목록
+    columns_order = ['계약명', '계약총액', '제품 현황 관리']
+    contract_manage = contract_manage.reindex(columns=columns_order)
+    contract_manage_sell = contract_manage_sell.reindex(columns=columns_order)
+    contract_manage_buy = contract_manage_buy.reindex(columns=columns_order)
+    contract_manage_noinfo = contract_manage_noinfo.reindex(
+        columns=columns_order)
+
+    # 계약서 View 할 때 보여질 선택박스 항목이랑, 데이터베이스 값 반환
+    contract_manage = extract_column_unique_value(contract_manage, "제품 현황 관리")
+    contract_manage_sell = extract_column_unique_value(
+        contract_manage_sell, "제품 현황 관리")
+    contract_manage_buy = extract_column_unique_value(
+        contract_manage_buy, "제품 현황 관리")
+    contract_manage_noinfo = extract_column_unique_value(
+        contract_manage_noinfo, "제품 현황 관리")
+
+    return contract_manage, contract_manage_sell, contract_manage_buy, contract_manage_noinfo
 
 
+# 데이터프레임의 특정 열의 고유 행 값을 추출하기 위한 함수, 고유 값 추출 된 행은 삭제되도록 설계해둠.
+def extract_column_unique_value(df, col_name):
 
-# # 대시보드 화면에 표출 할 데이터 분석 자료를 모아 둔 함수
-# def DA_data(df_data, page_label):
-#     result = extract_by_colum(df_data, "상태", page_label)
-#     return result
+    unique_value = df[col_name].unique()
+    df = df.drop(
+        columns=[col_name])
+    unique_value = unique_value.tolist()
+    unique_value.insert(0, '전체')
+
+    unique_value = extract_text_data(unique_value)
+    return df, unique_value
 
 
-def main(df,page_label):
-    filtered_df = filter_data_contains(df, page_label)  # Notion 데이터 프레임 - tab 메뉴 값*대분류) 정제 한 데이터 프레임
+# 리스트의 값들에서 특정 텍스트를 제거하는 함수
+def extract_text_data(list_data):
+    import re
+    # '제품' 열에서 대괄호 안의 텍스트를 제거하고 이름만 추출
+    return [re.sub(r'\[.*?\]\s*', '', item) for item in list_data]
 
 
-    return 0
+def contract_data_main(tab_name):
+    from ready_data import contract_manage
 
+    contract_manage, contract_manage_sell, contract_manage_buy, contract_manage_noinfo = contract_data_analysis(
+        contract_manage, tab_name)
+
+    return contract_manage, contract_manage_sell, contract_manage_buy, contract_manage_noinfo

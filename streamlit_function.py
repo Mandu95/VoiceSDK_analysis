@@ -53,14 +53,18 @@ def dashboard_button_df(df, column_name, tab_name):
 
     # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
-        temp_values = ['최초컨택', '자료발송', '사업설명', '실무자회의', '협약', '견적발송', 'POC', '계약완료']
+        temp_values = ['최초컨택', '자료발송', '사업설명',
+                       '실무자회의', '협약', '견적발송', 'POC', '계약완료']
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL", "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
+        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                     "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
         # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-        df['개발언어'] = df['개발언어'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        df['개발언어'] = df['개발언어'].apply(
+            lambda x: ', '.join(x) if isinstance(x, list) else x)
     else:
         if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
             temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
@@ -70,11 +74,14 @@ def dashboard_button_df(df, column_name, tab_name):
         # 특정 열에서 값의 개수를 계산
         value_counts = df[column_name].value_counts()
         # 특정 값들의 개수를 추출하여 딕셔너리에 저장
-        specific_counts = {value: value_counts.get(value, 0) for value in temp_values}
+        specific_counts = {value: value_counts.get(
+            value, 0) for value in temp_values}
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL", "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                     "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "담당자 이메일", "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "상태", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
     # 상태별 카운트 계산
@@ -98,49 +105,162 @@ def dashboard_button_df(df, column_name, tab_name):
 
     # 클릭된 항목과 연관된 데이터프레임 표시 (df에서 필터링)
     if st.session_state.clicked_item:
-        filtered_df = df[df['상태'].str.contains(st.session_state.clicked_item, na=False)]
+        filtered_df = df[df['상태'].str.contains(
+            st.session_state.clicked_item, na=False)]
         if len(filtered_df) == 0:
             st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
         else:
             filtered_df = filtered_df.reset_index(drop=True)
             display_dataframe(filtered_df)
-            # "계약완료"가 클릭된 경우 "안녕" 표시
-            if st.session_state.clicked_item == "계약완료":
-                from ready_data import contract_manage
-                temp_df = contract_manage[contract_manage['제품'].astype(str).str.contains(tab_name)]
 
-                # '상태' 열을 기준으로 내림차순 정렬
-                temp_df  = temp_df .sort_values(by='계약명', ascending=False)
-                
-                # 탭 구성
-                tab_titles = ["전체","매출","매입", "정보없음"]
-                columns_order = ['계약명', '계약총액']
+            # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
+            if st.session_state.clicked_item == "계약완료":
+
+                # 버튼이 안눌리면 분석 필요 없으니까 "계약완료" 버튼이 클릭 된 시점에 import
+                import real_data_analysis
+
+                # 함수에서 return 받는 데이터 타입은 튜플이고 0번째는 데이터프레임, 1번째는 선택박스 항목이 있음.
+                contract_manage, contract_manage_sell, contract_manage_buy, contract_manage_noinfo = real_data_analysis.contract_data_main(
+                    tab_name)
+
+                # Tab 메뉴 항목들
+                tab_titles = ["전체", "매출", "매입", "정보없음"]
                 tabs = st.tabs(tab_titles)
+
                 with tabs[0]:
 
-                    temp_df0 = temp_df.reindex(columns=columns_order)
-                    # temp_df01 = temp_df[temp_df['계약명'].astype(str).str.contains("[24년]")]
-                    # sum24 = temp_df01['계약총액'].sum()
-                    # temp_df02 = temp_df[temp_df['계약명'].astype(str).str.contains("[23년]")]
-                    # sum23 = temp_df02['계약총액'].sum()
-                    st.write(f"문서개수 : {len(temp_df)}")
-                    display_dataframe(temp_df0)
-                with tabs[1]:
-                    temp_df1 = temp_df[temp_df['매입/매출'].astype(str).str.contains("매출")]
-                    st.write(f"문서개수 : {len(temp_df1)}")
+                    df = contract_manage[0]
+                    # 상단에 선택박스 삽입
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+                        st.write(f"문서개수 : {len(df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", contract_manage[1])
 
-                    temp_df1 = temp_df1.reindex(columns=columns_order)
-                    display_dataframe(temp_df1)
+                    if selected_filter != "전체":
+                        df = df[df['계약명'].str.contains(
+                            selected_filter, na=False)]
+
+                    if df.empty:
+                        # 데이터가 없는 경우 메시지 표시
+                        st.markdown(
+                            """
+                            <style>
+                                .empty-message {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    height: 50vh;
+                                    font-size: 2em;
+                                    color: black;
+                                }
+                            </style>
+                            <div class="empty-message">검색 결과가 없습니다.</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        display_dataframe(df)
+
+                with tabs[1]:
+                    # 상단에 선택박스 삽입
+                    df = contract_manage_sell[0]
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+                        st.write(f"문서개수 : {len(df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", contract_manage_sell[1])
+
+                    if selected_filter != "전체":
+                        df = df[df['계약명'].str.contains(
+                            selected_filter, na=False)]
+
+                    if df.empty:
+                        # 데이터가 없는 경우 메시지 표시
+                        st.markdown(
+                            """
+                            <style>
+                                .empty-message {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    height: 50vh;
+                                    font-size: 2em;
+                                    color: black;
+                                }
+                            </style>
+                            <div class="empty-message">검색 결과가 없습니다.</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        display_dataframe(df)
                 with tabs[2]:
-                    temp_df2 = temp_df[temp_df['매입/매출'].astype(str).str.contains("매입")]
-                    st.write(f"문서개수 : {len(temp_df2)}")
-                    temp_df2 = temp_df2.reindex(columns=columns_order)
-                    display_dataframe(temp_df2)
+                    # 상단에 선택박스 삽입
+                    df = contract_manage_buy[0]
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+                        st.write(f"문서개수 : {len(df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", contract_manage_buy[1])
+                    if selected_filter != "전체":
+                        df = df[df['계약명'].str.contains(
+                            selected_filter, na=False)]
+                    if df.empty:
+                        # 데이터가 없는 경우 메시지 표시
+                        st.markdown(
+                            """
+                            <style>
+                                .empty-message {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    height: 50vh;
+                                    font-size: 2em;
+                                    color: black;
+                                }
+                            </style>
+                            <div class="empty-message">검색 결과가 없습니다.</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        display_dataframe(df)
                 with tabs[3]:
-                    temp_df3 = temp_df[temp_df['매입/매출'].astype(str).str.contains(" ")]
-                    st.write(f"문서개수 : {len(temp_df3)}")
-                    temp_df3 = temp_df3.reindex(columns=columns_order)
-                    display_dataframe(temp_df3)
+                    df = contract_manage_noinfo[0]
+                    # 상단에 선택박스 삽입
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+                        st.write(f"문서개수 : {len(df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", contract_manage_noinfo[1])
+                    if selected_filter != "전체":
+                        df = df[df['계약명'].str.contains(
+                            selected_filter, na=False)]
+                    if df.empty:
+                        # 데이터가 없는 경우 메시지 표시
+                        st.markdown(
+                            """
+                            <style>
+                                .empty-message {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    height: 50vh;
+                                    font-size: 2em;
+                                    color: black;
+                                }
+                            </style>
+                            <div class="empty-message">검색 결과가 없습니다.</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        display_dataframe(df)
 
 
 def search_box(search_key, default=""):
@@ -175,7 +295,8 @@ def display_dataframe(df, page_name=None):
             if page_name == "업무":
                 filter_options = df['분류'].dropna().unique().tolist()
                 filter_options.insert(0, '전체')
-                selected_filter = filter_selectbox(f"{page_name}_filter", filter_options)
+                selected_filter = filter_selectbox(
+                    f"{page_name}_filter", filter_options)
                 df = URL_insert(df)
             else:
                 filter_options = ["전체", "VoiceEMR", "VoiceENR",
@@ -387,16 +508,14 @@ def URL_insert(df):
         df = df.drop(columns=["페이지URL"])
 
     # Drop specific columns and add links based on tab_label
-    if '사본링크'  in df.columns:
+    if '사본링크' in df.columns:
         df['사본링크'] = df['사본링크'].apply(
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
 
-        
     # Drop specific columns and add links based on tab_label
-    if '관련 문서'  in df.columns:
+    if '관련 문서' in df.columns:
         df['관련 문서'] = df['관련 문서'].apply(
             lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">문서 확인하기</a>')
-
 
     if '기타문서 (견적서, NDA 등)' in df.columns:
         df['문서확인'] = df['기타문서 (견적서, NDA 등)'].apply(
