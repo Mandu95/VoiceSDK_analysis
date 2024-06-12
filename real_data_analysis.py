@@ -26,7 +26,7 @@ def contract_data_analysis(contract_manage, tab_name):
         str).str.contains("매입")]
     # 매출 데이터만 추출
     contract_manage_noinfo = contract_manage[contract_manage['매입/매출'].astype(
-        str).str.contains("")]
+        str).str.strip() == ""]
 
     # 내가 페이지에 남기고 싶어하는 데이터베이스의 열의 목록
     columns_order = ['계약명', '계약총액', '제품 현황 관리']

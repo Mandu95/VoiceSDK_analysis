@@ -124,7 +124,7 @@ def dashboard_button_df(df, column_name, tab_name):
                     tab_name)
 
                 # Tab 메뉴 항목들
-                tab_titles = ["전체", "매출", "매입", "정보없음"]
+                tab_titles = ["전체", "매출/매입", "정보없음"]
                 tabs = st.tabs(tab_titles)
 
                 with tabs[0]:
@@ -164,72 +164,75 @@ def dashboard_button_df(df, column_name, tab_name):
                         display_dataframe(df)
 
                 with tabs[1]:
-                    # 상단에 선택박스 삽입
-                    df = contract_manage_sell[0]
-                    col1, col2 = st.columns([8, 2])
-                    with col1:
-                        st.write(f"문서개수 : {len(df)}")
-                    with col2:
-                        selected_filter = filter_selectbox(
-                            f"{tabs}_filter", contract_manage_sell[1])
 
-                    if selected_filter != "전체":
-                        df = df[df['계약명'].str.contains(
-                            selected_filter, na=False)]
+                    col10, col11 = st.columns([5, 5])
+                    with col10:
+                        df = contract_manage_sell[0]
+                        col1, col2 = st.columns([8, 2])
+                        with col1:
+                            st.write(f"문서개수 : {len(df)}")
+                        with col2:
+                            selected_filter = filter_selectbox(
+                                f"{tabs}_filter_매출", contract_manage_sell[1])
 
-                    if df.empty:
-                        # 데이터가 없는 경우 메시지 표시
-                        st.markdown(
-                            """
-                            <style>
-                                .empty-message {
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    height: 50vh;
-                                    font-size: 2em;
-                                    color: black;
-                                }
-                            </style>
-                            <div class="empty-message">검색 결과가 없습니다.</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        display_dataframe(df)
+                        if selected_filter != "전체":
+                            df = df[df['계약명'].str.contains(
+                                selected_filter, na=False)]
+
+                        if df.empty:
+                            # 데이터가 없는 경우 메시지 표시
+                            st.markdown(
+                                """
+                                <style>
+                                    .empty-message {
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        height: 50vh;
+                                        font-size: 2em;
+                                        color: black;
+                                    }
+                                </style>
+                                <div class="empty-message">검색 결과가 없습니다.</div>
+                                """,
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            display_dataframe(df)
+                    with col11:
+
+                        # 상단에 선택박스 삽입
+                        df = contract_manage_buy[0]
+                        col1, col2 = st.columns([8, 2])
+                        with col1:
+                            st.write(f"문서개수 : {len(df)}")
+                        with col2:
+                            selected_filter = filter_selectbox(
+                                f"{tabs}_filter_매입", contract_manage_buy[1])
+                        if selected_filter != "전체":
+                            df = df[df['계약명'].str.contains(
+                                selected_filter, na=False)]
+                        if df.empty:
+                            # 데이터가 없는 경우 메시지 표시
+                            st.markdown(
+                                """
+                                    <style>
+                                        .empty-message {
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                            height: 50vh;
+                                            font-size: 2em;
+                                            color: black;
+                                        }
+                                    </style>
+                                    <div class="empty-message">검색 결과가 없습니다.</div>
+                                    """,
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            display_dataframe(df)
                 with tabs[2]:
-                    # 상단에 선택박스 삽입
-                    df = contract_manage_buy[0]
-                    col1, col2 = st.columns([8, 2])
-                    with col1:
-                        st.write(f"문서개수 : {len(df)}")
-                    with col2:
-                        selected_filter = filter_selectbox(
-                            f"{tabs}_filter", contract_manage_buy[1])
-                    if selected_filter != "전체":
-                        df = df[df['계약명'].str.contains(
-                            selected_filter, na=False)]
-                    if df.empty:
-                        # 데이터가 없는 경우 메시지 표시
-                        st.markdown(
-                            """
-                            <style>
-                                .empty-message {
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    height: 50vh;
-                                    font-size: 2em;
-                                    color: black;
-                                }
-                            </style>
-                            <div class="empty-message">검색 결과가 없습니다.</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        display_dataframe(df)
-                with tabs[3]:
                     df = contract_manage_noinfo[0]
                     # 상단에 선택박스 삽입
                     col1, col2 = st.columns([8, 2])
