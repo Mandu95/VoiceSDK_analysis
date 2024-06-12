@@ -402,7 +402,6 @@ def display_dataframe(df, page_name=None):
 
         # 데이터프레임 표시
         components.html(show_table(df_html), height=400, scrolling=True)
-        st.header("최근 2주 업데이트 업체")
 
 
 def show_table(df_html):
