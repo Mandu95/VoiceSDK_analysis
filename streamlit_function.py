@@ -133,6 +133,7 @@ def dashboard_button_df(df, column_name, tab_name):
                     # 상단에 선택박스 삽입
                     col1, col2 = st.columns([8, 2])
                     with col1:
+
                         st.write(f"문서개수 : {len(df)}")
                     with col2:
                         selected_filter = filter_selectbox(
@@ -171,14 +172,17 @@ def dashboard_button_df(df, column_name, tab_name):
                         col1, col2 = st.columns([8, 2])
                         with col1:
                             st.write(f"문서개수 : {len(df)}")
+
                         with col2:
                             selected_filter = filter_selectbox(
                                 f"{tabs}_filter_매출", contract_manage_sell[1])
-
+                        sell_sum = real_data_analysis.calculate_total_amount(
+                            df, "계약총액")
                         if selected_filter != "전체":
                             df = df[df['계약명'].str.contains(
                                 selected_filter, na=False)]
-
+                            sell_sum = real_data_analysis.calculate_total_amount(
+                                df, "계약총액")
                         if df.empty:
                             # 데이터가 없는 경우 메시지 표시
                             st.markdown(
@@ -199,19 +203,25 @@ def dashboard_button_df(df, column_name, tab_name):
                             )
                         else:
                             display_dataframe(df)
+                            st.write(f"총 매출액 : {sell_sum}")
                     with col11:
 
                         # 상단에 선택박스 삽입
                         df = contract_manage_buy[0]
                         col1, col2 = st.columns([8, 2])
                         with col1:
+
                             st.write(f"문서개수 : {len(df)}")
                         with col2:
                             selected_filter = filter_selectbox(
                                 f"{tabs}_filter_매입", contract_manage_buy[1])
+                        buy_sum = real_data_analysis.calculate_total_amount(
+                            df, "계약총액")
                         if selected_filter != "전체":
                             df = df[df['계약명'].str.contains(
                                 selected_filter, na=False)]
+                            buy_sum = real_data_analysis.calculate_total_amount(
+                                df, "계약총액")
                         if df.empty:
                             # 데이터가 없는 경우 메시지 표시
                             st.markdown(
@@ -232,6 +242,7 @@ def dashboard_button_df(df, column_name, tab_name):
                             )
                         else:
                             display_dataframe(df)
+                            st.write(f"총 매입액 : {buy_sum}")
                 with tabs[2]:
                     df = contract_manage_noinfo[0]
                     # 상단에 선택박스 삽입
@@ -365,6 +376,8 @@ def display_dataframe(df, page_name=None):
             # 데이터프레임 표시
             components.html(show_table(df_html),
                             height=table_height + 100, scrolling=True)
+
+            st.header("최근 2주 업데이트 업체")
 
     else:
         # 데이터프레임을 HTML로 변환

@@ -75,3 +75,29 @@ def contract_data_main(tab_name):
         contract_manage, tab_name)
 
     return contract_manage, contract_manage_sell, contract_manage_buy, contract_manage_noinfo
+
+
+############################### streamlit_function 파일에서 직접 호출하는 함수 ###############################
+
+def calculate_total_amount(df, col_name):
+    """
+    데이터프레임에서 특정 열의 금액 단위 데이터를 정수형으로 변환하여 전체 합계를 구하는 함수
+
+    Args:
+    df (pd.DataFrame): 입력 데이터프레임
+    col_name (str): 금액 단위 데이터를 포함하는 열의 이름
+
+    Returns:
+    str: 금액 단위로 환산된 전체 금액의 합계
+    """
+    # 금액 데이터를 정수형으로 변환하여 임시 변수에 저장
+    temp_values = df[col_name].replace(
+        {',': '', '원': ''}, regex=True).astype(int)
+
+    # 전체 합계 계산
+    total_amount = temp_values.sum()
+
+    # 금액 단위로 환산
+    formatted_amount = f"{total_amount:,}원"
+
+    return formatted_amount
