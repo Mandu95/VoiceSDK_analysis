@@ -1,5 +1,8 @@
 import pandas as pd
 import streamlit_function
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
+import re
 
 
 def contract_data_analysis(contract_manage, tab_name):
@@ -101,3 +104,27 @@ def calculate_total_amount(df, col_name):
     formatted_amount = f"{total_amount:,}원"
 
     return formatted_amount
+
+
+# 최근 2주 이내 업데이트 된 데이터 추출
+def recent_data(df):
+    now = datetime.now().date()
+    if '정보 최신화 날짜' in df.columns:
+        recent_df = df[pd.to_datetime(
+            df['정보 최신화 날짜']).dt.date >= now - timedelta(days=14)]
+    else:
+        recent_df = pd.DataFrame(columns=df.columns)  # 빈 데이터프레임 반환
+    return recent_df
+
+
+def extract_text_from_html(html_string):
+    # BeautifulSoup 객체 생성
+    soup = BeautifulSoup(html_string, 'html.parser')
+
+    # <a> 태그의 텍스트 추출
+    text = soup.get_text()
+
+    # [부터 ] 사이의 텍스트 제거
+    cleaned_text = re.sub(r'\[.*?\]', '', text)
+
+    return cleaned_text.strip()
