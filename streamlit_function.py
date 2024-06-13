@@ -67,8 +67,10 @@ def dashboard_button_df(df, column_name, tab_name):
         df['개발언어'] = df['개발언어'].apply(
             lambda x: ', '.join(x) if isinstance(x, list) else x)
     else:
-        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
+        if tab_name in ["VoiceMARK", "VoiceDOC"]:
             temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
+        elif tab_name == "VoiceENR":
+            temp_values = ['자료발송', '사업설명', '견적발송', '계약중', '계약완료']
         elif tab_name == "VoiceEMR":
             temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
 
