@@ -11,7 +11,7 @@ if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
     st.stop()
 
 else:
-    from ready_data import product_manage, etc_manage, contract_manage  # 데이터 로드
+    from Ready_notion_DB import product_manage, etc_manage, contract_manage  # 데이터 로드
 
     # 로그아웃 버튼 추가
     lf.add_logout_button()
