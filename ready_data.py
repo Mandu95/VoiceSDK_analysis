@@ -19,6 +19,7 @@ def sync_notion_data():
     # 노션 DB 데이터 추출
     notion_data = nc.notion_readDatabase(all_key)
     print(f"[{datetime.datetime.now()}] 노션 데이터베이스에서 데이터 추출 완료")
+    print(notion_data[0]['properties'][0])
 
     # 노션 데이터를 row_name, Properties, URL 추출해서 저장
     notion_data_result = function.extract_properties_to_array(notion_data)
@@ -42,7 +43,6 @@ def sync_notion_data():
         contract_manage, notion_data[0], "제품 현황 관리", "업체 이름")
     etc_manage = function.change_relation_data(
         etc_manage, notion_data[0], "발송 대상", "업체 이름")
-
     Task = function.change_relation_data(
         Task, notion_data[0], "분류", "업체 이름")
 
@@ -64,6 +64,7 @@ def sync_notion_data():
         Task, currency_columns, number_columns)
 
     print(f"[{datetime.datetime.now()}] 데이터 동기화 완료")
+    print(product_manage['생성 일시'])
     return product_manage, contract_manage, etc_manage, Task
 
 
