@@ -3,7 +3,9 @@ import streamlit.components.v1 as components
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import Mandu_DA
 import real_data_analysis
+import re
 
 
 def init_session_state(df, tab_label):
@@ -43,23 +45,27 @@ def filter_dataframe(dataframe, search_query, selected_product):
     return dataframe
 
 
-#######################################################################################################
+################################### Web 페이지에 View 하기 전 정리 ###################################
 
-def make_button(df, tab_name):  # 데이터프레임 특정 열의 행 고유 값을 가지고 버튼 항목 만드는 함수 ################
-    # VoiceSDK 탭 처리
-    if tab_name == "VoiceSDK":
-        temp_values = ['최초컨택', '자료발송', '사업설명',
-                       '실무자회의', '협약', '견적발송', 'POC', '계약완료']
 
-    else:
-        if tab_name in ["VoiceMARK", "VoiceDOC"]:
-            temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
-        elif tab_name == "VoiceENR":
-            temp_values = ['자료발송', '사업설명', '견적발송', '계약중', '계약완료']
-        elif tab_name == "VoiceEMR":
-            temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
+# 데이터프레임 특정 열의 행 고유 값을 가지고 버튼 항목 만드는 함수
+def make_button(df, tab_name,button_name=None):  
+    
+    if button_name == "Home화면 상단":
+        # VoiceSDK 탭 처리
+        if tab_name == "VoiceSDK":
+            temp_values = ['최초컨택', '자료발송', '사업설명',
+                        '실무자회의', '협약', '견적발송', 'POC', '계약완료']
 
-    return temp_values
+        else:
+            if tab_name in ["VoiceMARK", "VoiceDOC"]:
+                temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
+            elif tab_name == "VoiceENR":
+                temp_values = ['자료발송', '사업설명', '견적발송', '계약중', '계약완료']
+            elif tab_name == "VoiceEMR":
+                temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
+
+        return temp_values
 
 
 # Streamlit Home 화면 Tab 메뉴 값을 기준으로 필터링 된 데이터프림 만드는 함수
@@ -75,8 +81,8 @@ def make_filter_df(df, tab_name, col_name=None):
             df = df[df[col_name] == tab_name]
     return df
 
-
-def Sort_Col_df(df, tab_name):  # 데이터 프레임 열 삭제 및 정렬 ################
+# 데이터 프레임 열 삭제 및 정렬 ################
+def Sort_Col_df(df, tab_name):  
     # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
         # 필요한 열만 남기고 제거
@@ -102,23 +108,38 @@ def Sort_Col_df(df, tab_name):  # 데이터 프레임 열 삭제 및 정렬 ####
 
     return df
 
-#######################################################################################################
+
+## html 태그 제거 및 텍스트만 추출하여 업데이트
+def extract_text_from_html(html_string): 
+    # BeautifulSoup 객체 생성
+    soup = BeautifulSoup(html_string, 'html.parser')
+
+    # <a> 태그의 텍스트 추출
+    text = soup.get_text()
+
+    # [부터 ] 사이의 텍스트 제거
+    cleaned_text = re.sub(r'\[.*?\]', '', text)
+
+    return cleaned_text.strip()
 
 
-#######################################################################################################
-def View_button(temp_values):  # 상단 버튼 표시
+
+################################### Web 페이지에 View 하기 위한 함수 ###################################
+
+## 버튼 View 하는 함수
+def View_button(button_name):
     # 상태 버튼 생성
-    col_count = len(temp_values)
+    col_count = len(button_name)
     cols = st.columns(col_count)
     return cols
 
 
-# 버튼 클릭됐을 때 session 상태 변화 return 및 테이블 표시
-def View_Table_by_clicked_button(df, temp_values, cols, status_counts, tab_name):
+## 버튼 클릭됐을 때 session 상태 변화 return 및 테이블 View
+def View_Table_by_clicked_button(df, button_name, cols, status_counts, tab_name):
     if 'clicked_item' not in st.session_state:
         st.session_state.clicked_item = None
 
-    for idx, item in enumerate(temp_values):
+    for idx, item in enumerate(button_name):
         with cols[idx]:
             count = status_counts.get(item, 0)
             if st.button(f"{item} : {count}", key=f"{tab_name}_{item}_{idx}_first"):
@@ -140,11 +161,10 @@ def View_Table_by_clicked_button(df, temp_values, cols, status_counts, tab_name)
     return st.session_state.clicked_item
 
 
-def View_table_Clicked_contract_complete(tab_name):
-    import Mandu_DA
+## 계약 완료 버튼 눌렸을 때 테이블 View
+def View_table_Clicked_contract_complete_button(tab_name):
     all_contract_df, sell_df, buy_df, no_info_df = Mandu_DA.mandu_contract_main(
         tab_name)
-
     # Tab 메뉴 항목들
     tab_titles = ["전체", "매출/매입", "정보없음"]
     tabs = st.tabs(tab_titles)
@@ -152,7 +172,7 @@ def View_table_Clicked_contract_complete(tab_name):
     with tabs[0]:
 
         all_df = all_contract_df[0]
-
+        all_df = URL_insert(all_df)
         # 상단에 선택박스 삽입
         col1, col2 = st.columns([8, 2])
         with col1:
@@ -191,6 +211,7 @@ def View_table_Clicked_contract_complete(tab_name):
         col10, col11 = st.columns([5, 5])
         with col10:
             contract_sell_df = sell_df[0]
+            contract_sell_df = URL_insert(contract_sell_df)
             col1, col2 = st.columns([8, 2])
             with col1:
                 st.write(f"문서개수 : {len(contract_sell_df)}")
@@ -230,6 +251,7 @@ def View_table_Clicked_contract_complete(tab_name):
 
             # 상단에 선택박스 삽입
             contract_buy_df = buy_df[0]
+            contract_buy_df = URL_insert(contract_buy_df)
             col1, col2 = st.columns([8, 2])
             with col1:
 
@@ -267,6 +289,7 @@ def View_table_Clicked_contract_complete(tab_name):
                 st.write(f"총 매입액 : {buy_sum}")
     with tabs[2]:
         contract_noinfo_df = no_info_df[0]
+        contract_noinfo_df = URL_insert(contract_noinfo_df)
         # 상단에 선택박스 삽입
         col1, col2 = st.columns([8, 2])
         with col1:
@@ -298,39 +321,55 @@ def View_table_Clicked_contract_complete(tab_name):
         else:
             display_dataframe(contract_noinfo_df)
 
-#######################################################################################################
 
 
-def dashboard_button_df(df, column_name, tab_name):
+
+
+
+################################### Web 페이지에 View  ###################################
+
+def View_Hompage(df, tab_name, layer_name=None, column_name=None ):
+
+    if layer_name is not None:
+
+        if layer_name == "첫번째":
+            dashboard_first_layer(df, column_name, tab_name)
+        elif layer_name == "두번째":
+            dashboard_Second_layer(tab_name)
+
+## 홈페이지 첫번째 레이어 데이터 View
+def dashboard_first_layer(df, column_name, tab_name): 
 
     # URL 삽입 함수 호출
     URL_insert(df)
 
     df = make_filter_df(df, tab_name)  # 데이터프레임 Tab 선택 항목에 맞춰 필터링
     df = Sort_Col_df(df, tab_name)  # 데이터프레임 Tab 선택 항목에 맞춰 열 삭제 및 정렬
-    temp_values = make_button(df, tab_name)  # Tab 메뉴 별 상단 버튼 항목
+    Home_top_button = make_button(df, tab_name,"Home화면 상단")  # Tab 메뉴 별 상단 버튼 항목
     status_counts = df[column_name].value_counts().to_dict()     # 버튼 별 카운트 계산
 
     # streamlit web 화면 상에 버튼 개수에 맞춰 영역 할당 및 view
-    cols = View_button(temp_values)
+    cols = View_button(Home_top_button)
     session_status = View_Table_by_clicked_button(
-        df, temp_values, cols, status_counts, tab_name)
+        df, Home_top_button, cols, status_counts, tab_name)
 
     # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
     if session_status == "계약완료":
-        View_table_Clicked_contract_complete(tab_name)
+        View_table_Clicked_contract_complete_button(tab_name)
 
-    recent_df = real_data_analysis.recent_data(df)
-    # 데이터프레임의 "업체 이름" 열 값에서 HTML 태그 제거 및 텍스트만 추출하여 업데이트
-    recent_df['업체 이름'] = recent_df['업체 이름'].apply(
-        real_data_analysis.extract_text_from_html)
+## 홈페이지 두번째 레이어 데이터 View
+def dashboard_Second_layer(tab_name):
+    new_cop_df, update_one_week_df = Mandu_DA.mandu_cop_main(tab_name)
+    update_one_week_df['업체 이름'] = update_one_week_df['업체 이름'].apply(
+        extract_text_from_html)
+    new_cop_df = URL_insert(new_cop_df)
 
-    # 상단에 검색창과 선택박스 삽입
-    col20, col21 = st.columns([5, 5])
-    with col20:
+    col1, col2 = st.columns([5, 5])
+
+    with col1:
         # Streamlit 페이지 구성
         st.subheader("최근 2주간 업데이트")
-        if recent_df.empty:
+        if update_one_week_df.empty:
             st.write("데이터가 없습니다.")
         else:
             # HTML/CSS 스타일 설정
@@ -345,8 +384,8 @@ def dashboard_button_df(df, column_name, tab_name):
                 </style>
             """, unsafe_allow_html=True)
 
-            cols = st.columns(len(recent_df))
-            for col, (index, row) in zip(cols, recent_df.iterrows()):
+            cols = st.columns(len(update_one_week_df))
+            for col, (index, row) in zip(cols, update_one_week_df.iterrows()):
                 # 고유한 키를 사용하여 같은 이름이 중복되는 경우 문제를 방지
                 button_key = f"{row['업체 이름']}_{index}"
                 if col.button(row['업체 이름'], key=button_key):
@@ -356,8 +395,32 @@ def dashboard_button_df(df, column_name, tab_name):
                         st.write(f"업체 이름: {row['업체 이름']}")
                         st.write(f"정보 최신화 날짜: {row['정보 최신화 날짜']}")
 
-    with col21:
-        st.subheader("테스트")
+    with col2:
+        st.subheader("당월 신규 업체")
+        if len(new_cop_df) == 0 :
+            st.write("데이터가 없습니다.")
+        else :
+            # 숫자를 크게 보여주는 버튼 생성
+            if st.button(f'👆 {len(new_cop_df)}', key='number_button'):
+                st.session_state.show_df = True  # 세션 상태에 플래그 설정
+
+            # 버튼 클릭 시 데이터프레임 표시
+            if 'show_df' in st.session_state and st.session_state.show_df:
+                display_dataframe(new_cop_df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def search_box(search_key, default=""):

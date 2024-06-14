@@ -25,20 +25,22 @@ def main_content():
     tabs = st.tabs(tab_titles)
 
     with tabs[0]:
-        sf.dashboard_button_df(
-            company_df, "상태", "VoiceEMR")
+        sf.View_Hompage(
+            company_df, "VoiceEMR","첫번째","상태")
+        sf.View_Hompage(
+            company_df, "VoiceEMR","두번째")
 
     with tabs[1]:
-        sf.dashboard_button_df(
-            company_df, "상태", "VoiceENR")
+        sf.View_Hompage(
+            company_df, "VoiceENR","첫번째","상태")
 
     with tabs[2]:
-        sf.dashboard_button_df(
-            company_df, "상태", "VoiceSDK")
+        sf.View_Hompage(
+            company_df, "VoiceSDK","첫번째","상태")
 
     with tabs[3]:
-        sf.dashboard_button_df(
-            company_df, "상태", "VoiceMARK")
+        sf.View_Hompage(
+            company_df, "VoiceMARK","첫번째","상태")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
