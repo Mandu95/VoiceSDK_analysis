@@ -43,27 +43,70 @@ def First_data_setting():
         etc_manage, notion_data[0], "발송 대상", "업체 이름")
     Task = function.change_relation_data(
         Task, notion_data[0], "분류", "업체 이름")
+    
+    # 리스트를 문자열로 변환
+    product_manage = normalize_column_lists(product_manage)
+    contract_manage = normalize_column_lists(contract_manage)
+    etc_manage = normalize_column_lists(etc_manage)
+    Task = normalize_column_lists(Task)
 
     return product_manage, contract_manage, etc_manage, Task
 
 ## 로딩 된 데이터프레임 일부 데이터 형태를 변환 ##
-
-
 def Change_data(df, column_name=None):
 
     df = function.Change_date_iso8601(df, column_name)
     df = function.Change_data_type(df)
 
     return df
+## 데이터프레임의 각 열을 순회하면서 리스트 형태의 값들을 쉼표로 구분된 문자열로 변환 ##
+def normalize_column_lists(df):
+    for column in df.columns:
+        df[column] = df[column].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+    return df
 
+def main(df=None, tab_name=None, action_name=None):
 
-product_manage, contract_manage, etc_manage, Task = First_data_setting()
+    
+    
+    if action_name is None:
+        
+        product_manage, contract_manage, etc_manage, Task = First_data_setting()
 
-product_manage = Change_data(product_manage, ["생성 일시", "정보 최신화 날짜"])
-print(f"[{datetime.datetime.now(), len(product_manage)}] 업체 현황 데이터 준비 완료")
-contract_manage = Change_data(contract_manage)
-print(f"[{datetime.datetime.now(), len(contract_manage)}] 계약서 데이터 준비 완료")
-etc_manage = Change_data(etc_manage)
-print(f"[{datetime.datetime.now(), len(etc_manage)}] 기타서류 데이터 준비 완료")
-Task = Change_data(Task, "업무기간")
-print(f"[{datetime.datetime.now(), len(etc_manage)}] 업무 데이터 준비 완료")
+        product_manage = Change_data(product_manage, ["생성 일시", "정보 최신화 날짜"])
+        print(f"[{datetime.datetime.now(), len(product_manage)}] 업체 현황 데이터 준비 완료")
+        contract_manage = Change_data(contract_manage)
+        print(f"[{datetime.datetime.now(), len(contract_manage)}] 계약서 데이터 준비 완료")
+        etc_manage = Change_data(etc_manage)
+        print(f"[{datetime.datetime.now(), len(etc_manage)}] 기타서류 데이터 준비 완료")
+        Task = Change_data(Task, "업무기간")
+        print(f"[{datetime.datetime.now(), len(etc_manage)}] 업무 데이터 준비 완료")
+
+        return product_manage, contract_manage, etc_manage, Task
+
+    else:
+        import Mandu_DA as Mandu
+        print(action_name,"분석을 시작합니다.")
+        Filtered_df = df[df['제품'] == tab_name]
+        print(Filtered_df)
+        action_name = [action_name] if not isinstance(action_name, list) else action_name
+        for A in action_name:
+            if A == "내용 업데이트 업체":
+                DF_update_one_Week_cop = Mandu.update_one_week_cop(Filtered_df)
+                print(A,"데이터 준비 완료")
+                return DF_update_one_Week_cop
+            elif A == "신규 업체":
+                DF_New_cop = Mandu.new_cop_data(Filtered_df, "생성 일시")
+                print(A,"데이터 준비 완료")
+                return DF_New_cop
+            
+            elif A == "매입/매출 데이터":
+
+                Data_all, Data_buy, Data_sell, Data_no_info = Mandu.View_contract_status(Filtered_df)
+                print(A,"데이터 준비 완료")
+                return Data_all, Data_buy, Data_sell, Data_no_info
+            
+            elif A == "홈페이지 메인 데이터":
+
+                DF_Home_page = Filtered_df
+                return DF_Home_page
