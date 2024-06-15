@@ -287,7 +287,7 @@ def calculate_table_height(df, row_height=30):
 
 # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
 def URL_insert(df):
-
+    # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
     if '페이지URL' in df.columns:
         df.iloc[:, 0] = df.apply(
             lambda x: f'<a href="{x["페이지URL"]}" target="_blank">{x.iloc[0]}</a>' if pd.notna(x['페이지URL']) else x.iloc[0], axis=1)
