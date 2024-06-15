@@ -54,7 +54,7 @@ def View_contract_status(df):
 
 
     # 내가 페이지에 남기고 싶어하는 데이터베이스의 열의 목록
-    columns_order = ['계약명', '계약총액', '제품 현황 관리','페이지URL','제품 현황 관리']
+    columns_order = ['계약명', '계약총액', '제품 현황 관리','페이지URL','제품']
     temp_df = temp_df.reindex(columns=columns_order)
     temp_df_sell = temp_df_sell.reindex(columns=columns_order)
     temp_df_buy = temp_df_buy.reindex(columns=columns_order)

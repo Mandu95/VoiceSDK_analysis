@@ -1,6 +1,5 @@
 import streamlit as st
 import logging
-import streamlit_function as sf
 import login_function as lf
 import Ready_notion_DB
 import Mandu_component
@@ -34,8 +33,7 @@ def main_content():
     # 데이터 로딩 함수 호출
     load_and_initialize_data()
 
-    # CSS 스타일과 페이지 초기 설정 적용
-    Mandu_component.load_css()
+
     Mandu_component.set_initial_page()
 
     # 로그아웃 버튼 추가
@@ -50,26 +48,24 @@ def main_content():
 
     # 각 탭에 대한 콘텐츠 배치
     with tabs[0]:
-        cop_df_VoiceEMR = Ready_notion_DB.main(cop_df,"VoiceEMR","홈페이지 메인 데이터")
+        cop_df_VoiceEMR = cop_df[cop_df['제품'] == "VoiceEMR"]
         st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceEMR,"VoiceEMR")
 
     with tabs[1]:
-        cop_df_VoiceENR = Ready_notion_DB.main(cop_df,"VoiceENR","홈페이지 메인 데이터")
+        cop_df_VoiceENR = cop_df[cop_df['제품'] == "VoiceENR"]
         st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceENR,"VoiceENR")
 
     with tabs[2]:
-        cop_df_VoiceSDK = Ready_notion_DB.main(cop_df,"VoiceSDK","홈페이지 메인 데이터")
+        cop_df_VoiceSDK = cop_df[cop_df['제품'] == "VoiceSDK"]
         st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceSDK,"VoiceSDK")
 
     with tabs[3]:
-        cop_df_VoiceMARK = Ready_notion_DB.main(cop_df,"VoiceMARK","홈페이지 메인 데이터")
+        cop_df_VoiceMARK = cop_df[cop_df['제품'] == "VoiceMARK"]
         st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceMARK,"VoiceMARK")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
-    st.write(st.session_state['매입/매출 전체 데이터'])
-    st.write(st.session_state['매입/매출 매출 데이터'])
-    st.write(st.session_state['매입/매출 매입 데이터'])
+
 def main():
     # 페이지 설정
     st.set_page_config(page_title="PuzzleAI's Dashboard", layout="wide")
@@ -79,6 +75,7 @@ def main():
 
     # 세션 상태 초기화
     if 'logged_in' not in st.session_state:
+        st.session_state.clear()
         st.session_state['logged_in'] = False
         st.session_state['signup'] = False
 

@@ -65,7 +65,7 @@ def normalize_column_lists(df):
         df[column] = df[column].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
     return df
 
-def main(df=None, tab_name=None, action_name=None):
+def main(df=None, action_name=None):
 
     
     
@@ -87,29 +87,24 @@ def main(df=None, tab_name=None, action_name=None):
     else:
         import Mandu_DA as Mandu
         print(action_name,"분석을 시작합니다.")
-        Filtered_df = df[df['제품'] == tab_name]
-        print(Filtered_df)
         action_name = [action_name] if not isinstance(action_name, list) else action_name
         for A in action_name:
             if A == "내용 업데이트 업체":
-                DF_update_one_Week_cop = Mandu.update_one_week_cop(Filtered_df)
+                DF_update_one_Week_cop = Mandu.update_one_week_cop(df)
                 print(A,"데이터 준비 완료")
                 return DF_update_one_Week_cop
             elif A == "신규 업체":
-                DF_New_cop = Mandu.new_cop_data(Filtered_df, "생성 일시")
+                DF_New_cop = Mandu.new_cop_data(df, "생성 일시")
                 print(A,"데이터 준비 완료")
                 return DF_New_cop
             
             elif A == "매입/매출 데이터":
 
-                Data_all, Data_buy, Data_sell, Data_no_info = Mandu.View_contract_status(Filtered_df)
+                Data_all, Data_buy, Data_sell, Data_no_info = Mandu.View_contract_status(df)
                 print(A,"데이터 준비 완료")
                 return Data_all, Data_buy, Data_sell, Data_no_info
-            
-            elif A == "홈페이지 메인 데이터":
-
-                DF_Home_page = Filtered_df
-                return DF_Home_page
 
 
-
+# a = main()
+# b= main(a[1],"매입/매출 데이터")
+# print(b[2])
