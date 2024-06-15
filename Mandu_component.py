@@ -328,7 +328,7 @@ def second_layer(DF_update_one_Week_cop,DF_New_cop,tab_name):
 
 
 def third_layer(total_df,DA_result,tab_name):
-    col1, col2 = st.columns([5, 5])
+    col1, col2,col3 = st.columns([5, 5,5])
 
     with col1 :
 
@@ -344,18 +344,18 @@ def third_layer(total_df,DA_result,tab_name):
             DA_len = len(DA_result)
             result = (DA_len/total_len)*100
             st.header(result)
-            # 초기화
-            if 'selected_item' not in st.session_state:
-                st.session_state.selected_item = None
+            # # 초기화
+            # if 'selected_item' not in st.session_state:
+            #     st.session_state.selected_item = None
 
-            # 각 항목에 대한 버튼 생성
-            for item in DA_result:
-                if st.button(item):
-                    st.session_state.selected_item = item  # 클릭된 아이템 저장
+            # # 각 항목에 대한 버튼 생성
+            # for item in DA_result:
+            #     if st.button(item):
+            #         st.session_state.selected_item = item  # 클릭된 아이템 저장
 
-            # 선택된 아이템이 있을 경우 표시
-            if st.session_state.selected_item:
-                st.write(f"You clicked: {st.session_state.selected_item}")
+            # # 선택된 아이템이 있을 경우 표시
+            # if st.session_state.selected_item:
+            #     st.write(f"You clicked: {st.session_state.selected_item}")
 
 
 
