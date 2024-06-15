@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import streamlit_function as sf  # streamlit_function 모듈 임포트
 import login_function as lf  # 로그인 모듈 임포트
-import Home
+import Mandu_component
 
 st.set_page_config(page_title="데이터 조회", layout="wide")
 
@@ -34,9 +34,9 @@ else:
         contract_manage = contract_manage.reindex(
             columns=columns_order)
 
-        contract_manage = sf.URL_insert(
+        contract_manage = Mandu_component.URL_insert(
             contract_manage)
-        sf.display_dataframe(contract_manage, "계약서 관리")
+        Mandu_component.display_dataframe(contract_manage, "계약서 관리")
 
     # 기타 문서 관리 페이지 함수
     def show_other_documents_management():
@@ -54,8 +54,8 @@ else:
 
         # sf.display_tab 함수 호출
         # sf.display_tab(etc_manage_reordered, "기타 문서 관리", 10)
-        etc_manage = sf.URL_insert(etc_manage)
-        sf.display_dataframe(etc_manage, "기타 문서 관리")
+        etc_manage = Mandu_component.URL_insert(etc_manage)
+        Mandu_component.display_dataframe(etc_manage, "기타 문서 관리")
 
     # 제품 현황 관리 페이지 함수
     def show_product_management():
@@ -72,9 +72,9 @@ else:
 
         st.write("Notion DB를 기준으로 분석한 자료이며, 오전 7시, 12시 하루 2회 동기화 됩니다.:sunglasses:")
 
-        cop_manage = sf.URL_insert(
+        cop_manage = Mandu_component.URL_insert(
             cop_manage)
-        sf.display_dataframe(cop_manage, "제품 현황 관리")
+        Mandu_component.display_dataframe(cop_manage, "제품 현황 관리")
 
     # 탭 구성
     tab1, tab2, tab3 = st.tabs(["업체추적", "계약서", "기타서류"])
