@@ -276,3 +276,102 @@ def component_top_button(df,tab_name):
                     if result:
                             display_dataframe(Data_no_info_df)
 
+
+
+def second_layer(DF_update_one_Week_cop,DF_New_cop,tab_name):
+    col1, col2 = st.columns([5, 5])
+
+    with col1 :
+            st.subheader("최근 1주 내 이력변경")
+            # 데이터프레임이 비었는지 확인
+            if DF_update_one_Week_cop.empty:
+                mandu_cs.display_empty_message(f"{tab_name}의 업데이트된 데이터가 없습니다.")
+            else : 
+
+                # HTML/CSS 스타일 설정
+                st.markdown("""
+                    <style>
+                    .stButton button {
+                        display: inline-block;
+                        padding: auto;
+                        margin: auto;
+                        font-size: 14px;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
+
+                cols = st.columns(len(DF_update_one_Week_cop))
+                for col, (index, row) in zip(cols, DF_update_one_Week_cop.iterrows()):
+                    # 고유한 키를 사용하여 같은 이름이 중복되는 경우 문제를 방지
+                    button_key = f"{row['업체 이름']}_{index}"
+                    if col.button(row['업체 이름'], key=button_key):
+                        st.write(f"{row['업체 이름']} 버튼이 클릭되었습니다!")
+                        # 클릭 시 세부 정보를 표시하는 expander
+                        with st.expander("세부 정보 보기"):
+                            st.write(f"업체 이름: {row['업체 이름']}")
+                            st.write(f"정보 최신화 날짜: {row['정보 최신화 날짜']}")
+
+    with col2 :
+
+
+            st.subheader(f"당월 신규 업체")
+
+            if DF_New_cop.empty:
+                mandu_cs.display_empty_message(f"{tab_name}의 신규 데이터가 없습니다.")
+            else:
+                DF_New_cop=mandu_cs.URL_insert(DF_New_cop)
+                DF_New_cop=mandu_cs.table_columns_select(DF_New_cop,tab_name,"두번째레이어")
+            
+                display_dataframe(DF_New_cop)
+
+
+
+
+def third_layer(total_df,DA_result,tab_name):
+    col1, col2 = st.columns([5, 5])
+
+    with col1 :
+
+        st.subheader("계약전환률")
+        st.write("데모 또는 MOU 체결 등 협력 진행 이후 정식계약으로 전환 된 비율입니다.")
+
+        
+        if not DA_result:
+            mandu_cs.display_empty_message(f"{tab_name}의 계약 전환 된 사례가 없습니다.")
+        else :
+            mandu_cs.URL_insert(total_df)    
+            total_len = len(total_df)
+            DA_len = len(DA_result)
+            result = (DA_len/total_len)*100
+            st.header(result)
+            # 초기화
+            if 'selected_item' not in st.session_state:
+                st.session_state.selected_item = None
+
+            # 각 항목에 대한 버튼 생성
+            for item in DA_result:
+                if st.button(item):
+                    st.session_state.selected_item = item  # 클릭된 아이템 저장
+
+            # 선택된 아이템이 있을 경우 표시
+            if st.session_state.selected_item:
+                st.write(f"You clicked: {st.session_state.selected_item}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

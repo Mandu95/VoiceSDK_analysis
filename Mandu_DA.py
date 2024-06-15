@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
+import re
 
 # from Ready_notion_DB import contract_manage, product_manage
 
@@ -24,7 +25,9 @@ def new_cop_data(df, colum_name=None):   ## 1달 단위 신규 업체 (생성 �
 
         return this_month_df
 
-def update_one_week_cop(df):  ## 최근 1주 간 정보 업데이트 된 업체
+
+#################################### 최근 1주 간 정보 업데이트 된 업체 ####################################
+def update_one_week_cop(df): 
     now = datetime.now().date()
     if '정보 최신화 날짜' in df.columns:
         update_one_week_df = df[pd.to_datetime(
@@ -67,6 +70,19 @@ def View_contract_status(df):
 
 
 
+def DA_cop_convert_to_contract(df):
+
+    contract_df_unique_values = df[0]["제품 현황 관리"].unique()
+    contract_df_unique_values = contract_df_unique_values.tolist()
+
+    etc_document_df_unique_values = df[1]["발송 대상"].unique()
+    etc_document_df_unique_values = etc_document_df_unique_values.tolist()
+
+    # set을 사용하여 교집합 찾기
+    common_values = list(set(contract_df_unique_values) & set(etc_document_df_unique_values))
+
+
+    return common_values
 
 
 

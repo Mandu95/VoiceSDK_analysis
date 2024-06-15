@@ -1,7 +1,7 @@
 import notion_DB_call
 import function
 import datetime
-
+import Mandu_DA as Mandu
 
 ## Notion에서 데이터 로딩하는 함수 ##
 def First_data_setting():
@@ -65,6 +65,12 @@ def normalize_column_lists(df):
         df[column] = df[column].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
     return df
 
+def cop_convert_to_contract(df):
+
+    filtered_etc_document_df = Mandu.DA_cop_convert_to_contract(df)
+
+    return filtered_etc_document_df
+
 def main(df=None, action_name=None):
 
     
@@ -85,7 +91,7 @@ def main(df=None, action_name=None):
         return product_manage, contract_manage, etc_manage, Task
 
     else:
-        import Mandu_DA as Mandu
+
         print(action_name,"분석을 시작합니다.")
         action_name = [action_name] if not isinstance(action_name, list) else action_name
         for A in action_name:
@@ -104,6 +110,11 @@ def main(df=None, action_name=None):
                 print(A,"데이터 준비 완료")
                 return Data_all, Data_buy, Data_sell, Data_no_info
 
+            elif A == "계약전환률":
+
+                result_df = cop_convert_to_contract(df)
+                print(A,"데이터 준비 완료")
+                return result_df
 
 # a = main()
 # b= main(a[1],"매입/매출 데이터")
