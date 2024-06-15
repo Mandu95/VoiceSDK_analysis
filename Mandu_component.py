@@ -1,78 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-
-def component_top_button(df,tab_name):
-        # VoiceSDK 탭 처리
-    if tab_name == "VoiceSDK":
-        temp_values = ['최초컨택', '자료발송', '사업설명',
-                       '실무자회의', '협약', '견적발송', 'POC', '계약완료']
-
-    else:
-        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
-            temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
-        elif tab_name == "VoiceEMR":
-            temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
-    
-    # 상태별 카운트 계산
-    status_counts = df['상태'].value_counts().to_dict()
-
-
-    # 상태 버튼 생성
-    col_count = len(temp_values)
-    cols = st.columns(col_count)
-    
-    if 'clicked_item' not in st.session_state:
-        st.session_state.clicked_item = None
-
-    for idx, item in enumerate(temp_values):
-        with cols[idx]:
-            count = status_counts.get(item, 0)
-            if st.button(f"{item} : {count}", key=f"{tab_name}_{item}_{idx}_first"):
-                if st.session_state.clicked_item == item:
-                    st.session_state.clicked_item = None
-                else:
-                    st.session_state.clicked_item = item
-
-    return st.session_state.clicked_item
-
-def View_top_table(df,click_status):
-    
-
-    # 클릭된 항목과 연관된 데이터프레임 표시 (df에서 필터링)
-    if click_status:
-        filtered_df = df[df['상태'].str.contains(
-            click_status, na=False)]
-        if len(filtered_df) == 0:
-            st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
-        else:
-            filtered_df = filtered_df.reset_index(drop=True)
-            display_dataframe(filtered_df)
-
-
-def table_columns_select(df,tab_name):
-    if tab_name == "VoiceSDK":
-            # 필요한 열만 남기고 제거
-            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                        "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
-            # 데이터프레임 열 순서 변경
-            columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
-                            "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-            df = df.reindex(columns=columns_order)
-            # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-            df['개발언어'] = df['개발언어'].apply(
-                lambda x: ', '.join(x) if isinstance(x, list) else x)
-            
-    else :
-            # 필요한 열만 남기고 제거
-            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                        "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
-            # 데이터프레임 열 순서 변경
-            columns_order = ["업체 이름", "상태", "담당자 이메일",
-                            "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-            df = df.reindex(columns=columns_order)
-    
-    return df
+import re
 
 
 
@@ -283,8 +212,6 @@ def calculate_table_height(df, row_height=30):
     table_height = num_rows * row_height
     return table_height
 
-
-
 # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
 def URL_insert(df):
     # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
@@ -310,3 +237,197 @@ def URL_insert(df):
         df = df.drop(columns=['기타문서 (견적서, NDA 등)'])
 
     return df
+
+
+def load_css():
+    with open("styles.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    st.markdown("""
+        <style>
+        .css-1d391kg, .css-1y4p8pa {visibility: hidden;}
+        </style>
+    """, unsafe_allow_html=True)
+
+# 초기 페이지 설정
+
+
+def set_initial_page():
+    col_header, col_buttons = st.columns([8, 2])
+    with col_header:
+        st.header("Welcome to PuzzleAI's Dashboard")
+
+    with open("styles.css", "r", encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    with col_buttons:
+        st.markdown(
+            """
+            <div class="button-container">
+                <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
+                    <button class="button notion-button">고객 관리</button>
+                </a>
+                <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
+                    <button class="button onedrive-button">사업부 공유폴더</button>
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+
+
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# 데이터프레임의 특정 열의 고유 행 값을 추출하기 위한 함수, 고유 값 추출 된 행은 삭제되도록 설계해둠.
+def extract_column_unique_value(df, col_name=None): 
+
+    if col_name is not None:
+
+        unique_value = df[col_name].unique()
+        df = df.drop(
+            columns=[col_name])
+        unique_value = unique_value.tolist()
+        unique_value.insert(0, '전체')
+        unique_value = [re.sub(r'\[.*?\]\s*', '', item)
+                        for item in unique_value]
+
+        return unique_value
+
+def table_columns_select(df,tab_name):
+    if tab_name == "VoiceSDK":
+            # 필요한 열만 남기고 제거
+            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                        "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
+                            "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+            # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+            df['개발언어'] = df['개발언어'].apply(
+                lambda x: ', '.join(x) if isinstance(x, list) else x)
+            
+    else :
+            # 필요한 열만 남기고 제거
+            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                        "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "담당자 이메일",
+                            "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+    
+    return df
+
+
+def preprocess_df(df,tab_name) : 
+    
+    df = URL_insert(df)
+    # VoiceSDK 탭 처리
+    if tab_name == "VoiceSDK":
+        temp_values = ['최초컨택', '자료발송', '사업설명',
+                       '실무자회의', '협약', '견적발송', 'POC', '계약완료']
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=["📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
+        # 데이터프레임 열 순서 변경
+        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        df = df.reindex(columns=columns_order)
+
+    else:
+        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
+            temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
+        elif tab_name == "VoiceEMR":
+            temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
+
+        # 필요한 열만 남기고 제거
+        df = df.drop(columns=["📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+        # 데이터프레임 열 순서 변경
+        columns_order = ["업체 이름", "상태", "담당자 이메일",
+                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        df = df.reindex(columns=columns_order)
+    
+    return df, temp_values
+
+def component_top_button(df,tab_name):
+
+    df, temp_values = preprocess_df(df,tab_name)
+    # 상태별 카운트 계산
+    status_counts = df['상태'].value_counts().to_dict()
+
+
+    # 상태 버튼 생성
+    col_count = len(temp_values)
+    cols = st.columns(col_count)
+    
+    if 'clicked_item' not in st.session_state:
+        st.session_state.clicked_item = None
+
+    for idx, item in enumerate(temp_values):
+        with cols[idx]:
+            count = status_counts.get(item, 0)
+            if st.button(f"{item} : {count}", key=f"{tab_name}_{item}_{idx}_first"):
+                if st.session_state.clicked_item == item:
+                    st.session_state.clicked_item = None
+                else:
+                    st.session_state.clicked_item = item
+
+    # 클릭된 항목과 연관된 데이터프레임 표시 (df에서 필터링)
+    if st.session_state.clicked_item:
+        df = df[df['상태']==st.session_state.clicked_item]
+        if len(df) == 0:
+            st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
+        else:
+            df = df.reset_index(drop=True)
+            display_dataframe(df)
+
+            # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
+            if st.session_state.clicked_item == "계약완료":
+
+                # Tab 메뉴 항목들
+                tab_titles = ["전체", "매출/매입", "정보없음"]
+                tabs = st.tabs(tab_titles)
+
+                with tabs[0]:
+                    Data_all_df = st.session_state['매입/매출 전체 데이터']
+                    all_select_values = extract_column_unique_value(Data_all_df,"제품 현황 관리")
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+
+                        st.write(f"문서개수 : {len(Data_all_df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", all_select_values)
+                with tabs[1]:
+                    Data_buy_df  = st.session_state['매입/매출 매출 데이터']
+                    buy_select_values = extract_column_unique_value(Data_buy_df,"제품 현황 관리")
+                    Data_sell_df = st.session_state['매입/매출 매입 데이터']
+                    sell_select_values = extract_column_unique_value(Data_sell_df,"제품 현황 관리")                    
+                    
+                    
+                    col10, col11 = st.columns([5, 5])
+
+                    with col10:
+                        col1, col2 = st.columns([8, 2])
+                        with col1:
+                            st.write(f"문서개수 : {len(Data_buy_df)}")
+                        with col2:
+                            selected_filter = filter_selectbox(
+                                f"{tabs}_filter", buy_select_values)
+                            
+                    with col11:
+                        with col1:
+                            st.write(f"문서개수 : {len(Data_sell_df)}")
+                        with col2:
+                            selected_filter = filter_selectbox(
+                                f"{tabs}_filter", sell_select_values) 
+                with tabs[2]:
+                    Data_no_info_df = st.session_state['매입/매출 정보없음 데이터']
+                    no_info_select_values = extract_column_unique_value(Data_no_info_df,"제품 현황 관리")
+                    col1, col2 = st.columns([8, 2])
+                    with col1:
+
+                        st.write(f"문서개수 : {len(Data_no_info_df)}")
+                    with col2:
+                        selected_filter = filter_selectbox(
+                            f"{tabs}_filter", no_info_select_values)

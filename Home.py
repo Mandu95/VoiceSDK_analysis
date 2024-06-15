@@ -2,63 +2,87 @@ import streamlit as st
 import logging
 import streamlit_function as sf
 import login_function as lf
+import Ready_notion_DB
+import Mandu_component
 
-# 메인 콘텐츠 표시
+# 데이터 로딩 및 초기화 함수
+def load_and_initialize_data():
+    # 세션 상태를 확인하여 데이터가 이미 로드되었는지 확인
+    if 'data_initialized' not in st.session_state:
+        # 데이터를 최초로 로딩하는 로직
+        cop_manage, contract_manage, etc_manage, Task = Ready_notion_DB.main()
+        DF_update_one_Week_cop = Ready_notion_DB.main(cop_manage,"내용 업데이트 업체")
+        DF_New_cop = Ready_notion_DB.main(cop_manage,"신규 업체")
+        Data_all, Data_buy, Data_sell, Data_no_info = Ready_notion_DB.main(contract_manage,"매입/매출 데이터")
 
+        # 세션 상태에 로딩된 데이터를 저장
+        st.session_state['product_manage'] = cop_manage
+        st.session_state['contract_manage'] = contract_manage
+        st.session_state['etc_manage'] = etc_manage
+        st.session_state['Task'] = Task
+        st.session_state['내용 업데이트 업체'] = DF_update_one_Week_cop
+        st.session_state['신규 업체'] = DF_New_cop
+        st.session_state['매입/매출 전체 데이터'] = Data_all
+        st.session_state['매입/매출 매출 데이터'] = Data_buy
+        st.session_state['매입/매출 매입 데이터'] = Data_sell
+        st.session_state['매입/매출 정보없음 데이터'] = Data_no_info
+        
+        # 데이터 로드 완료 표시
+        st.session_state['data_initialized'] = True
 
 def main_content():
-    sf.load_css()
-    sf.set_initial_page()
+    # 데이터 로딩 함수 호출
+    load_and_initialize_data()
 
-    import Ready_notion_DB
+    # CSS 스타일과 페이지 초기 설정 적용
+    Mandu_component.load_css()
+    Mandu_component.set_initial_page()
 
     # 로그아웃 버튼 추가
     lf.add_logout_button()
 
-    company_df = Ready_notion_DB.product_manage
-    # contract_df = ready_data.contract_manage
-    # etc_df = ready_data.etc_manage
-    # task_df = ready_data.Task
+    # 로드된 데이터를 세션 상태에서 가져옴
+    cop_df = st.session_state['product_manage']
 
-    # 탭 구성
+    # 탭 구성 설정
     tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
     tabs = st.tabs(tab_titles)
 
+    # 각 탭에 대한 콘텐츠 배치
     with tabs[0]:
-        sf.View_Hompage(
-            company_df, "VoiceEMR","첫번째","상태")
-        sf.View_Hompage(
-            company_df, "VoiceEMR","두번째")
+        cop_df_VoiceEMR = Ready_notion_DB.main(cop_df,"VoiceEMR","홈페이지 메인 데이터")
+        st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceEMR,"VoiceEMR")
 
     with tabs[1]:
-        sf.View_Hompage(
-            company_df, "VoiceENR","첫번째","상태")
+        cop_df_VoiceENR = Ready_notion_DB.main(cop_df,"VoiceENR","홈페이지 메인 데이터")
+        st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceENR,"VoiceENR")
 
     with tabs[2]:
-        sf.View_Hompage(
-            company_df, "VoiceSDK","첫번째","상태")
+        cop_df_VoiceSDK = Ready_notion_DB.main(cop_df,"VoiceSDK","홈페이지 메인 데이터")
+        st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceSDK,"VoiceSDK")
 
     with tabs[3]:
-        sf.View_Hompage(
-            company_df, "VoiceMARK","첫번째","상태")
+        cop_df_VoiceMARK = Ready_notion_DB.main(cop_df,"VoiceMARK","홈페이지 메인 데이터")
+        st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceMARK,"VoiceMARK")
 
     with tabs[4]:
         st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
-
-# 메인 함수
-
-
+    st.write(st.session_state['매입/매출 전체 데이터'])
+    st.write(st.session_state['매입/매출 매출 데이터'])
+    st.write(st.session_state['매입/매출 매입 데이터'])
 def main():
-    st.set_page_config(page_title="PuzzleAI's Dashboard",
-                       layout="wide")
+    # 페이지 설정
+    st.set_page_config(page_title="PuzzleAI's Dashboard", layout="wide")
+    
+    # 로그 설정
+    logging.basicConfig(filename='data_sync.log', level=logging.INFO, format='%(asctime)s - %(message)s')
 
-    logging.basicConfig(filename='data_sync.log',
-                        level=logging.INFO, format='%(asctime)s - %(message)s')
-
+    # 세션 상태 초기화
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
         st.session_state['signup'] = False
 
+    # 로그인 상태 확인
     if st.session_state['logged_in']:
         main_content()
     else:
@@ -66,7 +90,6 @@ def main():
             lf.signup_screen()
         else:
             lf.login_screen()
-
 
 if __name__ == "__main__":
     main()
