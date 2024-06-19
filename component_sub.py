@@ -3,8 +3,7 @@ import pandas as pd
 import re
 
 
-
-## display dataframe 할 때 css 값
+# display dataframe 할 때 css 값
 def show_table(df_html):
 
     table_html = f'''
@@ -54,18 +53,21 @@ def show_table(df_html):
             '''
     return table_html
 
-## 검색창 생성하는 함수
+# 검색창 생성하는 함수
+
+
 def search_box(search_key, default=""):
     return st.text_input("검색어를 입력하세요", default, key=search_key)
 
-## 필터 선택박스 생성하는 함수
+# 필터 선택박스 생성하는 함수
+
+
 def filter_selectbox(filter_key, options, default="전체"):
     """필터 선택박스를 생성하는 함수"""
     return st.selectbox("필터 선택", options, index=options.index(default), key=filter_key)
 
 
-
-## 필터 초기화 버튼 생성하는 함수
+# 필터 초기화 버튼 생성하는 함수
 def reset_filter_button(filter_key, search_key):
     """필터 초기화 버튼을 생성하는 함수"""
     if st.button("필터 초기화", key=f"{filter_key}_reset_button"):
@@ -73,7 +75,7 @@ def reset_filter_button(filter_key, search_key):
         st.session_state[search_key] = ""
 
 
-## 페이징 기능 삽입
+# 페이징 기능 삽입
 def paginate_dataframe(df, page_size, key_prefix=""):
     """데이터프레임을 페이지 단위로 나누고 페이지 번호를 선택할 수 있는 기능을 제공하는 함수"""
     total_items = len(df)
@@ -99,9 +101,7 @@ def paginate_dataframe(df, page_size, key_prefix=""):
     return paged_df, total_pages, page_num
 
 
-
-
-## 테이블 높이 계산하는 함수
+# 테이블 높이 계산하는 함수
 def calculate_table_height(df, row_height=30):
     """데이터프레임의 행 개수에 맞춰 테이블 높이를 계산하는 함수"""
     num_rows = len(df)
@@ -111,7 +111,6 @@ def calculate_table_height(df, row_height=30):
 
 # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
 def URL_insert(df):
-
 
     if '페이지URL' in df.columns:
         df.iloc[:, 0] = df.apply(
@@ -124,7 +123,7 @@ def URL_insert(df):
         '관련 문서': '문서 확인하기',
         '기타문서 (견적서, NDA 등)': '문서 확인하기'
     }
-    
+
     for col, link_text in link_columns.items():
         if col in df.columns:
             df[col] = df[col].apply(
@@ -133,7 +132,6 @@ def URL_insert(df):
                 df.rename(columns={col: '문서확인'}, inplace=True)
 
     return df
-
 
 
 def load_css():
@@ -147,9 +145,8 @@ def load_css():
     """, unsafe_allow_html=True)
 
 
-
 # 데이터프레임의 특정 열의 고유 행 값을 추출하기 위한 함수, 고유 값 추출 된 행은 삭제되도록 설계해둠.
-def extract_column_unique_value(df, col_name=None): 
+def extract_column_unique_value(df, col_name=None):
 
     if col_name is not None:
 
@@ -162,54 +159,53 @@ def extract_column_unique_value(df, col_name=None):
                         for item in unique_value]
 
         return unique_value
-    
 
 
-def table_columns_select(df,tab_name,page_name):
+def table_columns_select(df, tab_name, page_name):
 
     if page_name == "두번째레이어":
         # 데이터프레임 열 순서 변경
         columns_order = ["업체 이름", "상태", "개발언어",
-                                "컨택 업체 담당자","정보 최신화 날짜"]
+                         "컨택 업체 담당자", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
         return df
-    
-    elif page_name =="세번째레이어":
+
+    elif page_name == "세번째레이어":
         # 데이터프레임 열 순서 변경
         columns_order = ["업체 이름", "상태", "개발언어",
-                                "컨택 업체 담당자","정보 최신화 날짜"]
+                         "컨택 업체 담당자", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
         return df
 
-    else :
+    else:
         if tab_name == "VoiceSDK":
-                # 필요한 열만 남기고 제거
-                df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                            "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
-                # 데이터프레임 열 순서 변경
-                columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
-                                "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-                df = df.reindex(columns=columns_order)
-                # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-                df['개발언어'] = df['개발언어'].apply(
-                    lambda x: ', '.join(x) if isinstance(x, list) else x)
-                
-        else :
-                # 필요한 열만 남기고 제거
-                df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                            "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
-                # 데이터프레임 열 순서 변경
-                columns_order = ["업체 이름", "상태", "담당자 이메일",
-                                "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-                df = df.reindex(columns=columns_order)
-        
+            # 필요한 열만 남기고 제거
+            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                                  "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
+                             "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+            # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
+            df['개발언어'] = df['개발언어'].apply(
+                lambda x: ', '.join(x) if isinstance(x, list) else x)
+
+        else:
+            # 필요한 열만 남기고 제거
+            df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
+                                  "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "담당자 이메일",
+                             "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+
         return df
 
 
-def preprocess_df(df,tab_name) : 
-    
+def preprocess_df(df, tab_name):
+
     df = URL_insert(df)
     # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
@@ -234,8 +230,9 @@ def preprocess_df(df,tab_name) :
         columns_order = ["업체 이름", "상태", "담당자 이메일",
                          "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
-    
+
     return df, temp_values
+
 
 def View_table(selected_filter, df, purpose=None):
     # df가 DataFrame인지 확인
@@ -268,8 +265,8 @@ def View_table(selected_filter, df, purpose=None):
                     return True
     else:
         # df가 DataFrame이 아닐 때 오류 메시지 출력
-        st.error("Provided data is not a DataFrame. Please ensure the data is loaded correctly.")
-
+        st.error(
+            "Provided data is not a DataFrame. Please ensure the data is loaded correctly.")
 
 
 def display_empty_message(message):
@@ -282,7 +279,7 @@ def display_empty_message(message):
                 justify-content: center;
                 align-items: center;
                 height: 50vh;
-                font-size: 2em;
+                font-size: 1em;
                 color: black;
             }}
         </style>
@@ -290,5 +287,3 @@ def display_empty_message(message):
         """,
         unsafe_allow_html=True
     )
-
-
