@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit_function as sf  # streamlit_function 모듈 임포트
 import login_function as lf  # 로그인 모듈 임포트
 import Mandu_component
+import component_sub
 
 st.set_page_config(page_title="데이터 조회", layout="wide")
 
@@ -34,14 +35,14 @@ else:
         contract_manage = contract_manage.reindex(
             columns=columns_order)
 
-        contract_manage = Mandu_component.URL_insert(
+        contract_manage = component_sub.URL_insert(
             contract_manage)
         Mandu_component.display_dataframe(contract_manage, "계약서 관리")
 
     # 기타 문서 관리 페이지 함수
     def show_other_documents_management():
         # 세션 상태에 로딩된 데이터를 저장
-        etc_manage = st.session_state['etc_manage'] 
+        etc_manage = st.session_state['etc_manage']
         st.write("업체로 발송 된 견적서, MOU 및 NDA 체결 문서를 볼 수 있습니다:sunglasses:")
 
         etc_manage = etc_manage.drop(
@@ -54,7 +55,7 @@ else:
 
         # sf.display_tab 함수 호출
         # sf.display_tab(etc_manage_reordered, "기타 문서 관리", 10)
-        etc_manage = Mandu_component.URL_insert(etc_manage)
+        etc_manage = component_sub.URL_insert(etc_manage)
         Mandu_component.display_dataframe(etc_manage, "기타 문서 관리")
 
     # 제품 현황 관리 페이지 함수
@@ -72,7 +73,7 @@ else:
 
         st.write("Notion DB를 기준으로 분석한 자료이며, 오전 7시, 12시 하루 2회 동기화 됩니다.:sunglasses:")
 
-        cop_manage = Mandu_component.URL_insert(
+        cop_manage = component_sub.URL_insert(
             cop_manage)
         Mandu_component.display_dataframe(cop_manage, "제품 현황 관리")
 
