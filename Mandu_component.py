@@ -174,113 +174,115 @@ def table_columns_select(df, tab_name):
 def component_top_button(df, tab_name):
 
     df, temp_values = mandu_cs.preprocess_df(df, tab_name)
-    # 상태별 카운트 계산
+    temp_values = ["전체"] + list(df['상태'].unique())  # 상태별 유니크 값 추출 및 '전체' 추가
     status_counts = df['상태'].value_counts().to_dict()
+    status_counts['전체'] = len(df)  # 전체 데이터 수를 추가
 
-    # 상태 버튼 생성
-    col_count = len(temp_values)
-    cols = st.columns(col_count)
+    cols = st.columns(len(temp_values))  # 각 상태에 대한 버튼을 배치할 열 생성
 
     if 'clicked_item' not in st.session_state:
-        st.session_state.clicked_item = None
+        st.session_state.clicked_item = '전체'  # 세션 상태에 'clicked_item' 초기화
 
     for idx, item in enumerate(temp_values):
-        with cols[idx]:
+        with cols[idx]:  # 생성된 열에 각 버튼 배치
             count = status_counts.get(item, 0)
-            if st.button(f"{item} : {count}", key=f"{tab_name}_{item}_{idx}_first"):
+            button_label = f"{item} : {count}"
+            if st.button(button_label, key=f"{tab_name}_{item}_{idx}_first"):
+                # 클릭된 아이템이 다시 클릭되면 전체 데이터프레임 표시
                 if st.session_state.clicked_item == item:
-                    st.session_state.clicked_item = None
+                    st.session_state.clicked_item = '전체'
                 else:
                     st.session_state.clicked_item = item
 
-    # 클릭된 항목과 연관된 데이터프레임 표시 (df에서 필터링)
-    if st.session_state.clicked_item:
-        df = df[df['상태'] == st.session_state.clicked_item]
-        if len(df) == 0:
+    # 클릭된 항목에 따라 데이터프레임 필터링
+    if st.session_state.clicked_item == '전체' or not st.session_state.clicked_item:
+        display_dataframe(df)  # 전체 데이터프레임 표시
+    else:
+        filtered_df = df[df['상태'] == st.session_state.clicked_item]
+        if filtered_df.empty:
             st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
         else:
-            df = df.reset_index(drop=True)
-            display_dataframe(df)
+            display_dataframe(filtered_df.reset_index(drop=True))
 
-            # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
-            if st.session_state.clicked_item == "계약완료":
-                Data_all_df = st.session_state['매입/매출 전체 데이터']
-                Data_all_df = Data_all_df[Data_all_df['제품'] == tab_name]
+        # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
+        if st.session_state.clicked_item == "계약완료":
+            Data_all_df = st.session_state['매입/매출 전체 데이터']
+            Data_all_df = Data_all_df[Data_all_df['제품'] == tab_name]
 
-                Data_buy_df = st.session_state['매입/매출 매출 데이터']
-                Data_buy_df = Data_buy_df[Data_buy_df['제품'] == tab_name]
+            Data_buy_df = st.session_state['매입/매출 매출 데이터']
+            Data_buy_df = Data_buy_df[Data_buy_df['제품'] == tab_name]
 
-                Data_sell_df = st.session_state['매입/매출 매입 데이터']
-                Data_sell_df = Data_sell_df[Data_sell_df['제품'] == tab_name]
+            Data_sell_df = st.session_state['매입/매출 매입 데이터']
+            Data_sell_df = Data_sell_df[Data_sell_df['제품'] == tab_name]
 
-                Data_no_info_df = st.session_state['매입/매출 정보없음 데이터']
-                Data_no_info_df = Data_no_info_df[Data_no_info_df['제품'] == tab_name]
+            Data_no_info_df = st.session_state['매입/매출 정보없음 데이터']
+            Data_no_info_df = Data_no_info_df[Data_no_info_df['제품'] == tab_name]
 
-                # Tab 메뉴 항목들
-                tab_titles = ["전체", "매출/매입", "정보없음"]
-                tabs = st.tabs(tab_titles)
+            # Tab 메뉴 항목들
+            tab_titles = ["전체", "매출/매입", "정보없음"]
+            tabs = st.tabs(tab_titles)
 
-                with tabs[0]:
+            with tabs[0]:
 
-                    all_select_values = mandu_cs.extract_column_unique_value(
-                        Data_all_df, "제품 현황 관리")
-                    col1, col2 = st.columns([8, 2])
-                    with col1:
-                        st.write(f"문서개수 : {len(Data_all_df)}")
-                    with col2:
+                all_select_values = mandu_cs.extract_column_unique_value(
+                    Data_all_df, "제품 현황 관리")
+                col1, col2 = st.columns([8, 2])
+                with col1:
+                    st.write(f"문서개수 : {len(Data_all_df)}")
+                with col2:
+                    selected_filter = mandu_cs.filter_selectbox(
+                        f"{tabs}_all_filter", all_select_values)
+
+                result = mandu_cs.View_table(
+                    selected_filter, Data_all_df, "계약완료 버튼클릭")
+                if result:
+                    display_dataframe(Data_all_df)
+
+            with tabs[1]:
+                buy_select_values = mandu_cs.extract_column_unique_value(
+                    Data_buy_df, "제품 현황 관리")
+                sell_select_values = mandu_cs.extract_column_unique_value(
+                    Data_sell_df, "제품 현황 관리")
+
+                col10, col11 = st.columns([5, 5])
+
+                with col10:
+                    col20, col21 = st.columns([8, 2])
+                    with col20:
+                        st.write(f"문서개수 : {len(Data_buy_df)}")
+                    with col21:
                         selected_filter = mandu_cs.filter_selectbox(
-                            f"{tabs}_all_filter", all_select_values)
+                            f"{tabs}_buy_filter", buy_select_values)
 
                     result = mandu_cs.View_table(
-                        selected_filter, Data_all_df, "계약완료 버튼클릭")
+                        selected_filter, Data_buy_df, "계약완료 버튼클릭")
                     if result:
-                        display_dataframe(Data_all_df)
-
-                with tabs[1]:
-                    buy_select_values = mandu_cs.extract_column_unique_value(
-                        Data_buy_df, "제품 현황 관리")
-                    sell_select_values = mandu_cs.extract_column_unique_value(
-                        Data_sell_df, "제품 현황 관리")
-
-                    col10, col11 = st.columns([5, 5])
-
-                    with col10:
-                        col20, col21 = st.columns([8, 2])
-                        with col20:
-                            st.write(f"문서개수 : {len(Data_buy_df)}")
-                        with col21:
-                            selected_filter = mandu_cs.filter_selectbox(
-                                f"{tabs}_buy_filter", buy_select_values)
-
-                        result = mandu_cs.View_table(
-                            selected_filter, Data_buy_df, "계약완료 버튼클릭")
-                        if result:
-                            display_dataframe(Data_buy_df)
-                    with col11:
-                        col22, col23 = st.columns([8, 2])
-                        with col22:
-                            st.write(f"문서개수 : {len(Data_sell_df)}")
-                        with col23:
-                            selected_filter = mandu_cs.filter_selectbox(
-                                f"{tabs}_sell_filter", sell_select_values)
-                        mandu_cs.View_table(
-                            selected_filter, Data_sell_df, "계약완료 버튼클릭")
-                        if result:
-                            display_dataframe(Data_sell_df)
-                with tabs[2]:
-                    no_info_select_values = mandu_cs.extract_column_unique_value(
-                        Data_no_info_df, "제품 현황 관리")
-                    col1, col2 = st.columns([8, 2])
-                    with col1:
-                        st.write(f"문서개수 : {len(Data_no_info_df)}")
-                    with col2:
+                        display_dataframe(Data_buy_df)
+                with col11:
+                    col22, col23 = st.columns([8, 2])
+                    with col22:
+                        st.write(f"문서개수 : {len(Data_sell_df)}")
+                    with col23:
                         selected_filter = mandu_cs.filter_selectbox(
-                            f"{tabs}_no_info_filter", no_info_select_values)
-
-                    result = mandu_cs.View_table(
-                        selected_filter, no_info_select_values, "계약완료 버튼클릭")
+                            f"{tabs}_sell_filter", sell_select_values)
+                    mandu_cs.View_table(
+                        selected_filter, Data_sell_df, "계약완료 버튼클릭")
                     if result:
-                        display_dataframe(Data_no_info_df)
+                        display_dataframe(Data_sell_df)
+            with tabs[2]:
+                no_info_select_values = mandu_cs.extract_column_unique_value(
+                    Data_no_info_df, "제품 현황 관리")
+                col1, col2 = st.columns([8, 2])
+                with col1:
+                    st.write(f"문서개수 : {len(Data_no_info_df)}")
+                with col2:
+                    selected_filter = mandu_cs.filter_selectbox(
+                        f"{tabs}_no_info_filter", no_info_select_values)
+
+                result = mandu_cs.View_table(
+                    selected_filter, no_info_select_values, "계약완료 버튼클릭")
+                if result:
+                    display_dataframe(Data_no_info_df)
 
 
 def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
