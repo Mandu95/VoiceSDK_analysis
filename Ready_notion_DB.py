@@ -4,6 +4,8 @@ import datetime
 import Mandu_DA as Mandu
 
 ## Notion에서 데이터 로딩하는 함수 ##
+
+
 def First_data_setting():
     """노션 API를 호출하여 데이터베이스를 동기화하고 데이터 프레임을 반환하는 함수."""
     print(f"[{datetime.datetime.now()}] 시작: 노션 데이터 동기화")
@@ -43,7 +45,7 @@ def First_data_setting():
         etc_manage, notion_data[0], "발송 대상", "업체 이름")
     Task = function.change_relation_data(
         Task, notion_data[0], "분류", "업체 이름")
-    
+
     # 리스트를 문자열로 변환
     product_manage = normalize_column_lists(product_manage)
     contract_manage = normalize_column_lists(contract_manage)
@@ -53,6 +55,8 @@ def First_data_setting():
     return product_manage, contract_manage, etc_manage, Task
 
 ## 로딩 된 데이터프레임 일부 데이터 형태를 변환 ##
+
+
 def Change_data(df, column_name=None):
 
     df = function.Change_date_iso8601(df, column_name)
@@ -60,10 +64,14 @@ def Change_data(df, column_name=None):
 
     return df
 ## 데이터프레임의 각 열을 순회하면서 리스트 형태의 값들을 쉼표로 구분된 문자열로 변환 ##
+
+
 def normalize_column_lists(df):
     for column in df.columns:
-        df[column] = df[column].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        df[column] = df[column].apply(
+            lambda x: ', '.join(x) if isinstance(x, list) else x)
     return df
+
 
 def cop_convert_to_contract(df):
 
@@ -71,12 +79,11 @@ def cop_convert_to_contract(df):
 
     return filtered_etc_document_df
 
+
 def main(df=None, action_name=None):
 
-    
-    
     if action_name is None:
-        
+
         product_manage, contract_manage, etc_manage, Task = First_data_setting()
 
         product_manage = Change_data(product_manage, ["생성 일시", "정보 최신화 날짜"])
@@ -92,29 +99,32 @@ def main(df=None, action_name=None):
 
     else:
 
-        print(action_name,"분석을 시작합니다.")
-        action_name = [action_name] if not isinstance(action_name, list) else action_name
+        print(action_name, "분석을 시작합니다.")
+        action_name = [action_name] if not isinstance(
+            action_name, list) else action_name
         for A in action_name:
             if A == "내용 업데이트 업체":
                 DF_update_one_Week_cop = Mandu.update_one_week_cop(df)
-                print(A,"데이터 준비 완료")
+                print(A, "데이터 준비 완료")
                 return DF_update_one_Week_cop
             elif A == "신규 업체":
                 DF_New_cop = Mandu.new_cop_data(df, "생성 일시")
-                print(A,"데이터 준비 완료")
+                print(A, "데이터 준비 완료")
                 return DF_New_cop
-            
+
             elif A == "매입/매출 데이터":
 
-                Data_all, Data_buy, Data_sell, Data_no_info = Mandu.View_contract_status(df)
-                print(A,"데이터 준비 완료")
+                Data_all, Data_buy, Data_sell, Data_no_info = Mandu.View_contract_status(
+                    df)
+                print(A, "데이터 준비 완료")
                 return Data_all, Data_buy, Data_sell, Data_no_info
 
             elif A == "계약전환률":
 
-                result_df = cop_convert_to_contract(df)
-                print(A,"데이터 준비 완료")
-                return result_df
+                contract_df_Demo, demo_to_contract_df = cop_convert_to_contract(
+                    df)
+                print(A, "데이터 준비 완료")
+                return contract_df_Demo, demo_to_contract_df
 
 # a = main()
 # b= main(a[1],"매입/매출 데이터")
