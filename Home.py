@@ -20,6 +20,9 @@ def load_and_initialize_data():
         Demo_df, demo_to_contract_df = Ready_notion_DB.main(
             contract_manage, "계약전환률")
 
+        this_month_df, df_last_3_months, df_last_6_months = Ready_notion_DB.main(
+            contract_manage, "매출성과")
+
         # 세션 상태에 로딩된 데이터를 저장
         st.session_state['product_manage'] = cop_manage
         st.session_state['contract_manage'] = contract_manage
@@ -33,6 +36,9 @@ def load_and_initialize_data():
         st.session_state['매입/매출 정보없음 데이터'] = Data_no_info
         st.session_state['데모 계약'] = Demo_df
         st.session_state['데모 to 정식 계약'] = demo_to_contract_df
+        st.session_state['당월 매출'] = this_month_df
+        st.session_state['최근 3개월 매출'] = df_last_3_months
+        st.session_state['최근 6개월 매출'] = df_last_6_months
 
         # 데이터 로드 완료 표시
         st.session_state['data_initialized'] = True
@@ -54,6 +60,9 @@ def main_content():
 
     Demo_df = st.session_state['데모 계약']
     demo_to_contract_df = st.session_state['데모 to 정식 계약']
+    this_month_df = st.session_state['당월 매출']
+    df_last_3_months = st.session_state['최근 3개월 매출']
+    df_last_6_months = st.session_state['최근 6개월 매출']
 
     # 탭 구성 설정
     tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
@@ -79,8 +88,16 @@ def main_content():
             demo_to_contract_df['제품'] == "VoiceEMR"]
         Demo_df_VoiceEMR = Demo_df[
             Demo_df['제품'] == "VoiceEMR"]
+        this_month_df_VoiceEMR = this_month_df[
+            this_month_df['제품'] == "VoiceEMR"]
+        df_last_3_months_VoiceEMR = df_last_3_months[
+            df_last_3_months['제품'] == "VoiceEMR"]
+        df_last_6_months_VoiceEMR = df_last_6_months[
+            df_last_6_months['제품'] == "VoiceEMR"]
+        moeny_list_VoiceEMR = [this_month_df_VoiceEMR,
+                               df_last_3_months_VoiceEMR, df_last_6_months_VoiceEMR]
         Mandu_component.third_layer(
-            Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR, "VoiceEMR")
+            Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR, moeny_list_VoiceEMR, "VoiceEMR")
 
     with tabs[1]:
         cop_df_VoiceENR = cop_df[cop_df['제품'] == "VoiceENR"]
@@ -98,8 +115,17 @@ def main_content():
             demo_to_contract_df['제품'] == "VoiceENR"]
         Demo_df_VoiceENR = Demo_df[
             Demo_df['제품'] == "VoiceENR"]
+
+        this_month_df_VoiceENR = this_month_df[
+            this_month_df['제품'] == "VoiceENR"]
+        df_last_3_months_VoiceENR = df_last_3_months[
+            df_last_3_months['제품'] == "VoiceENR"]
+        df_last_6_months_VoiceENR = df_last_6_months[
+            df_last_6_months['제품'] == "VoiceENR"]
+        moeny_list_VoiceENR = [this_month_df_VoiceENR,
+                               df_last_3_months_VoiceENR, df_last_6_months_VoiceENR]
         Mandu_component.third_layer(
-            Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, "VoiceENR")
+            Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, moeny_list_VoiceENR,  "VoiceENR")
 
     with tabs[2]:
         cop_df_VoiceSDK = cop_df[cop_df['제품'] == "VoiceSDK"]
