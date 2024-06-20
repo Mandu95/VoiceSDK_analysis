@@ -73,13 +73,6 @@ def normalize_column_lists(df):
     return df
 
 
-def cop_convert_to_contract(df):
-
-    filtered_etc_document_df = Mandu.DA_cop_convert_to_contract(df)
-
-    return filtered_etc_document_df
-
-
 def main(df=None, action_name=None):
 
     if action_name is None:
@@ -121,7 +114,7 @@ def main(df=None, action_name=None):
 
             elif A == "계약전환률":
 
-                contract_df_Demo, demo_to_contract_df = cop_convert_to_contract(
+                contract_df_Demo, demo_to_contract_df = Mandu.DA_cop_convert_to_contract(
                     df)
                 print(A, "데이터 준비 완료")
                 return contract_df_Demo, demo_to_contract_df
