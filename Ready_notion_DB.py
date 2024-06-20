@@ -119,6 +119,21 @@ def main(df=None, action_name=None):
                 print(A, "데이터 준비 완료")
                 return contract_df_Demo, demo_to_contract_df
 
+            elif A == "월별 매출성과":
+
+                this_month_df, df_last_3_months, df_last_6_months = Mandu.moeny_sum_month(
+                    df)
+                print(A, "데이터 준비 완료")
+                return this_month_df, df_last_3_months, df_last_6_months
+
+            elif A == "분기별 매출성과":
+
+                quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df = Mandu.moeny_quater(
+                    df)
+                print(A, "데이터 준비 완료")
+                return quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df
+
+
 # a = main()
 # b= main(a[1],"매입/매출 데이터")
 # print(b[2])

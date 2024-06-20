@@ -40,7 +40,7 @@ def show_table(df_html):
                     }}
                     td:first-child {{
                         width: auto; /* 첫 번째 열은 자동 너비 */
-                        text-align: left; 
+                        text-align: left;
                     }}
 
                     a {{
@@ -112,26 +112,29 @@ def calculate_table_height(df, row_height=30):
 # '페이지URL' 열이 있는지 확인하고 하이퍼링크 적용
 def URL_insert(df):
 
-    if '페이지URL' in df.columns:
-        df.iloc[:, 0] = df.apply(
-            lambda x: f'<a href="{x["페이지URL"]}" target="_blank">{x.iloc[0]}</a>' if pd.notna(x['페이지URL']) else x.iloc[0], axis=1)
-        df = df.drop(columns=["페이지URL"])
+    if df is None:
+        display_empty_message(f"검색 결과가 없습니다.")
 
-    # 하이퍼링크 적용을 위한 다른 열들 처리
-    link_columns = {
-        '사본링크': '문서 확인하기',
-        '관련 문서': '문서 확인하기',
-        '기타문서 (견적서, NDA 등)': '문서 확인하기'
-    }
+    else:
+        if '페이지URL' in df.columns:
+            df.iloc[:, 0] = df.apply(
+                lambda x: f'<a href="{x["페이지URL"]}" target="_blank">{x.iloc[0]}</a>' if pd.notna(x['페이지URL']) else x.iloc[0], axis=1)
+            df = df.drop(columns=["페이지URL"])
 
-    for col, link_text in link_columns.items():
-        if col in df.columns:
-            df[col] = df[col].apply(
-                lambda x: f'<a href="{x}" target="_blank" style="color: inherit;">{link_text}</a>' if pd.notna(x) else '')
-            if col == '기타문서 (견적서, NDA 등)':
-                df.rename(columns={col: '문서확인'}, inplace=True)
+        link_columns = {
+            '사본링크': '문서 확인하기',
+            '관련 문서': '문서 확인하기',
+            '기타문서 (견적서, NDA 등)': '문서 확인하기'
+        }
 
-    return df
+        for col, link_text in link_columns.items():
+            if col in df.columns:
+                df[col] = df[col].apply(
+                    lambda x: f'<a href="{x}{link_text}</a>' if pd.notna(x) else '')
+                if col == '기타문서 (견적서, NDA 등)':
+                    df.rename(columns={col: '문서확인'}, inplace=True)
+
+        return df
 
 
 def load_css():
@@ -161,23 +164,38 @@ def extract_column_unique_value(df, col_name=None):
         return unique_value
 
 
-def table_columns_select(df, tab_name, page_name):
+def columns_select(df, tab_name, page_name=None):
 
-    if page_name == "두번째레이어":
-        # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "개발언어",
-                         "컨택 업체 담당자", "정보 최신화 날짜"]
-        df = df.reindex(columns=columns_order)
+    if page_name is not None:
+        if page_name == "두번째레이어":
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "개발언어",
+                             "컨택 업체 담당자", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
 
-        return df
+            return df
 
-    elif page_name == "세번째레이어":
-        # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "개발언어",
-                         "컨택 업체 담당자", "정보 최신화 날짜"]
-        df = df.reindex(columns=columns_order)
+        elif page_name == "계약완료 버튼클릭":
+            # 데이터프레임 열 순서 변경
+            columns_order = ["계약명", "계약총액"]
 
-        return df
+            df = df.reindex(columns=columns_order)
+
+            return df
+
+        elif page_name == "세번째레이어":
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "개발언어",
+                             "컨택 업체 담당자", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+
+            return df
+        elif page_name == "업체 조회_데이터조회탭":
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "상태", "컨택 업체 담당자", "담당자 이메일"]
+            df = df.reindex(columns=columns_order)
+
+            return df
 
     else:
         if tab_name == "VoiceSDK":
@@ -206,7 +224,6 @@ def table_columns_select(df, tab_name, page_name):
 
 def preprocess_df(df, tab_name):
 
-    df = URL_insert(df)
     # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
         temp_values = ['최초컨택', '자료발송', '사업설명',
@@ -244,29 +261,14 @@ def View_table(selected_filter, df, purpose=None):
 
                 # DataFrame이 비어 있는지 확인
                 if df.empty:
-                    # 데이터가 없는 경우 메시지 표시
-                    st.markdown(
-                        """
-                        <style>
-                            .empty-message {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                height: 50vh;
-                                font-size: 2em;
-                                color: black;
-                            }
-                        </style>
-                        <div class="empty-message">검색 결과가 없습니다.</div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # df가 DataFrame이 아닐 때 오류 메시지 출력
+                    display_empty_message(f"검색 결과가 없습니다.")
                 else:
-                    return True
+
+                    return df
     else:
         # df가 DataFrame이 아닐 때 오류 메시지 출력
-        st.error(
-            "Provided data is not a DataFrame. Please ensure the data is loaded correctly.")
+        display_empty_message(f"해당되는 데이터가 없습니다.")
 
 
 def display_empty_message(message):

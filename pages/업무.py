@@ -18,7 +18,7 @@ else:
 
     def show_product_management():
         # 세션 상태에 로딩된 데이터를 저장
-        Task = st.session_state['Task'] 
+        Task = st.session_state['Task']
 
         # 'age' 열을 기준으로 내림차순 정렬
         Task = Task.sort_values(by='최종 편집 일시', ascending=False)
@@ -33,7 +33,8 @@ else:
         st.subheader("업체 별 업무 진행상황 관리")
         st.write("Notion DB를 기준으로 분석한 자료입니다.:sunglasses:")
 
-        Mandu_component.display_dataframe(Task, "업무")
+        Mandu_component.display_dataframe(
+            Task, tab_name=None, page_name="업무", purpose=None)
 
     if __name__ == "__main__":
         show_product_management()

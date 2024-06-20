@@ -21,7 +21,10 @@ def load_and_initialize_data():
             contract_manage, "계약전환률")
 
         this_month_df, df_last_3_months, df_last_6_months = Ready_notion_DB.main(
-            contract_manage, "매출성과")
+            contract_manage, "월별 매출성과")
+
+        quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df = Ready_notion_DB.main(
+            contract_manage, "분기별 매출성과")
 
         # 세션 상태에 로딩된 데이터를 저장
         st.session_state['product_manage'] = cop_manage
@@ -39,6 +42,10 @@ def load_and_initialize_data():
         st.session_state['당월 매출'] = this_month_df
         st.session_state['최근 3개월 매출'] = df_last_3_months
         st.session_state['최근 6개월 매출'] = df_last_6_months
+        st.session_state['1/4분기 매출'] = quarter_1_df
+        st.session_state['2/4분기 매출'] = quarter_2_df
+        st.session_state['3/4분기 매출'] = quarter_3_df
+        st.session_state['4/4분기 매출'] = quarter_4_df
 
         # 데이터 로드 완료 표시
         st.session_state['data_initialized'] = True
@@ -63,6 +70,10 @@ def main_content():
     this_month_df = st.session_state['당월 매출']
     df_last_3_months = st.session_state['최근 3개월 매출']
     df_last_6_months = st.session_state['최근 6개월 매출']
+    quarter_4_df = st.session_state['4/4분기 매출']
+    quarter_3_df = st.session_state['3/4분기 매출']
+    quarter_2_df = st.session_state['2/4분기 매출']
+    quarter_1_df = st.session_state['1/4분기 매출']
 
     # 탭 구성 설정
     tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
@@ -96,8 +107,21 @@ def main_content():
             df_last_6_months['제품'] == "VoiceEMR"]
         moeny_list_VoiceEMR = [this_month_df_VoiceEMR,
                                df_last_3_months_VoiceEMR, df_last_6_months_VoiceEMR]
+
+        quarter_4_df_VoiceEMR = quarter_4_df[
+            quarter_4_df['제품'] == "VoiceEMR"]
+        quarter_3_df_VoiceEMR = quarter_3_df[
+            quarter_3_df['제품'] == "VoiceEMR"]
+        quarter_2_df_VoiceEMR = quarter_2_df[
+            quarter_2_df['제품'] == "VoiceEMR"]
+        quarter_1_df_VoiceEMR = quarter_1_df[
+            quarter_1_df['제품'] == "VoiceEMR"]
+
+        quarter_list_VoiceEMR = [quarter_1_df_VoiceEMR, quarter_2_df_VoiceEMR,
+                                 quarter_3_df_VoiceEMR, quarter_4_df_VoiceEMR]
+
         Mandu_component.third_layer(
-            Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR, moeny_list_VoiceEMR, "VoiceEMR")
+            Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR, moeny_list_VoiceEMR, quarter_list_VoiceEMR, "VoiceEMR")
 
     with tabs[1]:
         cop_df_VoiceENR = cop_df[cop_df['제품'] == "VoiceENR"]
@@ -124,8 +148,21 @@ def main_content():
             df_last_6_months['제품'] == "VoiceENR"]
         moeny_list_VoiceENR = [this_month_df_VoiceENR,
                                df_last_3_months_VoiceENR, df_last_6_months_VoiceENR]
+
+        quarter_4_df_VoiceENR = quarter_4_df[
+            quarter_4_df['제품'] == "VoiceEMR"]
+        quarter_3_df_VoiceENR = quarter_3_df[
+            quarter_3_df['제품'] == "VoiceEMR"]
+        quarter_2_df_VoiceENR = quarter_2_df[
+            quarter_2_df['제품'] == "VoiceEMR"]
+        quarter_1_df_VoiceENR = quarter_1_df[
+            quarter_1_df['제품'] == "VoiceEMR"]
+
+        quarter_list_VoiceENR = [quarter_1_df_VoiceENR, quarter_2_df_VoiceENR,
+                                 quarter_3_df_VoiceENR, quarter_4_df_VoiceENR]
+
         Mandu_component.third_layer(
-            Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, moeny_list_VoiceENR,  "VoiceENR")
+            Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, moeny_list_VoiceENR, quarter_list_VoiceENR, "VoiceENR")
 
     with tabs[2]:
         cop_df_VoiceSDK = cop_df[cop_df['제품'] == "VoiceSDK"]

@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 import numpy as np
+from pandas.tseries.offsets import DateOffset
 
 # from Ready_notion_DB import contract_manage, product_manage
 
@@ -61,6 +62,8 @@ def View_contract_status(df):
 
     return temp_df, temp_df_sell, temp_df_buy, temp_df_no_info
 
+#################################### 데모 to 계약 전환률 #############################################
+
 
 def DA_cop_convert_to_contract(df):
 
@@ -75,6 +78,56 @@ def DA_cop_convert_to_contract(df):
         contract_df_NoDemo_values)]
 
     return contract_df_Demo, demo_to_contract_df
+
+
+#################################### 월별/분기별 매출액 #############################################
+def moeny_sum_month(df):
+    # 산출 근거 : 계약시작일이 당월인 데이터들의 계약 총액의 합계
+    # '계약시작일' 열을 날짜 형식으로 변환
+    df['계약시작일'] = pd.to_datetime(df['계약시작일'])
+    # '계약총액' 열에서 '원'과 쉼표를 제거
+    df['계약총액'] = df['계약총액'].replace('[원,]', '', regex=True)
+
+    # 빈 문자열을 NaN으로 변환 후 NaN을 0으로 대체
+    df['계약총액'] = pd.to_numeric(
+        df['계약총액'], errors='coerce').fillna(0).astype(int)
+    # 현재 날짜 정보 가져오기
+    current_date = datetime.now()
+
+    # 최근 3개월 데이터 필터링
+    three_months_ago = current_date - DateOffset(months=3)
+    df_last_3_months = df[df['계약시작일'] >= three_months_ago]
+    # total_last_3_months_money_amount = df_last_3_months['계약총액'].sum()
+    # 최근 6개월 데이터 필터링
+    six_months_ago = current_date - DateOffset(months=6)
+    df_last_6_months = df[df['계약시작일'] >= six_months_ago]
+
+    # 이번 달 데이터만 필터링
+    this_month_df = df[(df['계약시작일'].dt.year == current_date.year) &
+                       (df['계약시작일'].dt.month == current_date.month)]
+
+    return this_month_df, df_last_3_months, df_last_6_months
+
+
+def moeny_quater(df):
+    # 산출 근거 : 계약시작일이 당월인 데이터들의 계약 총액의 합계
+    # '계약총액' 열에서 '원'과 쉼표를 제거
+    df['계약총액'] = df['계약총액'].replace('[원,]', '', regex=True)
+    # 빈 문자열을 NaN으로 변환 후 NaN을 0으로 대체
+    df['계약총액'] = pd.to_numeric(
+        df['계약총액'], errors='coerce').fillna(0).astype(int)
+    df['계약시작일'] = pd.to_datetime(df['계약시작일'])
+
+    # 분기 계산
+    df['분기'] = df['계약시작일'].dt.to_period('Q')
+
+    # 각 분기별 데이터프레임을 변수에 할당
+    quarter_1_df = df[df['분기'] == '2024Q1']
+    quarter_2_df = df[df['분기'] == '2024Q2']
+    quarter_3_df = df[df['분기'] == '2024Q3']
+    quarter_4_df = df[df['분기'] == '2024Q4']
+
+    return quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df
 
 
 # ####################### 데이터 분석 main (streamlit_function에서 호출하는 부분) #######################

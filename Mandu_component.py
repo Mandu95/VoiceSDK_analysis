@@ -1,122 +1,91 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import component_sub as mandu_cs
+import streamlit as st
+from datetime import datetime
 
 
 # 데이터프레임 html table로 보여주는 함수
-def display_dataframe(df, page_name=None):
+def display_dataframe(df, tab_name, page_name=None, purpose=None):
 
     df = mandu_cs.URL_insert(df)
 
-    if page_name is not None:
+    if df is not None and not df.empty:
+        if page_name is not None:
 
-        mandu_cs.reset_filter_button(
-            f"{page_name}_filter", f"{page_name}_search")
+            mandu_cs.reset_filter_button(
+                f"{page_name}_filter", f"{page_name}_search")
 
-        # 상단에 검색창과 선택박스 삽입
-        col1, col2 = st.columns([8, 2])
-
-        with col1:
-            search_query = mandu_cs.search_box(f"{page_name}_search")
-
-        with col2:
-            if page_name == "업무":
-                filter_options = df['분류'].dropna().unique().tolist()
-                filter_options.insert(0, '전체')
-                selected_filter = mandu_cs.filter_selectbox(
-                    f"{page_name}_filter", filter_options)
-                df = mandu_cs.URL_insert(df)
-            else:
-                filter_options = ["전체", "VoiceEMR", "VoiceENR",
-                                  "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
-                selected_filter = mandu_cs.filter_selectbox(
-                    f"{page_name}_filter", filter_options)
-
-        # 검색 기능 적용: 첫 번째 열을 기준으로 검색
-        if search_query:
-            first_column = df.columns[0]
-            df = df[df[first_column].astype(
-                str).str.contains(search_query, na=False)]
-
-        # 제품 열의 리스트를 텍스트로 변환
-        if '제품' in df.columns:
-            df['제품'] = df['제품'].apply(lambda x: ', '.join(
-                x) if isinstance(x, list) else x)
-
-        if selected_filter != "전체":
-
-            if page_name != "업무":
-                df = df[df['제품'] == selected_filter]
-            else:
-                df = df[df['분류'] == selected_filter]
-
-        if df.empty:
-            # 데이터가 없는 경우 메시지 표시
-            st.markdown(
-                """
-                <style>
-                    .empty-message {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 50vh;
-                        font-size: 2em;
-                        color: black;
-                    }
-                </style>
-                <div class="empty-message">검색 결과가 없습니다.</div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            # 좌측 테이블과 우측 페이징을 위한 컬럼 배치
+            # 상단에 검색창과 선택박스 삽입
             col1, col2 = st.columns([8, 2])
-            with col2:
-                # 페이징
-                items_per_page = 10  # 한 페이지에 보여줄 행의 개수
-                paged_df, total_pages, page_num = mandu_cs.paginate_dataframe(
-                    df, items_per_page, key_prefix=page_name)
 
-            if page_name != "업무":
-                paged_df = paged_df.drop(
-                    columns=['제품'])  # 필요한 열만 남기고 제거
+            with col1:
+                search_query = mandu_cs.search_box(f"{page_name}_search")
+
+            with col2:
+                if page_name == "업무":
+                    filter_options = df['분류'].dropna().unique().tolist()
+                    filter_options.insert(0, '전체')
+                    selected_filter = mandu_cs.filter_selectbox(
+                        f"{page_name}_filter", filter_options)
+                    df = mandu_cs.URL_insert(df)
+                else:
+                    filter_options = ["전체", "VoiceEMR", "VoiceENR",
+                                      "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
+                    selected_filter = mandu_cs.filter_selectbox(
+                        f"{page_name}_filter", filter_options)
+
+            # 검색 기능 적용: 첫 번째 열을 기준으로 검색
+            if search_query:
+                first_column = df.columns[0]
+                df = df[df[first_column].astype(
+                    str).str.contains(search_query, na=False)]
+
+            # 제품 열의 리스트를 텍스트로 변환
+            if '제품' in df.columns:
+                df['제품'] = df['제품'].apply(lambda x: ', '.join(
+                    x) if isinstance(x, list) else x)
+
+            if selected_filter != "전체":
+
+                if page_name != "업무":
+                    df = df[df['제품'] == selected_filter]
+                else:
+                    df = df[df['분류'] == selected_filter]
+
+            if df.empty:
+                mandu_cs.display_empty_message(f"조회되는 데이터가 없습니다.")
+            else:
+                # 좌측 테이블과 우측 페이징을 위한 컬럼 배치
+                col1, col2 = st.columns([8, 2])
+                with col2:
+                    # 페이징
+                    items_per_page = 10  # 한 페이지에 보여줄 행의 개수
+                    paged_df, total_pages, page_num = mandu_cs.paginate_dataframe(
+                        df, items_per_page, key_prefix=page_name)
+
+                if page_name != "업무":
+                    paged_df = paged_df.drop(
+                        columns=['제품'])  # 필요한 열만 남기고 제거
+
+                # 데이터프레임을 HTML로 변환
+                df_html = paged_df.to_html(index=False, escape=False)
+
+                # 테이블 높이 계산
+                table_height = mandu_cs.calculate_table_height(paged_df)
+
+                # 데이터프레임 표시
+                components.html(mandu_cs.show_table(df_html),
+                                height=table_height + 100, scrolling=True)
+
+        else:
 
             # 데이터프레임을 HTML로 변환
-            df_html = paged_df.to_html(index=False, escape=False)
-
-            # 테이블 높이 계산
-            table_height = mandu_cs.calculate_table_height(paged_df)
+            df_html = df.to_html(index=False, escape=False)
 
             # 데이터프레임 표시
             components.html(mandu_cs.show_table(df_html),
-                            height=table_height + 100, scrolling=True)
-
-    else:
-        # 데이터프레임을 HTML로 변환
-        df_html = df.to_html(index=False, escape=False)
-
-        if df.empty:
-            # 데이터가 없는 경우 메시지 표시
-            st.markdown(
-                """
-                <style>
-                    .empty-message {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 50vh;
-                        font-size: 2em;
-                        color: black;
-                    }
-                </style>
-                <div class="empty-message">검색 결과가 없습니다.</div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        # 데이터프레임 표시
-        components.html(mandu_cs.show_table(df_html),
-                        height=400, scrolling=True)
+                            height=400, scrolling=True)
 
 
 # 초기 페이지 설정
@@ -146,35 +115,10 @@ def set_initial_page():
         )
 
 
-def table_columns_select(df, tab_name):
-    if tab_name == "VoiceSDK":
-        # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                              "📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
-        # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "개발언어", "담당자 이메일",
-                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-        df = df.reindex(columns=columns_order)
-        # ArrowInvalid 오류 해결을 위해 리스트 형태를 텍스트 값으로 변환
-        df['개발언어'] = df['개발언어'].apply(
-            lambda x: ', '.join(x) if isinstance(x, list) else x)
-
-    else:
-        # 필요한 열만 남기고 제거
-        df = df.drop(columns=['기타문서 (견적서, NDA 등)', "페이지URL",
-                              "📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
-        # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "담당자 이메일",
-                         "컨택 업체 담당자", "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
-        df = df.reindex(columns=columns_order)
-
-    return df
-
-
 def component_top_button(df, tab_name):
-
+    df = mandu_cs.URL_insert(df)
     df, temp_values = mandu_cs.preprocess_df(df, tab_name)
-    temp_values = ["전체"] + list(df['상태'].unique())  # 상태별 유니크 값 추출 및 '전체' 추가
+    temp_values = ["전체"] + temp_values  # 상태별 유니크 값 추출 및 '전체' 추가
     status_counts = df['상태'].value_counts().to_dict()
     status_counts['전체'] = len(df)  # 전체 데이터 수를 추가
 
@@ -196,27 +140,44 @@ def component_top_button(df, tab_name):
 
     # 클릭된 항목에 따라 데이터프레임 필터링
     if st.session_state.clicked_item == '전체' or not st.session_state.clicked_item:
-        display_dataframe(df)  # 전체 데이터프레임 표시
+        display_dataframe(df, tab_name)  # 전체 데이터프레임 표시
     else:
         filtered_df = df[df['상태'] == st.session_state.clicked_item]
         if filtered_df.empty:
             st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
         else:
-            display_dataframe(filtered_df.reset_index(drop=True))
+            display_dataframe(filtered_df.reset_index(drop=True), tab_name)
 
         # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
         if st.session_state.clicked_item == "계약완료":
+
             Data_all_df = st.session_state['매입/매출 전체 데이터']
             Data_all_df = Data_all_df[Data_all_df['제품'] == tab_name]
+            all_select_values = mandu_cs.extract_column_unique_value(
+                Data_all_df, "제품 현황 관리")
+            Data_all_df = mandu_cs.columns_select(
+                Data_all_df, tab_name, "계약완료 버튼클릭")
 
             Data_buy_df = st.session_state['매입/매출 매출 데이터']
             Data_buy_df = Data_buy_df[Data_buy_df['제품'] == tab_name]
+            buy_select_values = mandu_cs.extract_column_unique_value(
+                Data_buy_df, "제품 현황 관리")
+            Data_buy_df = mandu_cs.columns_select(
+                Data_buy_df, tab_name, "계약완료 버튼클릭")
 
             Data_sell_df = st.session_state['매입/매출 매입 데이터']
             Data_sell_df = Data_sell_df[Data_sell_df['제품'] == tab_name]
+            sell_select_values = mandu_cs.extract_column_unique_value(
+                Data_sell_df, "제품 현황 관리")
+            Data_sell_df = mandu_cs.columns_select(
+                Data_sell_df, tab_name, "계약완료 버튼클릭")
 
             Data_no_info_df = st.session_state['매입/매출 정보없음 데이터']
             Data_no_info_df = Data_no_info_df[Data_no_info_df['제품'] == tab_name]
+            no_info_select_values = mandu_cs.extract_column_unique_value(
+                Data_no_info_df, "제품 현황 관리")
+            Data_no_info_df = mandu_cs.columns_select(
+                Data_no_info_df, tab_name, "계약완료 버튼클릭")
 
             # Tab 메뉴 항목들
             tab_titles = ["전체", "매출/매입", "정보없음"]
@@ -224,8 +185,6 @@ def component_top_button(df, tab_name):
 
             with tabs[0]:
 
-                all_select_values = mandu_cs.extract_column_unique_value(
-                    Data_all_df, "제품 현황 관리")
                 col1, col2 = st.columns([8, 2])
                 with col1:
                     st.write(f"문서개수 : {len(Data_all_df)}")
@@ -233,16 +192,11 @@ def component_top_button(df, tab_name):
                     selected_filter = mandu_cs.filter_selectbox(
                         f"{tabs}_all_filter", all_select_values)
 
-                result = mandu_cs.View_table(
+                result_all_df = mandu_cs.View_table(
                     selected_filter, Data_all_df, "계약완료 버튼클릭")
-                if result:
-                    display_dataframe(Data_all_df)
+                display_dataframe(result_all_df, tab_name)
 
             with tabs[1]:
-                buy_select_values = mandu_cs.extract_column_unique_value(
-                    Data_buy_df, "제품 현황 관리")
-                sell_select_values = mandu_cs.extract_column_unique_value(
-                    Data_sell_df, "제품 현황 관리")
 
                 col10, col11 = st.columns([5, 5])
 
@@ -254,10 +208,10 @@ def component_top_button(df, tab_name):
                         selected_filter = mandu_cs.filter_selectbox(
                             f"{tabs}_buy_filter", buy_select_values)
 
-                    result = mandu_cs.View_table(
+                    result_buy_df = mandu_cs.View_table(
                         selected_filter, Data_buy_df, "계약완료 버튼클릭")
-                    if result:
-                        display_dataframe(Data_buy_df)
+
+                    display_dataframe(result_buy_df, tab_name)
                 with col11:
                     col22, col23 = st.columns([8, 2])
                     with col22:
@@ -265,13 +219,12 @@ def component_top_button(df, tab_name):
                     with col23:
                         selected_filter = mandu_cs.filter_selectbox(
                             f"{tabs}_sell_filter", sell_select_values)
-                    mandu_cs.View_table(
+                    result_sell_df = mandu_cs.View_table(
                         selected_filter, Data_sell_df, "계약완료 버튼클릭")
-                    if result:
-                        display_dataframe(Data_sell_df)
+
+                    display_dataframe(result_sell_df, tab_name)
             with tabs[2]:
-                no_info_select_values = mandu_cs.extract_column_unique_value(
-                    Data_no_info_df, "제품 현황 관리")
+
                 col1, col2 = st.columns([8, 2])
                 with col1:
                     st.write(f"문서개수 : {len(Data_no_info_df)}")
@@ -279,10 +232,9 @@ def component_top_button(df, tab_name):
                     selected_filter = mandu_cs.filter_selectbox(
                         f"{tabs}_no_info_filter", no_info_select_values)
 
-                result = mandu_cs.View_table(
+                result_no_info_df = mandu_cs.View_table(
                     selected_filter, no_info_select_values, "계약완료 버튼클릭")
-                if result:
-                    display_dataframe(Data_no_info_df)
+                display_dataframe(result_no_info_df, tab_name)
 
 
 def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
@@ -326,13 +278,13 @@ def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
             mandu_cs.display_empty_message(f"{tab_name}의 신규 데이터가 없습니다.")
         else:
             DF_New_cop = mandu_cs.URL_insert(DF_New_cop)
-            DF_New_cop = mandu_cs.table_columns_select(
+            DF_New_cop = mandu_cs.columns_select(
                 DF_New_cop, tab_name, "두번째레이어")
 
-            display_dataframe(DF_New_cop)
+            display_dataframe(DF_New_cop, tab_name)
 
 
-def third_layer(demo_cop, Demo_to_contract_cop,  tab_name):
+def third_layer(demo_cop, Demo_to_contract_cop, moeny_df_list, quarter_list, tab_name):
 
     # 스타일 적용
     st.markdown("""
@@ -375,5 +327,67 @@ def third_layer(demo_cop, Demo_to_contract_cop,  tab_name):
 
     with col2:
 
-        st.subheader("계약전환률")
-        st.write("데모 또는 MOU 체결 등 협력 진행 이후 정식계약으로 전환 된 비율입니다.")
+        total_this_months_money_amount = moeny_df_list[0]['계약총액'].sum()
+        total_last_3_months_money_amount = moeny_df_list[1]['계약총액'].sum()
+        total_last_6_months_money_amount = moeny_df_list[2]['계약총액'].sum()
+
+        # 금액 단위로 표시
+        formatted_this_month = f"{total_this_months_money_amount:,}원"
+        formatted_last_3_months = f"{total_last_3_months_money_amount:,}원"
+        formatted_last_6_months = f"{total_last_6_months_money_amount:,}원"
+
+        col10, col11 = st.columns([8, 2])
+        with col10:
+            st.subheader("영업매출")
+            st.write("계약서의 계약날짜 기준으로 산출 된 계약총액 합계입니다.")
+
+        with col11:
+            # 선택박스 구성
+
+            period_options = {
+                "당월": formatted_this_month,
+                "3개월": formatted_last_3_months,
+                "6개월": formatted_last_6_months
+            }
+
+            # 각 선택박스에 고유한 키를 할당하기 위해 tab_name 변수와 고유의 접미사를 사용
+            monthly_sales_key = f"{tab_name}_monthly_sales_selectbox"
+            selected_period1 = st.selectbox("기간 선택:", list(
+                period_options.keys()), key=monthly_sales_key)
+
+        st.subheader(f"{period_options[selected_period1]}")
+
+    with col3:
+        # 분기별 매출액 계산
+        quarter_1_money = quarter_list[0]['계약총액'].sum()
+        quarter_2_money = quarter_list[1]['계약총액'].sum()
+        quarter_3_money = quarter_list[2]['계약총액'].sum()
+        quarter_4_money = quarter_list[3]['계약총액'].sum()
+
+        # 금액 단위로 표시
+        formatted_money = {
+            "1/4분기": f"{quarter_1_money:,}원",
+            "2/4분기": f"{quarter_2_money:,}원",
+            "3/4분기": f"{quarter_3_money:,}원",
+            "4/4분기": f"{quarter_4_money:,}원"
+        }
+
+        current_quarter = (datetime.now().month - 1) // 3 + 1
+
+        col10, col11 = st.columns([7, 3])
+        with col10:
+            st.subheader("분기별 매출")
+            st.write("당해 년도 분기 별 매출 데이터입니다.")
+
+        with col11:
+            # 선택박스 구성
+            quarter_sales_key = f"{tab_name}_quarter_sales_selectbox"
+            selected_quarter_text = st.selectbox("기간 선택:", list(
+                formatted_money.keys()), key=quarter_sales_key)
+
+            selected_quarter_index = int(selected_quarter_text.split('/')[0])
+
+        if selected_quarter_index > current_quarter:
+            st.write("분기가 시작되면 데이터가 표시됩니다!")
+        else:
+            st.subheader(formatted_money[selected_quarter_text])

@@ -24,6 +24,7 @@ else:
     def show_contract_management():
         # 세션 상태에 로딩된 데이터를 저장
         contract_manage = st.session_state['contract_manage']
+
         st.write("정식/데모 계약서를 확인할 수 있습니다.:sunglasses:")
 
         # 필요 없는 열을 제거
@@ -37,7 +38,8 @@ else:
 
         contract_manage = component_sub.URL_insert(
             contract_manage)
-        Mandu_component.display_dataframe(contract_manage, "계약서 관리")
+        Mandu_component.display_dataframe(
+            contract_manage, tab_name=None, page_name="계약서 관리", purpose=None)
 
     # 기타 문서 관리 페이지 함수
     def show_other_documents_management():
@@ -56,7 +58,8 @@ else:
         # sf.display_tab 함수 호출
         # sf.display_tab(etc_manage_reordered, "기타 문서 관리", 10)
         etc_manage = component_sub.URL_insert(etc_manage)
-        Mandu_component.display_dataframe(etc_manage, "기타 문서 관리")
+        Mandu_component.display_dataframe(
+            etc_manage, tab_name=None, page_name="기타 문서 관리", purpose=None)
 
     # 제품 현황 관리 페이지 함수
     def show_product_management():
@@ -68,14 +71,15 @@ else:
         # 열 순서 변경
         columns_order = ['업체 이름', '상태', '담당자 이메일', '제품',
                          '컨택 업체 담당자', '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
-        product_manage_df_reordered = cop_manage.reindex(
+        cop_manage = cop_manage.reindex(
             columns=columns_order)
 
         st.write("Notion DB를 기준으로 분석한 자료이며, 오전 7시, 12시 하루 2회 동기화 됩니다.:sunglasses:")
 
         cop_manage = component_sub.URL_insert(
             cop_manage)
-        Mandu_component.display_dataframe(cop_manage, "제품 현황 관리")
+        Mandu_component.display_dataframe(
+            cop_manage, tab_name=None, page_name="제품 현황 관리", purpose=None)
 
     # 탭 구성
     tab1, tab2, tab3 = st.tabs(["업체추적", "계약서", "기타서류"])
