@@ -278,15 +278,3 @@ def Change_date_iso8601(df, column_names):
     return df
 
 ##############################################################################################################
-
-
-################## 제거##################
-def process_dataframe(df, currency_columns, number_columns):
-    """데이터 프레임을 처리하여 지정된 열들을 변환하는 함수."""
-    df = convert_currency_format(df, currency_columns)
-    df = convert_number_text_format(df, number_columns)
-
-    # NaN 또는 None 값을 빈 문자열로 대체
-    df = df.fillna('')
-
-    return df
