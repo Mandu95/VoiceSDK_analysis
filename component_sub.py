@@ -177,9 +177,10 @@ def columns_select(df, tab_name, page_name=None):
 
         elif page_name == "계약완료 버튼클릭":
             # 데이터프레임 열 순서 변경
-            columns_order = ["계약명", "계약총액"]
+            columns_order = ["계약명", "계약총액","페이지URL"]
 
             df = df.reindex(columns=columns_order)
+            df = URL_insert(df)
 
             return df
 
