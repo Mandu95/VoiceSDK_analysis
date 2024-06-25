@@ -252,22 +252,25 @@ def preprocess_df(df, tab_name):
 
 
 def View_table(selected_filter, df, purpose=None):
-    if df is None or df.empty:
+    # DataFrame인지 확인
+    if not isinstance(df, pd.DataFrame):
+        st.error("제공된 데이터가 유효한 DataFrame이 아닙니다.")
+        return pd.DataFrame()  # 비어 있는 DataFrame 반환
+
+    if df.empty:
         st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
         return pd.DataFrame()  # 비어 있는 DataFrame 반환
 
-    # df가 DataFrame이면 로직 수행
-    if isinstance(df, pd.DataFrame) and purpose == "계약완료 버튼클릭":
+    # 계약완료 버튼 클릭 시 필터링 로직
+    if purpose == "계약완료 버튼클릭":
         if selected_filter != "전체":
             df = df[df['계약명'].str.contains(selected_filter, na=False)]
 
         if df.empty:
-            st.markdown("검색 결과가 없습니다.")
+            display_empty_message("검색 결과가 없습니다.")
             return pd.DataFrame()  # 여기서도 비어 있는 DataFrame 반환
-        else:
-            return df
 
-    return df  # 필터링되지 않은 원본 DataFrame 반환
+    return df  # 필터링된 또는 원본 DataFrame 반환
 
 
 def display_empty_message(message):
