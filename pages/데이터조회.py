@@ -32,7 +32,7 @@ else:
             columns=['제품 현황 관리', '계약경로', '매입/매출'])
 
         columns_order = ['계약명', '계약구분', '계약시작일', '라이선스 수', '계약단가', '제품',
-                         '라이선스 총액', '계약총액',"페이지URL"]
+                         '라이선스 총액', '계약총액', "페이지URL"]
         contract_manage = contract_manage.reindex(
             columns=columns_order)
         contract_manage = component_sub.URL_insert(
@@ -68,7 +68,7 @@ else:
             columns=['개발언어', '납품병원', '계약구분', '계약 횟수', '계약관리', '라이선스 수', '기타문서 (견적서, NDA 등)'])  # 필요한 열만 남기고 제거
 
         # 열 순서 변경
-        columns_order = ['업체 이름', '상태', '담당자 이메일', '제품',
+        columns_order = ['업체 이름', '상태', '제품',
                          '컨택 업체 담당자', '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
         cop_manage = cop_manage.reindex(
             columns=columns_order)

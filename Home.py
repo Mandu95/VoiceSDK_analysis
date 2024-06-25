@@ -76,7 +76,7 @@ def main_content():
     quarter_1_df = st.session_state['1/4분기 매출']
 
     # 탭 구성 설정
-    tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK", "VoiceDOC"]
+    tab_titles = ["VoiceEMR", "VoiceENR", "VoiceSDK", "VoiceMARK"]
     tabs = st.tabs(tab_titles)
 
     # 각 탭에 대한 콘텐츠 배치
@@ -187,8 +187,8 @@ def main_content():
         Mandu_component.second_layer(
             DF_update_one_Week_cop_VoiceMARK, DF_New_cop_VoiceMARK, "VoiceMARK")
 
-    with tabs[4]:
-        st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
+    # with tabs[4]:
+        # st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
 
 
 def main():
