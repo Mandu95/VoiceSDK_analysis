@@ -181,11 +181,11 @@ def main_content():
         st.session_state.clicked_item = Mandu_component.component_top_button(
             cop_df_VoiceMARK, "VoiceMARK")
 
-        DF_update_one_Week_cop_VoiceMARK = DF_update_one_Week_cop[
-            DF_update_one_Week_cop['제품'] == "VoiceMARK"]
-        DF_New_cop_VoiceMARK = DF_New_cop[DF_New_cop['제품'] == "VoiceMARK"]
-        Mandu_component.second_layer(
-            DF_update_one_Week_cop_VoiceMARK, DF_New_cop_VoiceMARK, "VoiceMARK")
+        # DF_update_one_Week_cop_VoiceMARK = DF_update_one_Week_cop[
+        #     DF_update_one_Week_cop['제품'] == "VoiceMARK"]
+        # DF_New_cop_VoiceMARK = DF_New_cop[DF_New_cop['제품'] == "VoiceMARK"]
+        # Mandu_component.second_layer(
+        #     DF_update_one_Week_cop_VoiceMARK, DF_New_cop_VoiceMARK, "VoiceMARK")
 
     # with tabs[4]:
         # st.markdown("제품 개발을 위한 협약 단계에 있습니다. 차후 데이터가 업로드 되면 표시됩니다.")
