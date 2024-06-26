@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import streamlit_function as sf  # streamlit_function 모듈 임포트
 import login_function as lf  # 로그인 모듈 임포트
 import Mandu_component
 import component_sub
