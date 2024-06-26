@@ -167,9 +167,16 @@ def extract_column_unique_value(df, col_name=None):
 def columns_select(df, tab_name, page_name=None):
 
     if page_name is not None:
-        if page_name == "두번째레이어":
+        if page_name == "두번째레이어 오른쪽":
             # 데이터프레임 열 순서 변경
             columns_order = ["업체 이름", "상태", "개발언어", "정보 최신화 날짜"]
+            df = df.reindex(columns=columns_order)
+
+            return df
+
+        elif page_name == "두번째레이어 왼쪽":
+            # 데이터프레임 열 순서 변경
+            columns_order = ["업체 이름", "정보 최신화 날짜"]
             df = df.reindex(columns=columns_order)
 
             return df

@@ -246,29 +246,33 @@ def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
         if DF_update_one_Week_cop.empty:
             mandu_cs.display_empty_message(f"{tab_name}의 업데이트된 데이터가 없습니다.")
         else:
+            DF_update_one_Week_cop = mandu_cs.columns_select(
+                DF_update_one_Week_cop, tab_name, "두번째레이어 왼쪽")
 
-            # HTML/CSS 스타일 설정
-            st.markdown("""
-                    <style>
-                    .stButton button {
-                        display: inline-block;
-                        padding: auto;
-                        margin: auto;
-                        font-size: 14px;
-                    }
-                    </style>
-                """, unsafe_allow_html=True)
+            display_dataframe(DF_update_one_Week_cop, tab_name)
 
-            cols = st.columns(len(DF_update_one_Week_cop))
-            for col, (index, row) in zip(cols, DF_update_one_Week_cop.iterrows()):
-                # 고유한 키를 사용하여 같은 이름이 중복되는 경우 문제를 방지
-                button_key = f"{row['업체 이름']}_{index}"
-                if col.button(row['업체 이름'], key=button_key):
-                    st.write(f"{row['업체 이름']} 버튼이 클릭되었습니다!")
-                    # 클릭 시 세부 정보를 표시하는 expander
-                    with st.expander("세부 정보 보기"):
-                        st.write(f"업체 이름: {row['업체 이름']}")
-                        st.write(f"정보 최신화 날짜: {row['정보 최신화 날짜']}")
+            # # HTML/CSS 스타일 설정
+            # st.markdown("""
+            #         <style>
+            #         .stButton button {
+            #             display: inline-block;
+            #             padding: auto;
+            #             margin: auto;
+            #             font-size: 14px;
+            #         }
+            #         </style>
+            #     """, unsafe_allow_html=True)
+
+            # cols = st.columns(len(DF_update_one_Week_cop))
+            # for col, (index, row) in zip(cols, DF_update_one_Week_cop.iterrows()):
+            #     # 고유한 키를 사용하여 같은 이름이 중복되는 경우 문제를 방지
+            #     button_key = f"{row['업체 이름']}_{index}"
+            #     if col.button(row['업체 이름'], key=button_key):
+            #         st.write(f"{row['업체 이름']} 버튼이 클릭되었습니다!")
+            #         # 클릭 시 세부 정보를 표시하는 expander
+            #         with st.expander("세부 정보 보기"):
+            #             st.write(f"업체 이름: {row['업체 이름']}")
+            #             st.write(f"정보 최신화 날짜: {row['정보 최신화 날짜']}")
 
     with col2:
 
@@ -279,7 +283,7 @@ def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
         else:
             DF_New_cop = mandu_cs.URL_insert(DF_New_cop)
             DF_New_cop = mandu_cs.columns_select(
-                DF_New_cop, tab_name, "두번째레이어")
+                DF_New_cop, tab_name, "두번째레이어 오른쪽")
 
             display_dataframe(DF_New_cop, tab_name)
 
