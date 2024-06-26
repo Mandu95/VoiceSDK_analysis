@@ -249,6 +249,8 @@ def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
         if DF_update_one_Week_cop.empty:
             mandu_cs.display_empty_message(f"{tab_name}의 업데이트된 데이터가 없습니다.")
         else:
+            DF_update_one_Week_cop = mandu_cs.URL_insert(
+                DF_update_one_Week_cop)
             DF_update_one_Week_cop = mandu_cs.columns_select(
                 DF_update_one_Week_cop, tab_name, "두번째레이어 왼쪽")
 
