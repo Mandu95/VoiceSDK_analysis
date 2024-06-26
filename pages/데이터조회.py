@@ -31,7 +31,7 @@ else:
             columns=['제품 현황 관리', '계약경로', '매입/매출'])
 
         columns_order = ['계약명', '계약구분', '계약시작일', '라이선스 수', '계약단가', '제품',
-                         '라이선스 총액', '계약총액']
+                         '라이선스 총액', '계약총액', '페이지URL']
         contract_manage = contract_manage.reindex(
             columns=columns_order)
         contract_manage = component_sub.URL_insert(
