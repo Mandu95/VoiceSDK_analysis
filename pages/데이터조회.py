@@ -31,7 +31,7 @@ else:
             columns=['제품 현황 관리', '계약경로', '매입/매출'])
 
         columns_order = ['계약명', '계약구분', '계약시작일', '라이선스 수', '계약단가', '제품',
-                         '라이선스 총액', '계약총액', "페이지URL"]
+                         '라이선스 총액', '계약총액']
         contract_manage = contract_manage.reindex(
             columns=columns_order)
         contract_manage = component_sub.URL_insert(
@@ -53,8 +53,6 @@ else:
                          '라이선스 총액', '계약총액', '견적 유효 마감일', '페이지URL']
         etc_manage = etc_manage.reindex(columns=columns_order)
 
-        # sf.display_tab 함수 호출
-        # sf.display_tab(etc_manage_reordered, "기타 문서 관리", 10)
         etc_manage = component_sub.URL_insert(etc_manage)
         Mandu_component.display_dataframe(
             etc_manage, tab_name=None, page_name="기타 문서 관리", purpose=None)
@@ -68,7 +66,7 @@ else:
 
         # 열 순서 변경
         columns_order = ['업체 이름', '상태', '제품',
-                         '컨택 업체 담당자', '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
+                         '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
         cop_manage = cop_manage.reindex(
             columns=columns_order)
 
