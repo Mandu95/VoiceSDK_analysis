@@ -144,7 +144,7 @@ def component_top_button(df, tab_name):
     else:
         filtered_df = df[df['상태'] == st.session_state.clicked_item]
         if filtered_df.empty:
-            st.markdown("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
+            st.write("데이터가 존재하지 않습니다. 데이터가 추가되면 표시됩니다.")
         else:
             display_dataframe(filtered_df.reset_index(drop=True), tab_name)
 
@@ -180,29 +180,31 @@ def component_top_button(df, tab_name):
                 Data_no_info_df, tab_name, "계약완료 버튼클릭")
 
             # Tab 메뉴 항목들
-            tab_titles = ["전체", "매출/매입", "정보없음"]
+            tab_titles = ["매출/매입", "정보없음"]
             tabs = st.tabs(tab_titles)
 
+            # with tabs[0]:
+
+            #     col1, col2 = st.columns([8, 2])
+            #     with col1:
+            #         st.write(f"문서개수 : {len(Data_all_df)}")
+            #     with col2:
+            #         selected_filter = mandu_cs.filter_selectbox(
+            #             f"{tabs}_all_filter", all_select_values)
+
+            #     result_all_df = mandu_cs.View_table(
+            #         selected_filter, Data_all_df, "계약완료 버튼클릭")
+            #     display_dataframe(result_all_df, tab_name)
+
             with tabs[0]:
-
-                col1, col2 = st.columns([8, 2])
-                with col1:
-                    st.write(f"문서개수 : {len(Data_all_df)}")
-                with col2:
-                    selected_filter = mandu_cs.filter_selectbox(
-                        f"{tabs}_all_filter", all_select_values)
-
-                result_all_df = mandu_cs.View_table(
-                    selected_filter, Data_all_df, "계약완료 버튼클릭")
-                display_dataframe(result_all_df, tab_name)
-
-            with tabs[1]:
 
                 col10, col11 = st.columns([5, 5])
 
                 with col10:
+
                     col20, col21 = st.columns([8, 2])
                     with col20:
+                        st.subheader("매출 계약서")
                         st.write(f"문서개수 : {len(Data_buy_df)}")
                     with col21:
                         selected_filter = mandu_cs.filter_selectbox(
@@ -215,6 +217,7 @@ def component_top_button(df, tab_name):
                 with col11:
                     col22, col23 = st.columns([8, 2])
                     with col22:
+                        st.subheader("매입 계약서")
                         st.write(f"문서개수 : {len(Data_sell_df)}")
                     with col23:
                         selected_filter = mandu_cs.filter_selectbox(
@@ -223,7 +226,7 @@ def component_top_button(df, tab_name):
                         selected_filter, Data_sell_df, "계약완료 버튼클릭")
 
                     display_dataframe(result_sell_df, tab_name)
-            with tabs[2]:
+            with tabs[1]:
 
                 col1, col2 = st.columns([8, 2])
                 with col1:

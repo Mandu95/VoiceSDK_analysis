@@ -287,7 +287,7 @@ def display_empty_message(message):
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 50vh;
+                height: 10vh;
                 font-size: 1em;
                 color: black;
             }}
