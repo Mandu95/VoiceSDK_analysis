@@ -112,6 +112,8 @@ def get_value_from_property(property):  # notion properties 중 롤업 속성에
         return safe_get(property, ['url'])
     elif property['type'] == "created_time":
         return safe_get(property, ['created_time'])
+    elif property['type'] == "phone_number":
+        return safe_get(property, ['phone_number'])
     elif property['type'] == "title":
         return safe_get(property, ['title', 0, 'text', 'content']) if safe_get(property, ['title', 0, 'type']) == "text" else None
 
