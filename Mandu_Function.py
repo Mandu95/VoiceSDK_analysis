@@ -31,6 +31,24 @@ def Notion_properties_URL(data):
     return empty_array
 
 
+def notion_dic_to_dataframe(data):  # 딕셔너리 dataframe로 변환하는 함수
+
+    count_data = len(data)
+
+    if count_data < 1:
+        print("데이터가 없습니다. 확인 부탁드립니다.")
+
+    else:
+        try:
+            for A in range(count_data):
+                data[A] = pd.DataFrame.from_dict(
+                    data=data[A], orient="columns")
+        except Exception as e:
+            print("dic to dataframe 변환 실패 : ", e)
+
+        return data
+
+
 def make_dataframe(data):  # properties속성으로 데이터프레임 만듦
     temp_value = []
 

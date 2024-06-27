@@ -1,5 +1,6 @@
 from notion_client import Client
 from notion_client.helpers import collect_paginated_api
+import Mandu_Function as Mandu_F
 
 
 class notion_API:
@@ -26,7 +27,7 @@ class notion_API:
                     "======================================================================================="
                 )
 
-            data = function.notion_dic_to_dataframe(data_list)
+            data = Mandu_F.notion_dic_to_dataframe(data_list)
             return data
 
         else:
@@ -41,11 +42,11 @@ class notion_API:
                 except Exception as e:
                     print("notion 데이터베이스 접근 실패", e)
 
-            data = function.notion_dic_to_dataframe(data_list)
+            data = Mandu_F.notion_dic_to_dataframe(data_list)
             return data_list
 
     def extract_properties(self, notion_data):
-        notion_data = function.notion_dic_to_dataframe(
+        notion_data = Mandu_F.notion_dic_to_dataframe(
             notion_data
         )  # data 변수의 type은 list, list[0]의 type은 딕셔너리. 딕셔너리를 dataframe 형태로 변환
         count_data = len(notion_data)
