@@ -57,12 +57,9 @@ else:
     def show_product_management():
         # 세션 상태에 로딩된 데이터를 저장
         cop_manage = st.session_state['cop_manage_df']
-        cop_manage = cop_manage.drop(
-            columns=['개발언어', '납품병원', '계약구분', '계약 횟수', '계약관리', '라이선스 수', '기타문서 (견적서, NDA 등)'])  # 필요한 열만 남기고 제거
 
         # 열 순서 변경
-        columns_order = ['업체 이름', '상태', '제품',
-                         '계약시작일', '계약종료일', '계약잔여일', '정보 최신화 날짜', '페이지URL']
+        columns_order = ['업체 이름', '상태', '제품', '담당자', '정보 최신화 날짜', '페이지URL']
         cop_manage = cop_manage.reindex(
             columns=columns_order)
 
@@ -71,8 +68,22 @@ else:
         Mandu_component.display_dataframe(
             cop_manage, tab_name=None, page_name="제품 현황 관리", purpose=None)
 
+    # 제품 현황 관리 페이지 함수
+    def show_customer_management():
+        # 세션 상태에 로딩된 데이터를 저장
+        customer_df = st.session_state['customer_df']
+        # 열 순서 변경
+        columns_order = ['프로젝트', '고객 컨택 담당자', '담당자 직급', '담당자 전화번호',
+                         '담당자 이메일', '최초 컨택 날짜', 'PuzzleAI 담당자', '인/아웃바운드', '제품']
+        customer_df = customer_df.reindex(columns=columns_order)
+
+        st.write("프로젝트 진행 중인 업체 별 담당자 정보 조회 입니다.")
+
+        Mandu_component.display_dataframe(
+            customer_df, tab_name=None, page_name="고객 관리", purpose=None)
+
     # 탭 구성
-    tab1, tab2, tab3 = st.tabs(["업체추적", "계약서", "기타서류"])
+    tab1, tab2, tab3, tab4 = st.tabs(["업체추적", "계약서", "기타서류", "고객 담당자"])
 
     with tab1:
         show_product_management()
@@ -83,3 +94,7 @@ else:
     with tab3:
 
         show_other_documents_management()
+
+    with tab4:
+
+        show_customer_management()
