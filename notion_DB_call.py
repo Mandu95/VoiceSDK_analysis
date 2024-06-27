@@ -1,8 +1,6 @@
 from notion_client import Client
 from notion_client.helpers import collect_paginated_api
 
-import function
-
 
 class notion_API:
 

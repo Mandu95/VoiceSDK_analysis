@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import login_function as lf  # 로그인 모듈 임포트
 import Mandu_component
 import component_sub
@@ -34,8 +33,6 @@ else:
                          '라이선스 총액', '계약총액', '페이지URL']
         contract_manage = contract_manage.reindex(
             columns=columns_order)
-        contract_manage = component_sub.URL_insert(
-            contract_manage)
         Mandu_component.display_dataframe(
             contract_manage, tab_name=None, page_name="계약서 관리", purpose=None)
 
@@ -53,14 +50,13 @@ else:
                          '라이선스 총액', '계약총액', '견적 유효 마감일', '페이지URL']
         etc_manage = etc_manage.reindex(columns=columns_order)
 
-        etc_manage = component_sub.URL_insert(etc_manage)
         Mandu_component.display_dataframe(
             etc_manage, tab_name=None, page_name="기타 문서 관리", purpose=None)
 
     # 제품 현황 관리 페이지 함수
     def show_product_management():
         # 세션 상태에 로딩된 데이터를 저장
-        cop_manage = st.session_state['product_manage']
+        cop_manage = st.session_state['cop_manage_df']
         cop_manage = cop_manage.drop(
             columns=['개발언어', '납품병원', '계약구분', '계약 횟수', '계약관리', '라이선스 수', '기타문서 (견적서, NDA 등)'])  # 필요한 열만 남기고 제거
 
@@ -72,8 +68,6 @@ else:
 
         st.write("Notion DB를 기준으로 분석한 자료이며, 오전 7시, 12시 하루 2회 동기화 됩니다.:sunglasses:")
 
-        cop_manage = component_sub.URL_insert(
-            cop_manage)
         Mandu_component.display_dataframe(
             cop_manage, tab_name=None, page_name="제품 현황 관리", purpose=None)
 
