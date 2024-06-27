@@ -73,8 +73,8 @@ else:
         # 세션 상태에 로딩된 데이터를 저장
         customer_df = st.session_state['customer_df']
         # 열 순서 변경
-        columns_order = ['프로젝트', '고객 컨택 담당자', '담당자 직급', '담당자 전화번호',
-                         '담당자 이메일', '최초 컨택 날짜', 'PuzzleAI 담당자', '인/아웃바운드', '제품']
+        columns_order = ['고객 컨택 담당자', '프로젝트', '담당자 직급', '담당자 전화번호',
+                         '담당자 이메일', '최초 컨택 날짜', '인/아웃바운드', '제품', '페이지URL']
         customer_df = customer_df.reindex(columns=columns_order)
 
         st.write("프로젝트 진행 중인 업체 별 담당자 정보 조회 입니다.")
