@@ -1,7 +1,7 @@
 import streamlit as st
 import logging
 import login_function as lf
-import Ready_notion_DB
+import Mandu_Data as Mandu
 import Mandu_component
 
 # 데이터 로딩 및 초기화 함수
@@ -11,26 +11,26 @@ def load_and_initialize_data():
     # 세션 상태를 확인하여 데이터가 이미 로드되었는지 확인
     if 'data_initialized' not in st.session_state:
         # 데이터를 최초로 로딩하는 로직
-        cop_manage, contract_manage, etc_manage, Task = Ready_notion_DB.main()
-        DF_update_one_Week_cop = Ready_notion_DB.main(cop_manage, "내용 업데이트 업체")
-        DF_New_cop = Ready_notion_DB.main(cop_manage, "신규 업체")
-        Data_all, Data_buy, Data_sell, Data_no_info = Ready_notion_DB.main(
-            contract_manage, "매입/매출 데이터")
+        cop_manage_df, contract_manage_df, etc_manage_df, Task_df = Mandu.main()
+        DF_update_one_Week_cop = Mandu.main(cop_manage_df, "내용 업데이트 업체")
+        DF_New_cop = Mandu.main(cop_manage_df, "신규 업체")
+        Data_all, Data_buy, Data_sell, Data_no_info = Mandu.main(
+            contract_manage_df, "매입/매출 데이터")
 
-        Demo_df, demo_to_contract_df = Ready_notion_DB.main(
-            contract_manage, "계약전환률")
+        Demo_df, demo_to_contract_df = Mandu.main(
+            contract_manage_df, "계약전환률")
 
-        this_month_df, df_last_3_months, df_last_6_months = Ready_notion_DB.main(
-            contract_manage, "월별 매출성과")
+        this_month_df, df_last_3_months, df_last_6_months = Mandu.main(
+            contract_manage_df, "월별 매출성과")
 
-        quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df = Ready_notion_DB.main(
-            contract_manage, "분기별 매출성과")
+        quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df = Mandu.main(
+            contract_manage_df, "분기별 매출성과")
 
         # 세션 상태에 로딩된 데이터를 저장
-        st.session_state['product_manage'] = cop_manage
-        st.session_state['contract_manage'] = contract_manage
-        st.session_state['etc_manage'] = etc_manage
-        st.session_state['Task'] = Task
+        st.session_state['cop_manage_df'] = cop_manage_df
+        st.session_state['contract_manage'] = contract_manage_df
+        st.session_state['etc_manage'] = etc_manage_df
+        st.session_state['Task'] = Task_df
         st.session_state['내용 업데이트 업체'] = DF_update_one_Week_cop
         st.session_state['신규 업체'] = DF_New_cop
         st.session_state['매입/매출 전체 데이터'] = Data_all
@@ -61,7 +61,7 @@ def main_content():
     lf.add_logout_button()
 
     # 로드된 데이터를 세션 상태에서 가져옴
-    cop_df = st.session_state['product_manage']
+    cop_df = st.session_state['cop_manage_df']
     DF_update_one_Week_cop = st.session_state['내용 업데이트 업체']
     DF_New_cop = st.session_state['신규 업체']
 

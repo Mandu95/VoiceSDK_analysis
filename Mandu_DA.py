@@ -1,10 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
-import re
-import numpy as np
 from pandas.tseries.offsets import DateOffset
-
-# from Ready_notion_DB import contract_manage, product_manage
 
 
 #################################### 이번달 신규 업체 개수 찾기 ####################################
@@ -128,49 +124,3 @@ def moeny_quater(df):
     quarter_4_df = df[df['분기'] == '2024Q4']
 
     return quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df
-
-
-# ####################### 데이터 분석 main (streamlit_function에서 호출하는 부분) #######################
-# def mandu_contract_main(tab_name):
-#     contract_inital_df = contract_manage
-
-#     # '제품' 열의 리스트를 문자열로 변환
-#     contract_inital_df['제품'] = contract_inital_df['제품'].apply(lambda x: ', '.join(x))
-
-#     ####### 계약서 데이터베이스에서 "제품" 열을 기준으로 1차 필터링하는 코드
-#     contract_inital_df = contract_inital_df[contract_inital_df['제품'] == tab_name]
-
-#     ####### "계약시작일" 열의 행 값을 기준으로 내림차순 정렬
-#     contract_inital_df = contract_inital_df.sort_values(by='계약시작일', ascending=False)
-
-#     ####### '계약완료' 상태 클릭 됐을 때 보여 질 테이블과 데이터
-#     all_contract_df, sell_df, buy_df, no_info_df = View_contract_status(
-#         contract_inital_df, tab_name)
-#     print(len(all_contract_df[0]))
-#     print(len(sell_df[0]))
-#     print(len(buy_df[0]))
-#     print(len(no_info_df[0]))
-#     return all_contract_df, sell_df, buy_df, no_info_df
-
-# def mandu_cop_main(tab_name):
-#     cop_inital_df = product_manage
-#     ####### 계약서 데이터베이스에서 "제품" 열을 기준으로 1차 필터링하는 코드
-#     cop_inital_df = cop_inital_df[cop_inital_df['제품'] == tab_name]
-#     ####### "계약시작일" 열의 행 값을 기준으로 내림차순 정렬
-#     cop_inital_df = cop_inital_df.sort_values(by='계약시작일', ascending=False)
-#     # '제품' 열의 리스트를 문자열로 변환
-#     cop_inital_df['개발언어'] = cop_inital_df['개발언어'].apply(lambda x: ', '.join(x))
-
-
-#     ###### 이번달 신규 업체 개수 찾기
-#     new_cop_df = new_cop_data(cop_inital_df, "정보 최신화 날짜")
-
-#     ###### 2주 내 업데이트 이력 있는 기업 찾기
-#     update_one_week_df = update_one_week_cop(cop_inital_df)
-
-#     columns_order = ['업체 이름', '개발언어', '상태','페이지URL']
-#     new_cop_df= new_cop_df.reindex(columns=columns_order)
-#     return new_cop_df, update_one_week_df
-
-
-# mandu_contract_main("VoiceENR")
