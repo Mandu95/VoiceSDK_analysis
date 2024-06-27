@@ -46,7 +46,7 @@ def Notion_Data_Readysetting():
     etc_manage_df = Mandu_F.change_relation_data(
         etc_manage_df, notion_data[0], "발송 대상", "업체 이름")
     Task_df = Mandu_F.change_relation_data(
-        Task_df, notion_data[0], "분류", "업체 이름")
+        Task_df, notion_data[0], "프로젝트 (제품)", "업체 이름")
     customer_df = Mandu_F.change_relation_data(
         customer_df, notion_data[0], "프로젝트", "업체 이름")
 
@@ -121,6 +121,3 @@ def main(df=None, action_name=None):
                     df)
                 print(A, "데이터 준비 완료")
                 return quarter_1_df, quarter_2_df, quarter_3_df, quarter_4_df
-
-
-Notion_Data_Readysetting()
