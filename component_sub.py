@@ -236,10 +236,10 @@ def preprocess_df(df, tab_name):
         temp_values = ['최초컨택', '자료발송', '사업설명',
                        '실무자회의', '협약', '견적발송', 'POC', '계약완료']
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=["📦 업무 일정", "계약 횟수", "계약관리", "납품병원", "제품"])
+        df = df.drop(columns=["📦 업무 일정", "계약관리", "납품병원", "제품"])
         # 데이터프레임 열 순서 변경
         columns_order = ["업체 이름", "상태", "개발언어",
-                         "계약종료일", "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+                         "담당자", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
     else:
@@ -249,10 +249,9 @@ def preprocess_df(df, tab_name):
             temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
 
         # 필요한 열만 남기고 제거
-        df = df.drop(columns=["📦 업무 일정", "계약 횟수", "개발언어", "계약관리", "납품병원"])
+        df = df.drop(columns=["📦 업무 일정", "개발언어", "계약관리", "납품병원"])
         # 데이터프레임 열 순서 변경
-        columns_order = ["업체 이름", "상태", "계약종료일",
-                         "계약잔여일", "라이선스 수", "정보 최신화 날짜"]
+        columns_order = ["업체 이름", "상태", "담당자", "정보 최신화 날짜"]
         df = df.reindex(columns=columns_order)
 
     return df, temp_values

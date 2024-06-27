@@ -11,7 +11,7 @@ def load_and_initialize_data():
     # 세션 상태를 확인하여 데이터가 이미 로드되었는지 확인
     if 'data_initialized' not in st.session_state:
         # 데이터를 최초로 로딩하는 로직
-        cop_manage_df, contract_manage_df, etc_manage_df, Task_df = Mandu.main()
+        cop_manage_df, contract_manage_df, etc_manage_df, Task_df, customer_df = Mandu.main()
         DF_update_one_Week_cop = Mandu.main(cop_manage_df, "내용 업데이트 업체")
         DF_New_cop = Mandu.main(cop_manage_df, "신규 업체")
         Data_all, Data_buy, Data_sell, Data_no_info = Mandu.main(
@@ -28,6 +28,7 @@ def load_and_initialize_data():
 
         # 세션 상태에 로딩된 데이터를 저장
         st.session_state['cop_manage_df'] = cop_manage_df
+        st.session_state['customer_df'] = customer_df
         st.session_state['contract_manage'] = contract_manage_df
         st.session_state['etc_manage'] = etc_manage_df
         st.session_state['Task'] = Task_df

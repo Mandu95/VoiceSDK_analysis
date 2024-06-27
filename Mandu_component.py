@@ -50,6 +50,7 @@ def display_dataframe(df, tab_name, page_name=None, purpose=None):
 
                 if page_name != "업무":
                     df = df[df['제품'] == selected_filter]
+
                 else:
                     df = df[df['분류'] == selected_filter]
 
@@ -65,6 +66,7 @@ def display_dataframe(df, tab_name, page_name=None, purpose=None):
                         df, items_per_page, key_prefix=page_name)
 
                 if page_name != "업무":
+
                     paged_df = paged_df.drop(
                         columns=['제품'])  # 필요한 열만 남기고 제거
 

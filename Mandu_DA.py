@@ -63,15 +63,14 @@ def View_contract_status(df):
 
 def DA_cop_convert_to_contract(df):
 
-    contract_df_Demo = df[df['계약명'].str.contains('\[데모\]', regex=True)]
+    contract_df_Demo = df[df['계약구분'] == "데모"]
     contract_df_Demo_values = contract_df_Demo['제품 현황 관리'].unique()
 
-    contract_df_NoDemo = df[~df['계약명'].str.contains('\[데모\]', regex=True)]
-    contract_df_NoDemo_values = contract_df_NoDemo['제품 현황 관리'].unique()
+    contract_df_NoDemo = df[df['계약구분'] == "정식"]
 
-    # contract_df_Demo에서 '제품 현황 관리' 값이 unique_no_demo_values에 포함되는 행만 추출
-    demo_to_contract_df = contract_df_Demo[contract_df_Demo['제품 현황 관리'].isin(
-        contract_df_NoDemo_values)]
+    # contract_df_NoDemo에서 '제품 현황 관리' 값이 contract_df_Demo_values와 일치하는 행만 추출
+    demo_to_contract_df = contract_df_NoDemo[contract_df_NoDemo['제품 현황 관리'].isin(
+        contract_df_Demo_values)]
 
     return contract_df_Demo, demo_to_contract_df
 
