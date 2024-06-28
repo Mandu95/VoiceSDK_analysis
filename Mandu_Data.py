@@ -21,7 +21,6 @@ def Notion_Data_Readysetting():
 
     # 노션 데이터를 row_name, Properties, URL 추출해서 저장
     notion_data_result_list = Mandu_F.Notion_properties_URL(notion_data)
-    print(notion_data_result_list[4][1][0])
     print(f"[{datetime.datetime.now()}] 데이터 속성 추출 완료")
 
     # [제품 현황 관리, 계약관리, 기타서류] 데이터프레임 생성
