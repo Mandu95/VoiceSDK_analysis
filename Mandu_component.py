@@ -52,7 +52,7 @@ def display_dataframe(df, tab_name, page_name=None, purpose=None):
                     df = df[df['제품'] == selected_filter]
 
                 else:
-                    df = df[df['분류'] == selected_filter]
+                    df = df[df['프로젝트 (제품)'] == selected_filter]
 
             if df.empty:
                 mandu_cs.display_empty_message(f"조회되는 데이터가 없습니다.")
