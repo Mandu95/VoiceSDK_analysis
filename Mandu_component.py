@@ -24,7 +24,7 @@ def display_dataframe(df, tab_name, page_name=None, purpose=None):
 
             with col2:
                 if page_name == "업무":
-                    filter_options = df['분류'].dropna().unique().tolist()
+                    filter_options = df['프로젝트 (제품)'].dropna().unique().tolist()
                     filter_options.insert(0, '전체')
                     selected_filter = mandu_cs.filter_selectbox(
                         f"{page_name}_filter", filter_options)
