@@ -25,7 +25,7 @@ else:
             columns=['요청자', '담당부서', '사업부 달력 (관련 일정)'])  # 필요한 열만 남기고 제거
 
         # 열 순서 변경
-        columns_order = ['업무', '분류', '상태', '담당자',
+        columns_order = ['업무', '프로젝트 (제품)', '상태', '담당자',
                          '업무기간', '우선순위', '페이지URL']
         Task = Task.reindex(columns=columns_order)
 
