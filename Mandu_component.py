@@ -8,7 +8,7 @@ import pandas as pd
 
 
 # 데이터프레임 html table로 보여주는 함수
-def display_dataframe(df, tab_name, page_name=None, purpose=None):
+def display_dataframe(df, tab_name=None, page_name=None, purpose=None):
 
     df = mandu_cs.URL_insert(df)
 
@@ -119,7 +119,7 @@ def set_initial_page():
         )
 
 
-def component_top_button(df, tab_name):
+def component_top_button(df, demo_cop=None, Demo_to_contract_cop=None, tab_name=None):
     df = mandu_cs.URL_insert(df)
     df, temp_values = mandu_cs.preprocess_df(df, tab_name)
     temp_values = ["전체"] + temp_values  # 상태별 유니크 값 추출 및 '전체' 추가
@@ -131,6 +131,16 @@ def component_top_button(df, tab_name):
     if 'clicked_item' not in st.session_state:
         st.session_state.clicked_item = '전체'  # 세션 상태에 'clicked_item' 초기화
 
+    if 'show_tables' not in st.session_state:
+        st.session_state.show_tables = False  # 세션 상태에 'show_tables' 초기화
+
+    if 'buy_filter' not in st.session_state:
+        st.session_state.buy_filter = '전체'
+    if 'sell_filter' not in st.session_state:
+        st.session_state.sell_filter = '전체'
+    if 'no_info_filter' not in st.session_state:
+        st.session_state.no_info_filter = '전체'
+
     for idx, item in enumerate(temp_values):
         with cols[idx]:  # 생성된 열에 각 버튼 배치
             count = status_counts.get(item, 0)
@@ -139,8 +149,11 @@ def component_top_button(df, tab_name):
                 # 클릭된 아이템이 다시 클릭되면 전체 데이터프레임 표시
                 if st.session_state.clicked_item == item:
                     st.session_state.clicked_item = '전체'
+                    st.session_state.show_tables = False
                 else:
                     st.session_state.clicked_item = item
+                    st.session_state.show_tables = True
+                st.session_state.selected_filter = '전체'  # 버튼 클릭 시 필터 초기화
 
     # 클릭된 항목에 따라 데이터프레임 필터링
     if st.session_state.clicked_item == '전체' or not st.session_state.clicked_item:
@@ -153,33 +166,32 @@ def component_top_button(df, tab_name):
             display_dataframe(filtered_df.reset_index(drop=True), tab_name)
 
         # 계약완료 버튼이 클릭됐을 때 아래 선택박스/테이블 표시를 위한 코드
-        if st.session_state.clicked_item == "계약완료":
-
+        if st.session_state.clicked_item == "계약완료" and st.session_state.show_tables:
             Data_all_df = st.session_state['매입/매출 전체 데이터']
             Data_all_df = Data_all_df[Data_all_df['제품'] == tab_name]
-            all_select_values = mandu_cs.extract_column_unique_value(
-                Data_all_df, "제품 현황 관리")
+            all_select_values = ['전체'] + \
+                [str(year) for year in range(2018, 2025)]
             Data_all_df = mandu_cs.columns_select(
                 Data_all_df, tab_name, "계약완료 버튼클릭")
 
             Data_buy_df = st.session_state['매입/매출 매출 데이터']
             Data_buy_df = Data_buy_df[Data_buy_df['제품'] == tab_name]
-            buy_select_values = mandu_cs.extract_column_unique_value(
-                Data_buy_df, "제품 현황 관리")
+            buy_select_values = ['전체'] + \
+                [str(year) for year in range(2018, 2025)]
             Data_buy_df = mandu_cs.columns_select(
                 Data_buy_df, tab_name, "계약완료 버튼클릭")
 
             Data_sell_df = st.session_state['매입/매출 매입 데이터']
             Data_sell_df = Data_sell_df[Data_sell_df['제품'] == tab_name]
-            sell_select_values = mandu_cs.extract_column_unique_value(
-                Data_sell_df, "제품 현황 관리")
+            sell_select_values = ['전체'] + \
+                [str(year) for year in range(2018, 2025)]
             Data_sell_df = mandu_cs.columns_select(
                 Data_sell_df, tab_name, "계약완료 버튼클릭")
 
             Data_no_info_df = st.session_state['매입/매출 정보없음 데이터']
             Data_no_info_df = Data_no_info_df[Data_no_info_df['제품'] == tab_name]
-            no_info_select_values = mandu_cs.extract_column_unique_value(
-                Data_no_info_df, "제품 현황 관리")
+            no_info_select_values = ['전체'] + \
+                [str(year) for year in range(2018, 2025)]
             Data_no_info_df = mandu_cs.columns_select(
                 Data_no_info_df, tab_name, "계약완료 버튼클릭")
 
@@ -187,64 +199,102 @@ def component_top_button(df, tab_name):
             tab_titles = ["매출/매입", "정보없음"]
             tabs = st.tabs(tab_titles)
 
-            # with tabs[0]:
-
-            #     col1, col2 = st.columns([8, 2])
-            #     with col1:
-            #         st.write(f"문서개수 : {len(Data_all_df)}")
-            #     with col2:
-            #         selected_filter = mandu_cs.filter_selectbox(
-            #             f"{tabs}_all_filter", all_select_values)
-
-            #     result_all_df = mandu_cs.View_table(
-            #         selected_filter, Data_all_df, "계약완료 버튼클릭")
-            #     display_dataframe(result_all_df, tab_name)
-
             with tabs[0]:
-
-                col10, col11 = st.columns([5, 5])
+                col10, col11, col12 = st.columns([5, 5, 5])
 
                 with col10:
 
+                    st.subheader("계약전환률")
+                    st.write("데모 계약 이후 정식계약으로 전환 된 비율입니다.")
+
+                    if Demo_to_contract_cop.empty:
+                        mandu_cs.display_empty_message(
+                            f"{tab_name}의 계약 전환 된 사례가 없습니다.")
+                    else:
+                        # mandu_cs.URL_insert(Demo_to_contract_cop)
+                        Demo_total_len = len(demo_cop)
+                        Demo_to_contract_len = len(Demo_to_contract_cop)
+                        result = (Demo_to_contract_len/Demo_total_len) * 100
+                        result = round(result, 2)
+                        # st.write(Demo_total_len, Demo_to_contract_len)
+                        st.header(f"{result}%")
+                        # # 초기화
+                        # if 'selected_item' not in st.session_state:
+                        #     st.session_state.selected_item = None
+
+                        # # 각 항목에 대한 버튼 생성
+                        # for item in DA_result:
+                        #     if st.button(item):
+                        #         st.session_state.selected_item = item  # 클릭된 아이템 저장
+
+                        # # 선택된 아이템이 있을 경우 표시
+                        # if st.session_state.selected_item:
+                        #     st.write(f"You clicked: {st.session_state.selected_item}")
+
+                with col11:
                     col20, col21 = st.columns([8, 2])
                     with col20:
                         st.subheader("매출 계약서")
                         st.write(f"문서개수 : {len(Data_buy_df)}")
                     with col21:
-                        selected_filter = mandu_cs.filter_selectbox(
-                            f"{tabs}_buy_filter", buy_select_values)
+                        selected_buy_filter = st.selectbox(
+                            "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
 
-                    result_buy_df = mandu_cs.View_table(
-                        selected_filter, Data_buy_df, "계약완료 버튼클릭")
+                        if selected_buy_filter != st.session_state.buy_filter:
+                            st.session_state.buy_filter = selected_buy_filter
 
-                    display_dataframe(result_buy_df, tab_name)
-                with col11:
+                    if st.session_state.buy_filter != "전체":
+                        Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
+                            st.session_state.buy_filter)]
+
+                    if Data_buy_df.empty:
+                        st.write("검색 결과가 없습니다.")
+                    else:
+                        display_dataframe(Data_buy_df, tab_name)
+
+                with col12:
                     col22, col23 = st.columns([8, 2])
                     with col22:
                         st.subheader("매입 계약서")
                         st.write(f"문서개수 : {len(Data_sell_df)}")
                     with col23:
-                        selected_filter = mandu_cs.filter_selectbox(
-                            f"{tabs}_sell_filter", sell_select_values)
-                    result_sell_df = mandu_cs.View_table(
-                        selected_filter, Data_sell_df, "계약완료 버튼클릭")
+                        selected_sell_filter = st.selectbox(
+                            "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
 
-                    display_dataframe(result_sell_df, tab_name)
+                        if selected_sell_filter != st.session_state.sell_filter:
+                            st.session_state.sell_filter = selected_sell_filter
+
+                    if st.session_state.sell_filter != "전체":
+                        Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
+                            st.session_state.sell_filter)]
+
+                    if Data_sell_df.empty:
+                        st.write("검색 결과가 없습니다.")
+                    else:
+                        display_dataframe(Data_sell_df, tab_name)
+
             with tabs[1]:
-
                 col1, col2 = st.columns([8, 2])
                 with col1:
                     st.write(f"문서개수 : {len(Data_no_info_df)}")
                 with col2:
-                    selected_filter = mandu_cs.filter_selectbox(
-                        f"{tabs}_no_info_filter", no_info_select_values)
+                    selected_no_info_filter = st.selectbox(
+                        "기간 선택:", no_info_select_values, key=f"{tab_name}_no_info_filter")
 
-                result_no_info_df = mandu_cs.View_table(
-                    selected_filter, no_info_select_values, "계약완료 버튼클릭")
-                display_dataframe(result_no_info_df, tab_name)
+                    if selected_no_info_filter != st.session_state.no_info_filter:
+                        st.session_state.no_info_filter = selected_no_info_filter
+
+                if st.session_state.no_info_filter != "전체":
+                    Data_no_info_df = Data_no_info_df[Data_no_info_df['계약명'].str.contains(
+                        st.session_state.no_info_filter)]
+
+                if Data_no_info_df.empty:
+                    st.write("검색 결과가 없습니다.")
+                else:
+                    display_dataframe(Data_no_info_df, tab_name)
 
 
-def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
+def third_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
     col1, col2 = st.columns([5, 5])
 
     with col1:
@@ -297,7 +347,7 @@ def second_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
             display_dataframe(DF_New_cop, tab_name)
 
 
-def third_layer(demo_cop, Demo_to_contract_cop, moeny_df_list, quarter_list, tab_name):
+def second_layer(moeny_df_list, quarter_list, tab_name):
 
     # 스타일 적용
     st.markdown("""
@@ -311,42 +361,79 @@ def third_layer(demo_cop, Demo_to_contract_cop, moeny_df_list, quarter_list, tab
     col1, col2, col3 = st.columns([5, 5, 5])
 
     with col1:
+        st.subheader("누적 영업매출")
+        st.write("창립 이후 누적 매출입니다.")
+        # 년도별 '계약총액' 합계 계산
+        years = list(range(2022, 2025))
+        yearly_sum = []
+        for year in years:
+            yearly_sum.append(
+                moeny_df_list[0][(moeny_df_list[0]['매입/매출'] == '매출') &
+                                 (moeny_df_list[0]['계약명'].str.contains(str(year)))]['계약총액'].sum()
+            )
 
-        st.subheader("계약전환률")
-        st.write("데모 또는 MOU 체결 등 협력 진행 이후 정식계약으로 전환 된 비율입니다.")
+        # 현재 년도
+        current_year = datetime.now().year
 
-        if Demo_to_contract_cop.empty:
-            mandu_cs.display_empty_message(f"{tab_name}의 계약 전환 된 사례가 없습니다.")
-        else:
-            # mandu_cs.URL_insert(Demo_to_contract_cop)
-            Demo_total_len = len(demo_cop)
-            Demo_to_contract_len = len(Demo_to_contract_cop)
-            result = (Demo_to_contract_len/Demo_total_len) * 100
-            result = round(result, 2)
-            # st.write(Demo_total_len, Demo_to_contract_len)
-            st.header(f"{result}%")
-            # # 초기화
-            # if 'selected_item' not in st.session_state:
-            #     st.session_state.selected_item = None
+        # 데이터프레임 생성
+        df = pd.DataFrame({
+            '년도': years,
+            '계약총액': yearly_sum
+        })
 
-            # # 각 항목에 대한 버튼 생성
-            # for item in DA_result:
-            #     if st.button(item):
-            #         st.session_state.selected_item = item  # 클릭된 아이템 저장
+        # 금액 단위로 변환 (천만원 단위)
+        df['계약총액(천 만원)'] = df['계약총액'] / 10000000
 
-            # # 선택된 아이템이 있을 경우 표시
-            # if st.session_state.selected_item:
-            #     st.write(f"You clicked: {st.session_state.selected_item}")
+        # 색상 설정
+        df['색상'] = df['년도'].apply(
+            lambda x: '당해년도' if x == current_year else '이전년도')
 
+        # 0인 값 제외
+        df = df[df['계약총액'] > 0]
+
+        # 누적 매출액 계산
+        total_revenue = moeny_df_list[0]['계약총액'].sum()
+
+        # Plotly 파이 차트 생성
+        fig = px.pie(
+            df, names='년도', values='계약총액', color='색상',
+            color_discrete_map={'당해년도': '#018E92', '이전년도': 'gray'},
+            title=f"전체: {total_revenue:,.0f}원",
+            hole=0.4  # 도넛형 차트로 만들기 위해 중간에 구멍 추가
+        )
+
+        # 마우스 커서에 표시되는 금액 포맷
+        fig.update_traces(
+            hovertemplate='<b>%{label}</b><br>계약총액: %{value:,.0f}원<br>'
+        )
+
+        # 범례를 "당해년도"와 "이전년도"로 변경
+        fig.update_layout(
+            legend_title_text='년도 구분',
+            legend=dict(
+                itemsizing='constant',
+                traceorder='reversed'
+            )
+        )
+
+        # Streamlit에 그래프 표시
+        st.plotly_chart(fig)
     with col2:
-        st.subheader("영업매출")
-        st.write("계약서의 계약날짜 기준으로 산출 된 계약총액 합계입니다.")
+        st.subheader("올해 영업매출")
+        st.write("계약날짜 기준으로 산출 된 계약총액 합계입니다.")
         # 금액 데이터 (예시 데이터 사용)
-        total_this_months_money_amount = moeny_df_list[0]['계약총액'].sum()
-        total_last_3_months_money_amount = moeny_df_list[1]['계약총액'].sum()
-        total_last_6_months_money_amount = moeny_df_list[2]['계약총액'].sum()
+
+        # '계약명' 열에 '2024'가 포함된 항목만 필터링하여 합산
+        total_this_year__money_amount = moeny_df_list[0][moeny_df_list[0]['계약명'].str.contains(
+            '2024')]['계약총액'].sum()
+        # 내가 구해 둔 항목의 합산
+        total_this_months_money_amount = moeny_df_list[1]['계약총액'].sum()
+        total_last_3_months_money_amount = moeny_df_list[2]['계약총액'].sum()
+        total_last_6_months_money_amount = moeny_df_list[3]['계약총액'].sum()
 
         # 금액 단위로 표시
+        total_this_year__money_amount_formatted = total_this_year__money_amount / \
+            10000000  # 천 만원 단위로 변환
         total_this_months_money_amount_formatted = total_this_months_money_amount / \
             10000000  # 천 만원 단위로 변환
         total_last_3_months_money_amount_formatted = total_last_3_months_money_amount / \
@@ -356,15 +443,15 @@ def third_layer(demo_cop, Demo_to_contract_cop, moeny_df_list, quarter_list, tab
 
         # 데이터프레임 생성
         df = pd.DataFrame({
-            '기간': ['당월', '3개월', '6개월'],
-            '금액(천 만원)': [total_this_months_money_amount_formatted, total_last_3_months_money_amount_formatted, total_last_6_months_money_amount_formatted],
-            '원래 금액': [total_this_months_money_amount, total_last_3_months_money_amount, total_last_6_months_money_amount]
+            '기간': ['24년', '당월', '3개월', '6개월'],
+            '금액(천 만원)': [total_this_year__money_amount_formatted, total_this_months_money_amount_formatted, total_last_3_months_money_amount_formatted, total_last_6_months_money_amount_formatted],
+            '원래 금액': [total_this_year__money_amount, total_this_months_money_amount, total_last_3_months_money_amount, total_last_6_months_money_amount]
         })
 
         # Plotly 막대 그래프 생성
         fig = px.bar(df, x='기간', y='금액(천 만원)', text_auto=False, color='기간',
-                     color_discrete_map={'당월': '#636EFA',
-                                         '3개월': '#EF553B', '6개월': '#00CC96'},
+                     color_discrete_map={
+                         '24년 누적': '#018E92', '당월': '#636EFA', '3개월': '#EF553B', '6개월': '#00CC96'},
                      hover_data={'기간': False, '금액(천 만원)': False, '원래 금액': True})
 
         # 마우스 커서에 표시되는 금액 포맷

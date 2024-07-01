@@ -63,6 +63,7 @@ def main_content():
 
     # 로드된 데이터를 세션 상태에서 가져옴
     cop_df = st.session_state['cop_manage_df']
+    contract_manage_df = st.session_state['contract_manage']
     DF_update_one_Week_cop = st.session_state['내용 업데이트 업체']
     DF_New_cop = st.session_state['신규 업체']
 
@@ -85,28 +86,23 @@ def main_content():
 
         # 첫번째 레이어
         cop_df_VoiceEMR = cop_df[cop_df['제품'] == "VoiceEMR"]
-        st.session_state.clicked_item = Mandu_component.component_top_button(
-            cop_df_VoiceEMR, "VoiceEMR")
-
-        # 두번째 레이어
-        DF_update_one_Week_cop_VoiceEMR = DF_update_one_Week_cop[
-            DF_update_one_Week_cop['제품'] == "VoiceEMR"]
-        DF_New_cop_VoiceEMR = DF_New_cop[DF_New_cop['제품'] == "VoiceEMR"]
-        Mandu_component.second_layer(
-            DF_update_one_Week_cop_VoiceEMR, DF_New_cop_VoiceEMR, "VoiceEMR")
-
-        # 세번째 레이어
         demo_to_contract_df_VoiceEMR = demo_to_contract_df[
             demo_to_contract_df['제품'] == "VoiceEMR"]
         Demo_df_VoiceEMR = Demo_df[
             Demo_df['제품'] == "VoiceEMR"]
+        st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VoiceEMR, Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR,
+                                                                             "VoiceEMR")
+
+        # 두번째 레이어
+        ALL_df_VoiceEMR = contract_manage_df[
+            contract_manage_df['제품'] == "VoiceEMR"]
         this_month_df_VoiceEMR = this_month_df[
             this_month_df['제품'] == "VoiceEMR"]
         df_last_3_months_VoiceEMR = df_last_3_months[
             df_last_3_months['제품'] == "VoiceEMR"]
         df_last_6_months_VoiceEMR = df_last_6_months[
             df_last_6_months['제품'] == "VoiceEMR"]
-        moeny_list_VoiceEMR = [this_month_df_VoiceEMR,
+        moeny_list_VoiceEMR = [ALL_df_VoiceEMR, this_month_df_VoiceEMR,
                                df_last_3_months_VoiceEMR, df_last_6_months_VoiceEMR]
 
         quarter_4_df_VoiceEMR = quarter_4_df[
@@ -121,25 +117,29 @@ def main_content():
         quarter_list_VoiceEMR = [quarter_1_df_VoiceEMR, quarter_2_df_VoiceEMR,
                                  quarter_3_df_VoiceEMR, quarter_4_df_VoiceEMR]
 
+        Mandu_component.second_layer(
+            moeny_list_VoiceEMR, quarter_list_VoiceEMR, "VoiceEMR")
+
+        # 세번째 레이어
+        DF_update_one_Week_cop_VoiceEMR = DF_update_one_Week_cop[
+            DF_update_one_Week_cop['제품'] == "VoiceEMR"]
+        DF_New_cop_VoiceEMR = DF_New_cop[DF_New_cop['제품'] == "VoiceEMR"]
         Mandu_component.third_layer(
-            Demo_df_VoiceEMR, demo_to_contract_df_VoiceEMR, moeny_list_VoiceEMR, quarter_list_VoiceEMR, "VoiceEMR")
+            DF_update_one_Week_cop_VoiceEMR, DF_New_cop_VoiceEMR, "VoiceEMR")
 
     with tabs[1]:
         cop_df_VoiceENR = cop_df[cop_df['제품'] == "VoiceENR"]
-        st.session_state.clicked_item = Mandu_component.component_top_button(
-            cop_df_VoiceENR, "VoiceENR")
-
-        DF_update_one_Week_cop_VoiceENR = DF_update_one_Week_cop[
-            DF_update_one_Week_cop['제품'] == "VoiceENR"]
-        DF_New_cop_VoiceENR = DF_New_cop[DF_New_cop['제품'] == "VoiceENR"]
-        Mandu_component.second_layer(
-            DF_update_one_Week_cop_VoiceENR, DF_New_cop_VoiceENR, "VoiceENR")
-
-        # 세번째 레이어
         demo_to_contract_df_VoiceENR = demo_to_contract_df[
             demo_to_contract_df['제품'] == "VoiceENR"]
         Demo_df_VoiceENR = Demo_df[
             Demo_df['제품'] == "VoiceENR"]
+
+        st.session_state.clicked_item = Mandu_component.component_top_button(
+            cop_df_VoiceENR, Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, "VoiceENR")
+
+        # 두번째 레이어
+        ALL_df_VoiceENR = contract_manage_df[
+            contract_manage_df['제품'] == "VoiceENR"]
 
         this_month_df_VoiceENR = this_month_df[
             this_month_df['제품'] == "VoiceENR"]
@@ -147,7 +147,7 @@ def main_content():
             df_last_3_months['제품'] == "VoiceENR"]
         df_last_6_months_VoiceENR = df_last_6_months[
             df_last_6_months['제품'] == "VoiceENR"]
-        moeny_list_VoiceENR = [this_month_df_VoiceENR,
+        moeny_list_VoiceENR = [ALL_df_VoiceENR, this_month_df_VoiceENR,
                                df_last_3_months_VoiceENR, df_last_6_months_VoiceENR]
 
         quarter_4_df_VoiceENR = quarter_4_df[
@@ -162,25 +162,31 @@ def main_content():
         quarter_list_VoiceENR = [quarter_1_df_VoiceENR, quarter_2_df_VoiceENR,
                                  quarter_3_df_VoiceENR, quarter_4_df_VoiceENR]
 
+        Mandu_component.second_layer(
+            moeny_list_VoiceENR, quarter_list_VoiceENR, "VoiceENR")
+
+        DF_update_one_Week_cop_VoiceENR = DF_update_one_Week_cop[
+            DF_update_one_Week_cop['제품'] == "VoiceENR"]
+        DF_New_cop_VoiceENR = DF_New_cop[DF_New_cop['제품'] == "VoiceENR"]
         Mandu_component.third_layer(
-            Demo_df_VoiceENR, demo_to_contract_df_VoiceENR, moeny_list_VoiceENR, quarter_list_VoiceENR, "VoiceENR")
+            DF_update_one_Week_cop_VoiceENR, DF_New_cop_VoiceENR, "VoiceENR")
 
     with tabs[2]:
         cop_df_VoiceSDK = cop_df[cop_df['제품'] == "VoiceSDK"]
         st.session_state.clicked_item = Mandu_component.component_top_button(
-            cop_df_VoiceSDK, "VoiceSDK")
+            cop_df_VoiceSDK, None, None, "VoiceSDK")
 
         DF_update_one_Week_cop_VoiceSDK = DF_update_one_Week_cop[
             DF_update_one_Week_cop['제품'] == "VoiceSDK"]
 
         DF_New_cop_VoiceSDK = DF_New_cop[DF_New_cop['제품'] == "VoiceSDK"]
-        Mandu_component.second_layer(
+        Mandu_component.third_layer(
             DF_update_one_Week_cop_VoiceSDK, DF_New_cop_VoiceSDK, "VoiceSDK")
 
     with tabs[3]:
         cop_df_VoiceMARK = cop_df[cop_df['제품'] == "VoiceMARK"]
         st.session_state.clicked_item = Mandu_component.component_top_button(
-            cop_df_VoiceMARK, "VoiceMARK")
+            cop_df_VoiceMARK, None, None, "VoiceMARK")
 
         # DF_update_one_Week_cop_VoiceMARK = DF_update_one_Week_cop[
         #     DF_update_one_Week_cop['제품'] == "VoiceMARK"]
