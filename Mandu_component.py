@@ -3,6 +3,8 @@ import streamlit.components.v1 as components
 import component_sub as mandu_cs
 import streamlit as st
 from datetime import datetime
+import plotly.express as px
+import pandas as pd
 
 
 # 데이터프레임 html table로 보여주는 함수
@@ -337,36 +339,70 @@ def third_layer(demo_cop, Demo_to_contract_cop, moeny_df_list, quarter_list, tab
             #     st.write(f"You clicked: {st.session_state.selected_item}")
 
     with col2:
-
+        st.subheader("영업매출")
+        st.write("계약서의 계약날짜 기준으로 산출 된 계약총액 합계입니다.")
+        # 금액 데이터 (예시 데이터 사용)
         total_this_months_money_amount = moeny_df_list[0]['계약총액'].sum()
         total_last_3_months_money_amount = moeny_df_list[1]['계약총액'].sum()
         total_last_6_months_money_amount = moeny_df_list[2]['계약총액'].sum()
 
         # 금액 단위로 표시
-        formatted_this_month = f"{total_this_months_money_amount:,}원"
-        formatted_last_3_months = f"{total_last_3_months_money_amount:,}원"
-        formatted_last_6_months = f"{total_last_6_months_money_amount:,}원"
+        total_this_months_money_amount_formatted = total_this_months_money_amount / \
+            10000000  # 천 만원 단위로 변환
+        total_last_3_months_money_amount_formatted = total_last_3_months_money_amount / \
+            10000000  # 천 만원 단위로 변환
+        total_last_6_months_money_amount_formatted = total_last_6_months_money_amount / \
+            10000000  # 천 만원 단위로 변환
 
-        col10, col11 = st.columns([8, 2])
-        with col10:
-            st.subheader("영업매출")
-            st.write("계약서의 계약날짜 기준으로 산출 된 계약총액 합계입니다.")
+        # 데이터프레임 생성
+        df = pd.DataFrame({
+            '기간': ['당월', '3개월', '6개월'],
+            '금액(천 만원)': [total_this_months_money_amount_formatted, total_last_3_months_money_amount_formatted, total_last_6_months_money_amount_formatted],
+            '원래 금액': [total_this_months_money_amount, total_last_3_months_money_amount, total_last_6_months_money_amount]
+        })
 
-        with col11:
-            # 선택박스 구성
+        # Plotly 막대 그래프 생성
+        fig = px.bar(df, x='기간', y='금액(천 만원)', text_auto=False, color='기간',
+                     color_discrete_map={'당월': '#636EFA',
+                                         '3개월': '#EF553B', '6개월': '#00CC96'},
+                     hover_data={'기간': False, '금액(천 만원)': False, '원래 금액': True})
 
-            period_options = {
-                "당월": formatted_this_month,
-                "3개월": formatted_last_3_months,
-                "6개월": formatted_last_6_months
-            }
+        # 마우스 커서에 표시되는 금액 포맷
+        fig.update_traces(
+            hovertemplate='<b>%{x}</b><br>금액: %{customdata[0]:,.0f}원<br>')
 
-            # 각 선택박스에 고유한 키를 할당하기 위해 tab_name 변수와 고유의 접미사를 사용
-            monthly_sales_key = f"{tab_name}_monthly_sales_selectbox"
-            selected_period1 = st.selectbox("기간 선택:", list(
-                period_options.keys()), key=monthly_sales_key)
+        # Streamlit에 그래프 표시
+        st.plotly_chart(fig)
 
-        st.subheader(f"{period_options[selected_period1]}")
+        # total_this_months_money_amount = moeny_df_list[0]['계약총액'].sum()
+        # total_last_3_months_money_amount = moeny_df_list[1]['계약총액'].sum()
+        # total_last_6_months_money_amount = moeny_df_list[2]['계약총액'].sum()
+
+        # # 금액 단위로 표시
+        # formatted_this_month = f"{total_this_months_money_amount:,}원"
+        # formatted_last_3_months = f"{total_last_3_months_money_amount:,}원"
+        # formatted_last_6_months = f"{total_last_6_months_money_amount:,}원"
+
+        # col10, col11 = st.columns([8, 2])
+        # with col10:
+        #     st.subheader("영업매출")
+        #     st.write("계약서의 계약날짜 기준으로 산출 된 계약총액 합계입니다.")
+
+        # with col11:
+        #     # 선택박스 구성
+
+        #     period_options = {
+        #         "당월": formatted_this_month,
+        #         "3개월": formatted_last_3_months,
+        #         "6개월": formatted_last_6_months
+        #     }
+
+        #     # 각 선택박스에 고유한 키를 할당하기 위해 tab_name 변수와 고유의 접미사를 사용
+        #     monthly_sales_key = f"{tab_name}_monthly_sales_selectbox"
+        #     selected_period1 = st.selectbox("기간 선택:", list(
+        #         period_options.keys()), key=monthly_sales_key)
+
+        # st.subheader(f"{period_options[selected_period1]}")
 
     with col3:
         # 분기별 매출액 계산

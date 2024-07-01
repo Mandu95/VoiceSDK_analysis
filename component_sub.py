@@ -295,3 +295,7 @@ def display_empty_message(message):
         """,
         unsafe_allow_html=True
     )
+
+
+def display_bar_chart(df):
+    print("아")
