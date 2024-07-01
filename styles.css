@@ -6,6 +6,12 @@ html, body, [class*="css"] {
     font-family: 'AppleSDGothicNeoR00';
 }
 
+/* 기본 색상을 light로 설정 */
+body, .main {
+    background-color: white;
+    color: black;
+}
+
 .button-container {
     display: flex;
     justify-content: flex-end;
@@ -26,12 +32,12 @@ html, body, [class*="css"] {
     min-width: 150px; /* 모든 버튼의 최소 너비를 동일하게 설정 */
 }
 .notion-button {
-    background-color: #00bfa6; /* Notion 시그니처 색상 */
+    background-color: #018E92; /* Notion 시그니처 색상 */
 }
 .notion-button:hover {
     background-color: white;
     color: black;
-    border: 2px solid #00bfa6;
+    border: 2px solid #018E92;
 }
 .onedrive-button {
     background-color: #0078d4; /* OneDrive 시그니처 색상 */
