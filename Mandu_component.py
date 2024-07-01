@@ -451,7 +451,7 @@ def second_layer(moeny_df_list, quarter_list, tab_name):
         # Plotly 막대 그래프 생성
         fig = px.bar(df, x='기간', y='금액(천 만원)', text_auto=False, color='기간',
                      color_discrete_map={
-                         '24년 누적': '#018E92', '당월': '#636EFA', '3개월': '#EF553B', '6개월': '#00CC96'},
+                         '24년 누적': '#018E92', '당월': '#636EFA', '3개월': 'gray', '6개월': 'gray'},
                      hover_data={'기간': False, '금액(천 만원)': False, '원래 금액': True})
 
         # 마우스 커서에 표시되는 금액 포맷
