@@ -151,13 +151,13 @@ def main_content():
                                df_last_3_months_VoiceENR, df_last_6_months_VoiceENR]
 
         quarter_4_df_VoiceENR = quarter_4_df[
-            quarter_4_df['제품'] == "VoiceEMR"]
+            quarter_4_df['제품'] == "VoiceENR"]
         quarter_3_df_VoiceENR = quarter_3_df[
-            quarter_3_df['제품'] == "VoiceEMR"]
+            quarter_3_df['제품'] == "VoiceENR"]
         quarter_2_df_VoiceENR = quarter_2_df[
-            quarter_2_df['제품'] == "VoiceEMR"]
+            quarter_2_df['제품'] == "VoiceENR"]
         quarter_1_df_VoiceENR = quarter_1_df[
-            quarter_1_df['제품'] == "VoiceEMR"]
+            quarter_1_df['제품'] == "VoiceENR"]
 
         quarter_list_VoiceENR = [quarter_1_df_VoiceENR, quarter_2_df_VoiceENR,
                                  quarter_3_df_VoiceENR, quarter_4_df_VoiceENR]
