@@ -110,9 +110,6 @@ def set_initial_page():
                 <a href="https://www.notion.so/puzzleai/69aeff6ca32d4466ad4748dde3939e8b?v=3de75aac58cd42978178f02e0b3d7707" target="_blank">
                     <button class="button notion-button">고객 관리</button>
                 </a>
-                <a href="https://puszleai-my.sharepoint.com/:f:/g/personal/mandu95_puzzle-ai_com/Egh0NiS6DdRPo8ej06sndswB7z9FOPB7OIAArnEenTObvw?e=igldVp" target="_blank">
-                    <button class="button onedrive-button">사업부 공유폴더</button>
-                </a>
             </div>
             """,
             unsafe_allow_html=True
@@ -196,135 +193,255 @@ def component_top_button(df, demo_cop=None, Demo_to_contract_cop=None, tab_name=
                 Data_no_info_df, tab_name, "계약완료 버튼클릭")
 
             # Tab 메뉴 항목들
-            tab_titles = ["매출/매입", "정보없음"]
-            tabs = st.tabs(tab_titles)
+            if len(Data_all_df) != 0:
+                if len(Data_no_info_df) != 0:
+                    tab_titles = ["매출/매입", "정보없음"]
+                    tabs = st.tabs(tab_titles)
 
-            with tabs[0]:
-                if demo_cop is None and Demo_to_contract_cop is None:
+                    with tabs[0]:
+                        if demo_cop is None and Demo_to_contract_cop is None:
 
-                    if len(Data_all_df) != 0:
-                        col11, col12 = st.columns([5, 5])
-                        with col11:
-                            col20, col21 = st.columns([8, 2])
+                            if len(Data_all_df) != 0:
+                                col11, col12 = st.columns([5, 5])
+                                with col11:
+                                    col20, col21 = st.columns([8, 2])
 
-                            with col20:
-                                st.subheader("매출 계약서")
-                                st.write(f"문서개수 : {len(Data_buy_df)}")
-                            with col21:
-                                selected_buy_filter = st.selectbox(
-                                    "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
+                                    with col20:
+                                        st.subheader("매출 계약서")
+                                        st.write(f"문서개수 : {len(Data_buy_df)}")
+                                    with col21:
+                                        selected_buy_filter = st.selectbox(
+                                            "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
 
-                                if selected_buy_filter != st.session_state.buy_filter:
-                                    st.session_state.buy_filter = selected_buy_filter
+                                        if selected_buy_filter != st.session_state.buy_filter:
+                                            st.session_state.buy_filter = selected_buy_filter
 
-                            if st.session_state.buy_filter != "전체":
-                                Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
-                                    st.session_state.buy_filter)]
+                                    if st.session_state.buy_filter != "전체":
+                                        Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
+                                            st.session_state.buy_filter)]
 
-                            if Data_buy_df.empty:
+                                    if Data_buy_df.empty:
+                                        st.write("검색 결과가 없습니다.")
+                                    else:
+                                        display_dataframe(
+                                            Data_buy_df, tab_name)
+
+                                with col12:
+                                    col22, col23 = st.columns([8, 2])
+                                    with col22:
+                                        st.subheader("매입 계약서")
+                                        st.write(f"문서개수 : {len(Data_sell_df)}")
+                                    with col23:
+                                        selected_sell_filter = st.selectbox(
+                                            "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
+
+                                        if selected_sell_filter != st.session_state.sell_filter:
+                                            st.session_state.sell_filter = selected_sell_filter
+
+                                    if st.session_state.sell_filter != "전체":
+                                        Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
+                                            st.session_state.sell_filter)]
+
+                                    if Data_sell_df.empty:
+                                        st.write("검색 결과가 없습니다.")
+                                    else:
+                                        display_dataframe(
+                                            Data_sell_df, tab_name)
+                        else:
+                            col10, col11, col12 = st.columns([3, 5, 5])
+
+                            with col10:  # Use col11 as the first column
+                                st.subheader("계약전환률")
+                                st.write("데모 계약 이후 정식계약으로 전환 된 비율입니다.")
+
+                                if Demo_to_contract_cop.empty:
+                                    mandu_cs.display_empty_message(
+                                        f"{tab_name}의 계약 전환 된 사례가 없습니다.")
+                                else:
+                                    Demo_total_len = len(demo_cop)
+                                    Demo_to_contract_len = len(
+                                        Demo_to_contract_cop)
+                                    result = (Demo_to_contract_len /
+                                              Demo_total_len) * 100
+                                    result = round(result, 2)
+                                    st.header(f"{result}%")
+                            with col11:
+                                col20, col21 = st.columns([8, 2])
+
+                                with col20:
+                                    st.subheader("매출 계약서")
+                                    st.write(f"문서개수 : {len(Data_buy_df)}")
+                                with col21:
+                                    selected_buy_filter = st.selectbox(
+                                        "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
+
+                                    if selected_buy_filter != st.session_state.buy_filter:
+                                        st.session_state.buy_filter = selected_buy_filter
+
+                                if st.session_state.buy_filter != "전체":
+                                    Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
+                                        st.session_state.buy_filter)]
+
+                                if Data_buy_df.empty:
+                                    st.write("검색 결과가 없습니다.")
+                                else:
+                                    display_dataframe(Data_buy_df, tab_name)
+
+                            with col12:
+                                col22, col23 = st.columns([8, 2])
+                                with col22:
+                                    st.subheader("매입 계약서")
+                                    st.write(f"문서개수 : {len(Data_sell_df)}")
+                                with col23:
+                                    selected_sell_filter = st.selectbox(
+                                        "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
+
+                                    if selected_sell_filter != st.session_state.sell_filter:
+                                        st.session_state.sell_filter = selected_sell_filter
+
+                                if st.session_state.sell_filter != "전체":
+                                    Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
+                                        st.session_state.sell_filter)]
+
+                                if Data_sell_df.empty:
+                                    st.write("검색 결과가 없습니다.")
+                                else:
+                                    display_dataframe(Data_sell_df, tab_name)
+
+                    with tabs[1]:
+                        if len(Data_no_info_df) != 0:
+                            col1, col2 = st.columns([8, 2])
+                            with col1:
+                                st.write(f"문서개수 : {len(Data_no_info_df)}")
+                            with col2:
+                                selected_no_info_filter = st.selectbox(
+                                    "기간 선택:", no_info_select_values, key=f"{tab_name}_no_info_filter")
+
+                                if selected_no_info_filter != st.session_state.no_info_filter:
+                                    st.session_state.no_info_filter = selected_no_info_filter
+
+                            if st.session_state.no_info_filter != "전체":
+                                Data_no_info_df = Data_no_info_df[Data_no_info_df['계약명'].str.contains(
+                                    st.session_state.no_info_filter)]
+
+                            if Data_no_info_df.empty:
                                 st.write("검색 결과가 없습니다.")
                             else:
-                                display_dataframe(Data_buy_df, tab_name)
+                                display_dataframe(Data_no_info_df, tab_name)
 
-                        with col12:
-                            col22, col23 = st.columns([8, 2])
-                            with col22:
-                                st.subheader("매입 계약서")
-                                st.write(f"문서개수 : {len(Data_sell_df)}")
-                            with col23:
-                                selected_sell_filter = st.selectbox(
-                                    "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
-
-                                if selected_sell_filter != st.session_state.sell_filter:
-                                    st.session_state.sell_filter = selected_sell_filter
-
-                            if st.session_state.sell_filter != "전체":
-                                Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
-                                    st.session_state.sell_filter)]
-
-                            if Data_sell_df.empty:
-                                st.write("검색 결과가 없습니다.")
-                            else:
-                                display_dataframe(Data_sell_df, tab_name)
                 else:
-                    col10, col11, col12 = st.columns([3, 5, 5])
+                    tab_titles = ["매출/매입"]
+                    tabs = st.tabs(tab_titles)
 
-                    with col10:  # Use col11 as the first column
-                        st.subheader("계약전환률")
-                        st.write("데모 계약 이후 정식계약으로 전환 된 비율입니다.")
+                    with tabs[0]:
+                        if demo_cop is None and Demo_to_contract_cop is None:
 
-                        if Demo_to_contract_cop.empty:
-                            mandu_cs.display_empty_message(
-                                f"{tab_name}의 계약 전환 된 사례가 없습니다.")
+                            if len(Data_all_df) != 0:
+                                col11, col12 = st.columns([5, 5])
+                                with col11:
+                                    col20, col21 = st.columns([8, 2])
+
+                                    with col20:
+                                        st.subheader("매출 계약서")
+                                        st.write(f"문서개수 : {len(Data_buy_df)}")
+                                    with col21:
+                                        selected_buy_filter = st.selectbox(
+                                            "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
+
+                                        if selected_buy_filter != st.session_state.buy_filter:
+                                            st.session_state.buy_filter = selected_buy_filter
+
+                                    if st.session_state.buy_filter != "전체":
+                                        Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
+                                            st.session_state.buy_filter)]
+
+                                    if Data_buy_df.empty:
+                                        st.write("검색 결과가 없습니다.")
+                                    else:
+                                        display_dataframe(
+                                            Data_buy_df, tab_name)
+
+                                with col12:
+                                    col22, col23 = st.columns([8, 2])
+                                    with col22:
+                                        st.subheader("매입 계약서")
+                                        st.write(f"문서개수 : {len(Data_sell_df)}")
+                                    with col23:
+                                        selected_sell_filter = st.selectbox(
+                                            "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
+
+                                        if selected_sell_filter != st.session_state.sell_filter:
+                                            st.session_state.sell_filter = selected_sell_filter
+
+                                    if st.session_state.sell_filter != "전체":
+                                        Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
+                                            st.session_state.sell_filter)]
+
+                                    if Data_sell_df.empty:
+                                        st.write("검색 결과가 없습니다.")
+                                    else:
+                                        display_dataframe(
+                                            Data_sell_df, tab_name)
                         else:
-                            Demo_total_len = len(demo_cop)
-                            Demo_to_contract_len = len(Demo_to_contract_cop)
-                            result = (Demo_to_contract_len /
-                                      Demo_total_len) * 100
-                            result = round(result, 2)
-                            st.header(f"{result}%")
-                    with col11:
-                        col20, col21 = st.columns([8, 2])
+                            col10, col11, col12 = st.columns([3, 5, 5])
 
-                        with col20:
-                            st.subheader("매출 계약서")
-                            st.write(f"문서개수 : {len(Data_buy_df)}")
-                        with col21:
-                            selected_buy_filter = st.selectbox(
-                                "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
+                            with col10:  # Use col11 as the first column
+                                st.subheader("계약전환률")
+                                st.write("데모 계약 이후 정식계약으로 전환 된 비율입니다.")
 
-                            if selected_buy_filter != st.session_state.buy_filter:
-                                st.session_state.buy_filter = selected_buy_filter
+                                if Demo_to_contract_cop.empty:
+                                    mandu_cs.display_empty_message(
+                                        f"{tab_name}의 계약 전환 된 사례가 없습니다.")
+                                else:
+                                    Demo_total_len = len(demo_cop)
+                                    Demo_to_contract_len = len(
+                                        Demo_to_contract_cop)
+                                    result = (Demo_to_contract_len /
+                                              Demo_total_len) * 100
+                                    result = round(result, 2)
+                                    st.header(f"{result}%")
+                            with col11:
+                                col20, col21 = st.columns([8, 2])
 
-                        if st.session_state.buy_filter != "전체":
-                            Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
-                                st.session_state.buy_filter)]
+                                with col20:
+                                    st.subheader("매출 계약서")
+                                    st.write(f"문서개수 : {len(Data_buy_df)}")
+                                with col21:
+                                    selected_buy_filter = st.selectbox(
+                                        "기간 선택:", buy_select_values, key=f"{tab_name}_buy_filter")
 
-                        if Data_buy_df.empty:
-                            st.write("검색 결과가 없습니다.")
-                        else:
-                            display_dataframe(Data_buy_df, tab_name)
+                                    if selected_buy_filter != st.session_state.buy_filter:
+                                        st.session_state.buy_filter = selected_buy_filter
 
-                    with col12:
-                        col22, col23 = st.columns([8, 2])
-                        with col22:
-                            st.subheader("매입 계약서")
-                            st.write(f"문서개수 : {len(Data_sell_df)}")
-                        with col23:
-                            selected_sell_filter = st.selectbox(
-                                "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
+                                if st.session_state.buy_filter != "전체":
+                                    Data_buy_df = Data_buy_df[Data_buy_df['계약명'].str.contains(
+                                        st.session_state.buy_filter)]
 
-                            if selected_sell_filter != st.session_state.sell_filter:
-                                st.session_state.sell_filter = selected_sell_filter
+                                if Data_buy_df.empty:
+                                    st.write("검색 결과가 없습니다.")
+                                else:
+                                    display_dataframe(Data_buy_df, tab_name)
 
-                        if st.session_state.sell_filter != "전체":
-                            Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
-                                st.session_state.sell_filter)]
+                            with col12:
+                                col22, col23 = st.columns([8, 2])
+                                with col22:
+                                    st.subheader("매입 계약서")
+                                    st.write(f"문서개수 : {len(Data_sell_df)}")
+                                with col23:
+                                    selected_sell_filter = st.selectbox(
+                                        "기간 선택:", sell_select_values, key=f"{tab_name}_sell_filter")
 
-                        if Data_sell_df.empty:
-                            st.write("검색 결과가 없습니다.")
-                        else:
-                            display_dataframe(Data_sell_df, tab_name)
+                                    if selected_sell_filter != st.session_state.sell_filter:
+                                        st.session_state.sell_filter = selected_sell_filter
 
-            with tabs[1]:
-                col1, col2 = st.columns([8, 2])
-                with col1:
-                    st.write(f"문서개수 : {len(Data_no_info_df)}")
-                with col2:
-                    selected_no_info_filter = st.selectbox(
-                        "기간 선택:", no_info_select_values, key=f"{tab_name}_no_info_filter")
+                                if st.session_state.sell_filter != "전체":
+                                    Data_sell_df = Data_sell_df[Data_sell_df['계약명'].str.contains(
+                                        st.session_state.sell_filter)]
 
-                    if selected_no_info_filter != st.session_state.no_info_filter:
-                        st.session_state.no_info_filter = selected_no_info_filter
-
-                if st.session_state.no_info_filter != "전체":
-                    Data_no_info_df = Data_no_info_df[Data_no_info_df['계약명'].str.contains(
-                        st.session_state.no_info_filter)]
-
-                if Data_no_info_df.empty:
-                    st.write("검색 결과가 없습니다.")
-                else:
-                    display_dataframe(Data_no_info_df, tab_name)
+                                if Data_sell_df.empty:
+                                    st.write("검색 결과가 없습니다.")
+                                else:
+                                    display_dataframe(Data_sell_df, tab_name)
 
 
 def third_layer(DF_update_one_Week_cop, DF_New_cop, tab_name):
