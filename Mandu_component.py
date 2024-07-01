@@ -200,7 +200,7 @@ def component_top_button(df, demo_cop=None, Demo_to_contract_cop=None, tab_name=
             tabs = st.tabs(tab_titles)
 
             with tabs[0]:
-                col10, col11, col12 = st.columns([5, 5, 5])
+                col10, col11, col12 = st.columns([3, 5, 5])
 
                 with col10:
 
