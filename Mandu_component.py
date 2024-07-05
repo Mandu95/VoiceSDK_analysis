@@ -33,7 +33,7 @@ def display_dataframe(df, tab_name=None, page_name=None, purpose=None):
                     df = mandu_cs.URL_insert(df)
                 else:
                     filter_options = ["전체", "VoiceEMR", "VoiceENR",
-                                      "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VoiceDOC"]
+                                      "VoiceSDK", "VoiceMARK", "VoiceEMR+", "VUNO"]
                     selected_filter = mandu_cs.filter_selectbox(
                         f"{page_name}_filter", filter_options)
 
