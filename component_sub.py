@@ -243,7 +243,7 @@ def preprocess_df(df, tab_name):
         df = df.reindex(columns=columns_order)
 
     else:
-        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC"]:
+        if tab_name in ["VoiceENR", "VoiceMARK", "VoiceDOC", "VUNO"]:
             temp_values = ['데모요청', '사업설명', '견적발송', '계약중', '계약완료']
         elif tab_name == "VoiceEMR":
             temp_values = ['데모요청', '사업설명', '견적발송', '계약완료', '데모']
