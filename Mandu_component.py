@@ -39,9 +39,8 @@ def display_dataframe(df, tab_name=None, page_name=None, purpose=None):
 
             # 검색 기능 적용: 첫 번째 열을 기준으로 검색
             if search_query:
-                first_column = df.columns[0]
-                df = df[df[first_column].astype(
-                    str).str.contains(search_query, na=False)]
+                df = df[df.apply(lambda row: row.astype(str).str.contains(
+                    search_query, case=False).any(), axis=1)]
 
             # 제품 열의 리스트를 텍스트로 변환
             if '제품' in df.columns:
