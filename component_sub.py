@@ -233,8 +233,7 @@ def preprocess_df(df, tab_name):
 
     # VoiceSDK 탭 처리
     if tab_name == "VoiceSDK":
-        temp_values = ['최초컨택', '자료발송', '사업설명',
-                       '실무자회의', '협약', '견적발송', 'POC', '계약완료']
+        temp_values = ['사업설명', '협약', 'POC', '계약완료', "협업취소"]
         # # 필요한 열만 남기고 제거
         # df = df.drop(columns=["📦 업무 일정", "계약관리", "납품병원", "제품"])
         # 데이터프레임 열 순서 변경
