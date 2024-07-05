@@ -203,37 +203,6 @@ def main_content():
         st.session_state.clicked_item = Mandu_component.component_top_button(cop_df_VUNO, Demo_df_VUNO, demo_to_contract_df_VUNO,
                                                                              "VUNO")
 
-        # 두번째 레이어
-        ALL_df_VUNO = contract_manage_df[
-            contract_manage_df['제품'] == "VUNO"]
-        this_month_df_VUNO = this_month_df[
-            this_month_df['제품'] == "VUNO"]
-        df_last_3_months_VUNO = df_last_3_months[
-            df_last_3_months['제품'] == "VUNO"]
-        df_last_6_months_VUNO = df_last_6_months[
-            df_last_6_months['제품'] == "VUNO"]
-        moeny_list_VUNO = [ALL_df_VUNO, this_month_df_VUNO,
-                           df_last_3_months_VUNO, df_last_6_months_VUNO]
-
-        quarter_4_df_VUNO = quarter_4_df[
-            quarter_4_df['제품'] == "VUNO"]
-        quarter_3_df_VUNO = quarter_3_df[
-            quarter_3_df['제품'] == "VUNO"]
-        quarter_2_df_VUNO = quarter_2_df[
-            quarter_2_df['제품'] == "VUNO"]
-        quarter_1_df_VUNO = quarter_1_df[
-            quarter_1_df['제품'] == "VUNO"]
-
-        quarter_list_VUNO = [quarter_1_df_VUNO, quarter_2_df_VUNO,
-                             quarter_3_df_VUNO, quarter_4_df_VUNO]
-
-        # 세번째 레이어
-        DF_update_one_Week_cop_VUNO = DF_update_one_Week_cop[
-            DF_update_one_Week_cop['제품'] == "VUNO"]
-        DF_New_cop_VUNO = DF_New_cop[DF_New_cop['제품'] == "VUNO"]
-        Mandu_component.third_layer(
-            DF_update_one_Week_cop_VUNO, DF_New_cop_VUNO, "VUNO")
-
 
 def main():
     # 페이지 설정
