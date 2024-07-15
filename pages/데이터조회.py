@@ -59,7 +59,8 @@ else:
         cop_manage = st.session_state['cop_manage_df']
 
         # 열 순서 변경
-        columns_order = ['업체 이름', '상태', '제품', '담당자', '정보 최신화 날짜', '페이지URL']
+        columns_order = ['업체 이름', '상태', '제품',
+                         '담당자', "주소", '정보 최신화 날짜', '페이지URL']
         cop_manage = cop_manage.reindex(
             columns=columns_order)
 
